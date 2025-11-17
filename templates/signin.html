@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in</title>
+  <link rel="stylesheet" href="{% static 'css/signin.css' %}">
+  <link rel="stylesheet" href="{% static 'css/ui.css' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav>
+    <div class="nav-left">
+      <a href="{% url 'listings:index' %}">home</a>
+    </div>
+    <div class="nav-right">
+      {% if user.is_authenticated %}
+        <a href="{% url 'listings:profile' %}" class="profile-icon" title="Profile">{{ user.username|slice:":2"|upper }}</a>
+      {% else %}
+        <a href="{% url 'listings:signin' %}" class="nav-btn">Sign in</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <div class="container">
+    <h2>Welcome back</h2>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.errors %}
+        <p class="errors">Invalid username or password.</p>
+      {% endif %}
+
+      <label for="id_username">Username</label>
+      {{ form.username }}
+      {% if form.username.errors %}
+        <p style="color: #e53e3e; font-size: 13px; margin-top: -8px;">{{ form.username.errors|first }}</p>
+      {% endif %}
+
+      <label for="id_password">Password</label>
+      {{ form.password }}
+      {% if form.password.errors %}
+        <p style="color: #e53e3e; font-size: 13px; margin-top: -8px;">{{ form.password.errors|first }}</p>
+      {% endif %}
+
+      <a href="{% url 'listings:password_reset' %}" class="forgot">Forgot password?</a>
+
+      <button type="submit" class="signin-btn">Sign in</button>
+
+      <p class="bottom-text">Don't have an account? <a href="{% url 'listings:signup' %}">Sign up</a></p>
+    </form>
+  </div>
+
+  <div id="messages" style="display:none;">
+    {% for message in messages %}
+      <div class="django-message {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+
+  <script src="{% static 'js/ui.js' %}"></script>
+</body>
+</html>

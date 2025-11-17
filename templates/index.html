@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HomeFinder</title>
+  <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/ui.css' %}" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">Real Estate With ML</div>
+
+    <nav>
+      <a href="#">Buy</a>
+      <a href="#">Sell</a>
+      <a href="#">Home</a>
+    </nav>
+
+    <div class="search-section">
+      {% if user.is_authenticated %}
+        <a href="{% url 'listings:profile' %}" class="profile-icon" title="Profile">{{ user.username|slice:":2"|upper }}</a>
+      {% else %}
+        <a href="{% url 'listings:signin' %}" class="sign-in">Sign In</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <div id="messages" style="display:none;">
+    {% for message in messages %}
+      <div class="django-message {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Find your place with <span>HomeFinder</span></h1>
+      </div>
+  </section>
+
+  <!-- Featured Listings -->
+  <section class="featured">
+    <h2>Featured Listings</h2>
+    <div class="listings">
+      <a href="{% url 'listings:listing_details' %}" class="listing-card">
+        <img src="{% static 'Depth 5, Frame 0.png' %}" alt="Home" />
+        <h3>Stunning Modern Home</h3>
+        <p>4 Beds • 2 Baths • 2,039 sq ft</p>
+      </a>
+
+      <a href="{% url 'listings:listing_details' %}" class="listing-card">
+        <img src="{% static 'Depth 6 Frame 0.png' %}" alt="Home" />
+        <h3>Elegant Family Residence</h3>
+        <p>3 Beds • 2 Baths • 1,950 sq ft</p>
+      </a>
+
+      <a href="{% url 'listings:listing_details' %}" class="listing-card">
+        <img src="{% static 'hero sectione.png' %}" alt="Home" />
+        <h3>Luxury Estate with a View</h3>
+        <p>5 Beds • 4 Baths • 3,400 sq ft</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- Explore by City -->
+  <section class="cities">
+    <h2>Explore by City</h2>
+    <div class="city-grid">
+      <div class="city-card">
+        <img src="{% static 'mumbai.png' %}" alt="Mumbai">
+        <p>Mumbai</p>
+      </div>
+      <div class="city-card">
+        <img src="{% static 'los angles.png' %}" alt="Los Angeles">
+        <p>Los Angeles</p>
+      </div>
+      <div class="city-card">
+        <img src="{% static 'new york.png' %}" alt="New York">
+        <p>New York</p>
+      </div>
+      <div class="city-card">
+        <img src="{% static 'chingo.png' %}" alt="Chicago">
+        <p>Chicago</p>
+      </div>
+      <div class="city-card">
+        <img src="{% static 'miami.png' %}" alt="Miami">
+        <p>Miami</p>
+      </div>
+      <div class="city-card">
+        <img src="{% static 'Dubai.png' %}" alt="Dubai">
+        <p>Dubai</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <h3>Ready to find your dream property?</h3>
+    <div class="footer-links">
+      <a href="#">About Us</a>
+      <a href="#">Contact</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+    </div>
+    <p>Real Estate With ML</p>
+  </footer>
+
+</body>
+</html>
+<script src="{% static 'js/ui.js' %}"></script>

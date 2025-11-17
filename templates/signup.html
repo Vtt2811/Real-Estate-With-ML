@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Register — Real Estate With ML</title>
+<link rel="stylesheet" href="{% static 'css/signup.css' %}">
+<link rel="stylesheet" href="{% static 'css/ui.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="topbar">
+<div class="brand">
+<div class="logo">✺</div>
+<div class="brand-text">Real Estate With ML</div>
+</div>
+<nav class="nav-right">
+</nav>
+</header>
+
+<div id="messages" style="display:none;">
+  {% for message in messages %}
+    <div class="django-message {{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+</div>
+
+<main class="page-wrap">
+<section class="content">
+<h1 class="page-title">Create your account</h1>
+
+<form class="register-form" method="post" autocomplete="off" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}
+    <ul class="errors">
+      {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <label for="id_username">
+    <span class="label">Username</span>
+    {{ form.username }}
+    {% if form.username.errors %}
+      <span style="color: #e53e3e; font-size: 12px; display: block; margin-top: 4px;">{{ form.username.errors|first }}</span>
+    {% endif %}
+  </label>
+
+  <label for="id_full_name">
+    <span class="label">Full name</span>
+    {{ form.full_name }}
+    {% if form.full_name.errors %}
+      <span style="color: #e53e3e; font-size: 12px; display: block; margin-top: 4px;">{{ form.full_name.errors|first }}</span>
+    {% endif %}
+  </label>
+
+  <label for="id_email">
+    <span class="label">Email address</span>
+    {{ form.email }}
+    {% if form.email.errors %}
+      <span style="color: #e53e3e; font-size: 12px; display: block; margin-top: 4px;">{{ form.email.errors|first }}</span>
+    {% endif %}
+  </label>
+
+  <label for="id_password1">
+    <span class="label">Password</span>
+    {{ form.password1 }}
+    {% if form.password1.errors %}
+      <span style="color: #e53e3e; font-size: 12px; display: block; margin-top: 4px;">{{ form.password1.errors|first }}</span>
+    {% endif %}
+  </label>
+
+  <label for="id_password2">
+    <span class="label">Confirm password</span>
+    {{ form.password2 }}
+    {% if form.password2.errors %}
+      <span style="color: #e53e3e; font-size: 12px; display: block; margin-top: 4px;">{{ form.password2.errors|first }}</span>
+    {% endif %}
+  </label>
+
+  <label for="id_role">
+    <span class="label">Role</span>
+    {{ form.role }}
+    {% if form.role.errors %}
+      <span style="color: #e53e3e; font-size: 12px; display: block; margin-top: 4px;">{{ form.role.errors|first }}</span>
+    {% endif %}
+  </label>
+
+  <button type="submit" class="primary-btn">Register</button>
+
+  <p class="small">Already have an account? <a href="{% url 'listings:signin' %}">Log in</a></p>
+</form>
+</section>
+</main>
+
+
+<footer class="site-footer"></footer>
+</body>
+</html>
+<script src="{% static 'js/ui.js' %}"></script>

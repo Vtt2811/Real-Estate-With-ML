@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listing Details - HomeFinder</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+        <link rel="stylesheet" href="{% static 'css/ui.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">Real Estate With ML</div>
+        <nav>
+            <a href="{% url 'listings:index' %}">Home</a>
+            <a href="#">Buy</a>
+            <a href="#">Sell</a>
+        </nav>
+                <div class="search-section">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'listings:signout' %}" class="profile-icon">{{ user.username|slice:":2"|upper }}</a>
+                    {% else %}
+                        <a href="{% url 'listings:signin' %}" class="sign-in">Sign In</a>
+                    {% endif %}
+                </div>
+    </header>
+
+    <main class="listing-details">
+        <h1>Property Details</h1>
+        <div class="property-info">
+            <h2>Details coming soon...</h2>
+            <p>This page will show detailed information about the selected property.</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <h3>Ready to find your dream property?</h3>
+        <div class="footer-links">
+            <a href="#">About Us</a>
+<script src="{% static 'js/ui.js' %}"></script>
+            <a href="#">Contact</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+        <p>Real Estate With ML</p>
+    </footer>
+
+    <div id="messages" style="display:none;">
+        {% for message in messages %}
+            <div class="django-message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+</body>
+</html>

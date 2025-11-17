@@ -1,0 +1,226 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #1a202c;
+  min-height: 100vh;
+}
+
+/* NAVBAR */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+nav a {
+  text-decoration: none;
+  color: #4a5568;
+  font-size: 14px;
+  margin-right: 20px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: #667eea;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #fff;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* MAIN CONTENT */
+.container {
+  width: 100%;
+  max-width: 420px;
+  margin: 80px auto;
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+h2 {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: #1a202c;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+  color: #4a5568;
+}
+
+input {
+  padding: 0.8rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: #f7fafc;
+  margin: 0 0 1rem 0;
+}
+
+input.form-input {
+  padding: 0.8rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: #f7fafc;
+  width: 100%;
+  font-family: inherit;
+  color: #1a202c;
+}
+
+input:focus,
+input.form-input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.forgot {
+  font-size: 13px;
+  color: #667eea;
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  text-align: right;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.forgot:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+.signin-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  padding: 0.9rem;
+  font-size: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.signin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.signin-btn:active {
+  transform: translateY(0);
+}
+
+.bottom-text {
+  text-align: center;
+  font-size: 13px;
+  color: #718096;
+  margin-top: 1.5rem;
+}
+
+.bottom-text a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.bottom-text a:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+.errors {
+  color: #e53e3e;
+  font-size: 13px;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: #fff5f5;
+  border-radius: 6px;
+  border-left: 3px solid #e53e3e;
+}
+
+/* Page helper styles */
+.subtitle {
+  text-align: center;
+  color: #718096;
+  font-size: 14px;
+  margin-bottom: 2rem;
+}
+
+.info-box {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  background: #f0f4ff;
+  border-left: 4px solid #667eea;
+  border-radius: 8px;
+  color: #4a5568;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.info-box p {
+  margin: 0.5rem 0;
+}
+
+.info-box strong {
+  color: #667eea;
+  font-weight: 600;
+}
+
+.info-box ul {
+  margin: 0.75rem 0 0 1.25rem;
+  padding: 0;
+}
+
+.info-box li {
+  margin: 0.4rem 0;
+  list-style: disc;
+}
