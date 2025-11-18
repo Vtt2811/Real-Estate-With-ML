@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 
 class SignupForm(UserCreationForm):
@@ -29,3 +31,31 @@ class SignupForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+    def clean_email(self):
+        """Ensure email addresses are unique (case-insensitive)."""
+        email = self.cleaned_data.get('email')
+        if email:
+            email = email.strip()
+            if User.objects.filter(email__iexact=email).exists():
+                raise ValidationError('An account with this email already exists.')
+        return email
+
+
+class AdminEmailChangeForm(forms.Form):
+    email = forms.EmailField(required=True)
+
+    def __init__(self, *args, user_obj=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user_obj = user_obj
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            email = email.strip()
+            qs = User.objects.filter(email__iexact=email)
+            if self.user_obj:
+                qs = qs.exclude(pk=self.user_obj.pk)
+            if qs.exists():
+                raise ValidationError('An account with this email already exists.')
+        return email

@@ -88,6 +88,16 @@ DATABASES = {
     }
 }
 
+# Configure session engine to use cache for automatic sign-out on server close
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -98,3 +108,30 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'photo', BASE_DIR / 'static']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# -----------------------------------------------------------------------------
+# CSRF and session cookie settings (explicit for local development)
+# - Use session-backed CSRF tokens to avoid some cookie/domain edge cases.
+# - Explicitly set secure flags to False for local HTTP development.
+# - Add the common local hosts to CSRF_TRUSTED_ORIGINS for clarity.
+# NOTE: For production, set `CSRF_COOKIE_SECURE = True`,
+#       `SESSION_COOKIE_SECURE = True` and populate
+#       `CSRF_TRUSTED_ORIGINS` with your real HTTPS origins.
+# -----------------------------------------------------------------------------
+CSRF_USE_SESSIONS = True
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+]
+
+# During local development we don't use secure cookies (HTTPS) so make this
+# explicit. In production these should be True.
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+
+# Make cookies usable in local cross-site contexts with the default 'Lax'.
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
+
+# When CSRF fails, use a custom view which will help debugging in development.
+CSRF_FAILURE_VIEW = 'listings.views.csrf_failure'

@@ -42,7 +42,18 @@
     <div class="profile-header">
       <div class="profile-avatar">{{ user.username|slice:":2"|upper }}</div>
       <div class="profile-info">
-        <h1 class="profile-name">{{ user.first_name }} {{ user.last_name|default:"User" }}</h1>
+        <h1 class="profile-name">
+          {# Show full name intelligently: first+last when both present; otherwise show whichever exists; fallback to username #}
+          {% if user.first_name and user.last_name %}
+            {{ user.first_name }} {{ user.last_name }}
+          {% elif user.first_name %}
+            {{ user.first_name }}
+          {% elif user.last_name %}
+            {{ user.last_name }}
+          {% else %}
+            {{ user.username }}
+          {% endif %}
+        </h1>
         <p class="profile-role">{{ profile.role|title }} • Member since {{ user.date_joined|date:"M Y" }}</p>
         <p class="profile-email">{{ user.email }}</p>
       </div>
@@ -59,18 +70,27 @@
         <div class="form-row">
           <div class="form-group">
             <label for="first_name" class="form-label">First Name</label>
-            <input type="text" id="first_name" name="first_name" class="form-input" value="{{ user.first_name }}" placeholder="John" />
+            <!-- If user has only a single name (stored in either first or last),
+                prefer showing it in the First Name field so the form looks natural. -->
+                     <input type="text" id="first_name" name="first_name" class="form-input"
+                       value="{% if user.first_name %}{{ user.first_name }}{% elif user.last_name %}{{ user.last_name }}{% else %}{% endif %}"
+                       placeholder="John" />
           </div>
           
           <div class="form-group">
             <label for="last_name" class="form-label">Last Name</label>
-            <input type="text" id="last_name" name="last_name" class="form-input" value="{{ user.last_name }}" placeholder="Doe" />
+                 <!-- Only prefill the Last Name input when a true last name is present.
+                 If the user only has a single name, we leave it in First Name above. -->
+                         <input type="text" id="last_name" name="last_name" class="form-input"
+                           value="{% if user.first_name and user.last_name %}{{ user.last_name }}{% else %}{% endif %}"
+                           placeholder="" />
           </div>
         </div>
 
         <div class="form-group">
           <label for="email" class="form-label">Email Address</label>
-          <input type="email" id="email" name="email" class="form-input" value="{{ user.email }}" placeholder="john@example.com" />
+          <input type="email" id="email" name="email" class="form-input" value="{{ user.email }}" placeholder="john@example.com" disabled />
+          <small class="form-hint">Email cannot be changed</small>
         </div>
 
         <div class="form-group">

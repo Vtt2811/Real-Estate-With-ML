@@ -1,0 +1,30 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin — Change User Email</title>
+  <link rel="stylesheet" href="{% static 'css/ui.css' %}">
+</head>
+<body>
+  <main style="max-width:720px;margin:2rem auto;padding:1rem;">
+    <h1>Change email for user: {{ target.username }}</h1>
+    <p>Current email: <strong>{{ target.email }}</strong></p>
+
+    <form method="post" style="margin-top:1rem;">
+      {% csrf_token %}
+      {{ form.email.label_tag }}<br>
+      {{ form.email }}<br><br>
+      <button type="submit" class="primary-btn">Update email</button>
+      <a href="{% url 'admin:auth_user_change' target.pk %}" style="margin-left:1rem;">Open in admin</a>
+    </form>
+
+    <div style="margin-top:1rem;">
+      {% for message in messages %}
+        <div class="django-message {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  </main>
+</body>
+</html>
