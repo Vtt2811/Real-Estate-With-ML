@@ -1,0 +1,271 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Dashboard — Real Estate With ML</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">Real Estate ML</div>
+                <div class="sidebar-role">Buyer Dashboard</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active">
+                    <span class="nav-icon">🏠</span>
+                    <span>Browse Properties</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">❤️</span>
+                    <span>Saved Properties</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">📊</span>
+                    <span>Price Predictions</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">📝</span>
+                    <span>My Interests</span>
+                </a>
+                <a href="{% url 'listings:profile' %}">
+                    <span class="nav-icon">👤</span>
+                    <span>Profile</span>
+                </a>
+                <a href="{% url 'listings:index' %}">
+                    <span class="nav-icon">🏡</span>
+                    <span>Home</span>
+                </a>
+                <a href="{% url 'listings:signout' %}">
+                    <span class="nav-icon">🚪</span>
+                    <span>Sign Out</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div>
+                    <h1 class="dashboard-title">Welcome back, {{ user.username|title }}!</h1>
+                    <p class="dashboard-subtitle">Explore properties and find your dream home</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary">
+                        <span>🔍</span>
+                        <span>Advanced Search</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card info">
+                    <div class="stat-header">
+                        <div class="stat-title">Properties Viewed</div>
+                        <div class="stat-icon">👁️</div>
+                    </div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-change positive">↑ 12% this week</div>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <div class="stat-title">Saved Favorites</div>
+                        <div class="stat-icon">❤️</div>
+                    </div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-change positive">↑ 3 new</div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <div class="stat-title">Interest Requests</div>
+                        <div class="stat-icon">📝</div>
+                    </div>
+                    <div class="stat-value">5</div>
+                    <div class="stat-change">2 pending response</div>
+                </div>
+
+                <div class="stat-card error">
+                    <div class="stat-header">
+                        <div class="stat-title">Avg. Budget</div>
+                        <div class="stat-icon">💰</div>
+                    </div>
+                    <div class="stat-value">₹75L</div>
+                    <div class="stat-change">Your range</div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label class="form-label">Location</label>
+                        <select class="form-select">
+                            <option>All Cities</option>
+                            <option>Mumbai</option>
+                            <option>Delhi</option>
+                            <option>Bangalore</option>
+                            <option>Chennai</option>
+                            <option>Kolkata</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Price Range</label>
+                        <select class="form-select">
+                            <option>Any Price</option>
+                            <option>Under ₹50 Lakhs</option>
+                            <option>₹50L - ₹1 Cr</option>
+                            <option>₹1 Cr - ₹2 Cr</option>
+                            <option>Above ₹2 Cr</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Property Type</label>
+                        <select class="form-select">
+                            <option>All Types</option>
+                            <option>Apartment</option>
+                            <option>Villa</option>
+                            <option>Independent House</option>
+                            <option>Penthouse</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-primary" style="width: 100%;">Apply Filters</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Listings -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Available Properties</h2>
+                    <span class="badge badge-primary">42 Properties</span>
+                </div>
+                <div class="card-body">
+                    <div class="property-grid">
+                        <!-- Property 1 -->
+                        <div class="property-card">
+                            <img src="{% static 'images/Depth 5, Frame 0.png' %}" alt="Property" class="property-image">
+                            <div class="property-content">
+                                <h3 class="property-title">Stunning Modern Home</h3>
+                                <p class="property-details">4 Beds • 2 Baths • 2,039 sq ft</p>
+                                <p class="property-details">📍 Bandra West, Mumbai</p>
+                                <div class="property-price">₹1,85,00,000</div>
+                                <div class="property-prediction">🤖 Predicted Price: ₹1,82,50,000</div>
+                                <button class="btn btn-primary" style="width: 100%;">Show Interest</button>
+                            </div>
+                        </div>
+
+                        <!-- Property 2 -->
+                        <div class="property-card">
+                            <img src="{% static 'images/Depth 6 Frame 0.png' %}" alt="Property" class="property-image">
+                            <div class="property-content">
+                                <h3 class="property-title">Elegant Family Residence</h3>
+                                <p class="property-details">3 Beds • 2 Baths • 1,950 sq ft</p>
+                                <p class="property-details">📍 Koramangala, Bangalore</p>
+                                <div class="property-price">₹95,00,000</div>
+                                <div class="property-prediction">🤖 Predicted Price: ₹92,75,000</div>
+                                <button class="btn btn-primary" style="width: 100%;">Show Interest</button>
+                            </div>
+                        </div>
+
+                        <!-- Property 3 -->
+                        <div class="property-card">
+                            <img src="{% static 'images/hero sectione.png' %}" alt="Property" class="property-image">
+                            <div class="property-content">
+                                <h3 class="property-title">Luxury Estate with View</h3>
+                                <p class="property-details">5 Beds • 4 Baths • 3,400 sq ft</p>
+                                <p class="property-details">📍 Golf Course Road, Gurgaon</p>
+                                <div class="property-price">₹2,45,00,000</div>
+                                <div class="property-prediction">🤖 Predicted Price: ₹2,38,00,000</div>
+                                <button class="btn btn-primary" style="width: 100%;">Show Interest</button>
+                            </div>
+                        </div>
+
+                        <!-- Property 4 -->
+                        <div class="property-card">
+                            <img src="{% static 'images/mumbai.png' %}" alt="Property" class="property-image">
+                            <div class="property-content">
+                                <h3 class="property-title">Cozy Apartment</h3>
+                                <p class="property-details">2 Beds • 2 Baths • 1,200 sq ft</p>
+                                <p class="property-details">📍 Andheri East, Mumbai</p>
+                                <div class="property-price">₹68,00,000</div>
+                                <div class="property-prediction">🤖 Predicted Price: ₹65,50,000</div>
+                                <button class="btn btn-primary" style="width: 100%;">Show Interest</button>
+                            </div>
+                        </div>
+
+                        <!-- Property 5 -->
+                        <div class="property-card">
+                            <img src="{% static 'images/delhi.png' %}" alt="Property" class="property-image">
+                            <div class="property-content">
+                                <h3 class="property-title">Spacious Villa</h3>
+                                <p class="property-details">4 Beds • 3 Baths • 2,800 sq ft</p>
+                                <p class="property-details">📍 Vasant Kunj, Delhi</p>
+                                <div class="property-price">₹1,55,00,000</div>
+                                <div class="property-prediction">🤖 Predicted Price: ₹1,52,00,000</div>
+                                <button class="btn btn-primary" style="width: 100%;">Show Interest</button>
+                            </div>
+                        </div>
+
+                        <!-- Property 6 -->
+                        <div class="property-card">
+                            <img src="{% static 'images/bangalore.png' %}" alt="Property" class="property-image">
+                            <div class="property-content">
+                                <h3 class="property-title">Modern Penthouse</h3>
+                                <p class="property-details">3 Beds • 3 Baths • 2,100 sq ft</p>
+                                <p class="property-details">📍 Whitefield, Bangalore</p>
+                                <div class="property-price">₹1,12,00,000</div>
+                                <div class="property-prediction">🤖 Predicted Price: ₹1,08,50,000</div>
+                                <button class="btn btn-primary" style="width: 100%;">Show Interest</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="messages" style="display:none;">
+        {% for message in messages %}
+        <div class="django-message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+
+    <script src="{% static 'js/ui.js' %}"></script>
+    <script>
+        // Optional: Dashboard guard - verify user has buyer role
+        // This is a frontend-only check for demo purposes
+        (function () {
+            const userRole = localStorage.getItem('userRole');
+            const isAuthenticated = {{ user.is_authenticated| yesno: "true,false"
+        }};
+
+        // Only check if user is authenticated
+        if (isAuthenticated && userRole && userRole !== 'buyer') {
+            console.log('User role mismatch. Expected: buyer, Got:', userRole);
+            // Optionally redirect to correct dashboard or directory
+            // Uncomment below to enable strict role checking
+            // window.location.href = "{% url 'listings:dashboard_directory' %}";
+        }
+  }) ();
+    </script>
+</body>
+
+</html>

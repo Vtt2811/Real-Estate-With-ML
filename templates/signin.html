@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
   <link rel="stylesheet" href="{% static 'css/ui.css' %}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
   <nav>
     <div class="nav-left">
@@ -16,9 +18,10 @@
     </div>
     <div class="nav-right">
       {% if user.is_authenticated %}
-        <a href="{% url 'listings:profile' %}" class="profile-icon" title="Profile">{{ user.username|slice:":2"|upper }}</a>
+      <a href="{% url 'listings:profile' %}" class="profile-icon" title="Profile">{{ user.username|slice:":2"|upper
+        }}</a>
       {% else %}
-        <a href="{% url 'listings:signin' %}" class="nav-btn">Sign in</a>
+      <a href="{% url 'listings:signin' %}" class="nav-btn">Sign in</a>
       {% endif %}
     </div>
   </nav>
@@ -29,22 +32,22 @@
     <form method="post" novalidate>
       {% csrf_token %}
       {% if form.errors %}
-        <p class="errors">Invalid username or password.</p>
+      <p class="errors">Invalid username or password.</p>
       {% endif %}
 
       <label for="id_username">Username</label>
       {{ form.username }}
       {% if form.username.errors %}
-        <p style="color: #e53e3e; font-size: 13px; margin-top: -8px;">{{ form.username.errors|first }}</p>
+      <p style="color: #e53e3e; font-size: 13px; margin-top: -8px;">{{ form.username.errors|first }}</p>
       {% endif %}
 
       <label for="id_password">Password</label>
       {{ form.password }}
       {% if form.password.errors %}
-        <p style="color: #e53e3e; font-size: 13px; margin-top: -8px;">{{ form.password.errors|first }}</p>
+      <p style="color: #e53e3e; font-size: 13px; margin-top: -8px;">{{ form.password.errors|first }}</p>
       {% endif %}
 
-      <a href="{% url 'listings:password_reset' %}" class="forgot">Forgot password?</a>
+      <a href="{% url 'listings:request_password_reset_otp' %}" class="forgot">Forgot password?</a>>
 
       <button type="submit" class="signin-btn">Sign in</button>
 
@@ -56,10 +59,49 @@
 
   <div id="messages" style="display:none;">
     {% for message in messages %}
-      <div class="django-message {{ message.tags }}">{{ message }}</div>
+    <div class="django-message {{ message.tags }}">{{ message }}</div>
     {% endfor %}
   </div>
 
   <script src="{% static 'js/ui.js' %}"></script>
+  <script>
+    // Frontend-only role-based redirection after login
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.querySelector('form');
+
+      // Check if user is already authenticated (page loaded after successful login)
+      const isAuthenticated = {{ user.is_authenticated| yesno: "true,false"
+    }};
+
+    if (isAuthenticated) {
+      // User just logged in, check their role and redirect
+      const userRole = localStorage.getItem('userRole');
+
+      if (userRole === 'buyer') {
+        console.log('Redirecting to Buyer Dashboard...');
+        window.location.href = "{% url 'listings:buyer_dashboard' %}";
+      } else if (userRole === 'seller') {
+        console.log('Redirecting to Seller Dashboard...');
+        window.location.href = "{% url 'listings:seller_dashboard' %}";
+      } else {
+        // No role found, redirect to dashboard directory
+        console.log('No role found, redirecting to dashboard directory...');
+        window.location.href = "{% url 'listings:dashboard_directory' %}";
+      }
+    }
+
+    // Also handle form submission to ensure role is available
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        // Store username for potential role lookup
+        const usernameInput = document.getElementById('id_username');
+        if (usernameInput && usernameInput.value) {
+          localStorage.setItem('lastUsername', usernameInput.value);
+        }
+      });
+    }
+    });
+  </script>
 </body>
+
 </html>

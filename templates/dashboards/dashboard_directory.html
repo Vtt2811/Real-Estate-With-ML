@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Directory — Real Estate With ML</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .directory-container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 3rem;
+        }
+
+        .directory-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .directory-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .directory-subtitle {
+            font-size: 1.1rem;
+            color: var(--muted);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-link {
+            display: block;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .dashboard-link:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.2);
+            border-color: var(--accent);
+        }
+
+        .dashboard-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .dashboard-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-desc {
+            font-size: 0.9rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .info-section {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+
+        .info-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--accent-dark);
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-text {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="directory-container">
+        <div class="directory-header">
+            <h1 class="directory-title">Dashboard Directory</h1>
+            <p class="directory-subtitle">Real Estate Platform with ML Integration</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <a href="{% url 'listings:buyer_dashboard' %}" class="dashboard-link">
+                <span class="dashboard-icon">🏠</span>
+                <h3 class="dashboard-name">Buyer Dashboard</h3>
+                <p class="dashboard-desc">Browse properties with ML price predictions and express interest</p>
+            </a>
+
+            <a href="{% url 'listings:seller_dashboard' %}" class="dashboard-link">
+                <span class="dashboard-icon">📊</span>
+                <h3 class="dashboard-name">Seller Dashboard</h3>
+                <p class="dashboard-desc">Manage property listings and respond to buyer interests</p>
+            </a>
+
+            <a href="{% url 'listings:admin_dashboard' %}" class="dashboard-link">
+                <span class="dashboard-icon">👥</span>
+                <h3 class="dashboard-name">Admin Dashboard</h3>
+                <p class="dashboard-desc">Manage users, approve properties, and verify interests</p>
+            </a>
+
+            <a href="{% url 'listings:security_dashboard' %}" class="dashboard-link">
+                <span class="dashboard-icon">🛡️</span>
+                <h3 class="dashboard-name">Security Analyst</h3>
+                <p class="dashboard-desc">Monitor system security, logs, and detect threats</p>
+            </a>
+
+            <a href="{% url 'listings:irt_dashboard' %}" class="dashboard-link">
+                <span class="dashboard-icon">🚨</span>
+                <h3 class="dashboard-name">Incident Response</h3>
+                <p class="dashboard-desc">Manage and resolve security incidents</p>
+            </a>
+
+            <a href="{% url 'listings:index' %}" class="dashboard-link">
+                <span class="dashboard-icon">🏡</span>
+                <h3 class="dashboard-name">Home Page</h3>
+                <p class="dashboard-desc">Return to the main homepage</p>
+            </a>
+        </div>
+
+        <div class="info-section">
+            <h4 class="info-title">ℹ️ Important Notes</h4>
+            <p class="info-text">
+                <strong>Frontend-Only Implementation:</strong> All dashboards use static/dummy data for demonstration
+                purposes.
+                Buttons and forms are UI-only and do not perform backend operations. This is intentional for a
+                faculty-friendly demonstration of the user interface design.
+            </p>
+        </div>
+
+        <div class="info-section" style="margin-top: 1rem;">
+            <h4 class="info-title">🎨 Design Features</h4>
+            <p class="info-text">
+                Modern gradient theme • Responsive layouts • Card-based design • Status badges •
+                Hover animations • Mobile-friendly • Consistent with existing pages
+            </p>
+        </div>
+
+        {% if not user.is_authenticated %}
+        <div class="info-section" style="margin-top: 1rem; background: rgba(239, 68, 68, 0.1);">
+            <h4 class="info-title" style="color: var(--error);">🔒 Authentication Required</h4>
+            <p class="info-text">
+                You need to be logged in to access the dashboards.
+                <a href="{% url 'listings:signin' %}" style="color: var(--accent); font-weight: 600;">Sign in here</a>
+                or <a href="{% url 'listings:signup' %}" style="color: var(--accent); font-weight: 600;">create an
+                    account</a>.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div id="messages" style="display:none;">
+        {% for message in messages %}
+        <div class="django-message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+
+    <script src="{% static 'js/ui.js' %}"></script>
+</body>
+
+</html>

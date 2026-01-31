@@ -1,0 +1,318 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Analyst Panel — Real Estate With ML</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">Real Estate ML</div>
+                <div class="sidebar-role">Security Analyst</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active">
+                    <span class="nav-icon">🛡️</span>
+                    <span>Security Overview</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">📋</span>
+                    <span>System Logs</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">⚠️</span>
+                    <span>Security Alerts</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">👁️</span>
+                    <span>Monitoring</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">📊</span>
+                    <span>Reports</span>
+                </a>
+                <a href="{% url 'listings:index' %}">
+                    <span class="nav-icon">🏡</span>
+                    <span>Home</span>
+                </a>
+                <a href="{% url 'listings:signout' %}">
+                    <span class="nav-icon">🚪</span>
+                    <span>Sign Out</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div>
+                    <h1 class="dashboard-title">Security Analyst Panel</h1>
+                    <p class="dashboard-subtitle">Monitor system security and detect potential threats</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary">
+                        <span>📥</span>
+                        <span>Export Logs</span>
+                    </button>
+                    <button class="btn btn-primary">
+                        <span>🔄</span>
+                        <span>Refresh</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <div class="stat-title">System Status</div>
+                        <div class="stat-icon">✅</div>
+                    </div>
+                    <div class="stat-value">Secure</div>
+                    <div class="stat-change positive">All systems operational</div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <div class="stat-title">Active Alerts</div>
+                        <div class="stat-icon">⚠️</div>
+                    </div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-change">2 medium, 1 low</div>
+                </div>
+
+                <div class="stat-card info">
+                    <div class="stat-header">
+                        <div class="stat-title">Login Attempts (24h)</div>
+                        <div class="stat-icon">🔐</div>
+                    </div>
+                    <div class="stat-value">1,247</div>
+                    <div class="stat-change positive">↑ 5% from yesterday</div>
+                </div>
+
+                <div class="stat-card error">
+                    <div class="stat-header">
+                        <div class="stat-title">Failed Logins</div>
+                        <div class="stat-icon">🚫</div>
+                    </div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-change negative">↓ 8% improvement</div>
+                </div>
+            </div>
+
+            <!-- Security Alerts -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <div class="card-header">
+                    <h2 class="card-title">Security Alerts</h2>
+                    <span class="badge badge-warning">3 Active</span>
+                </div>
+                <div class="card-body">
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Alert 1 -->
+                        <div
+                            style="padding: 1.2rem; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border-left: 4px solid var(--warning);">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.8rem;">
+                                <div>
+                                    <h4 style="font-weight: 700; margin-bottom: 0.3rem;">⚠️ Multiple Failed Login
+                                        Attempts</h4>
+                                    <p style="font-size: 0.85rem; color: var(--muted);">IP: 192.168.1.45 • Jan 31, 2026
+                                        12:45 PM</p>
+                                </div>
+                                <span class="badge badge-warning">Medium</span>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
+                                User account 'rahul_sharma' experienced 5 failed login attempts from IP 192.168.1.45
+                                within 10 minutes.
+                            </p>
+                            <div class="action-buttons">
+                                <button class="btn btn-info btn-sm">Investigate</button>
+                                <button class="btn btn-success btn-sm">Mark Resolved</button>
+                            </div>
+                        </div>
+
+                        <!-- Alert 2 -->
+                        <div
+                            style="padding: 1.2rem; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border-left: 4px solid var(--warning);">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.8rem;">
+                                <div>
+                                    <h4 style="font-weight: 700; margin-bottom: 0.3rem;">⚠️ Unusual Access Pattern</h4>
+                                    <p style="font-size: 0.85rem; color: var(--muted);">User: priya_patel • Jan 31, 2026
+                                        11:30 AM</p>
+                                </div>
+                                <span class="badge badge-warning">Medium</span>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
+                                User 'priya_patel' accessed the system from a new location (Bangalore) after logging in
+                                from Mumbai 2 hours ago.
+                            </p>
+                            <div class="action-buttons">
+                                <button class="btn btn-info btn-sm">Investigate</button>
+                                <button class="btn btn-success btn-sm">Mark Resolved</button>
+                            </div>
+                        </div>
+
+                        <!-- Alert 3 -->
+                        <div
+                            style="padding: 1.2rem; background: rgba(14, 165, 233, 0.1); border-radius: 8px; border-left: 4px solid var(--info);">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.8rem;">
+                                <div>
+                                    <h4 style="font-weight: 700; margin-bottom: 0.3rem;">ℹ️ Session Timeout Increased
+                                    </h4>
+                                    <p style="font-size: 0.85rem; color: var(--muted);">System • Jan 31, 2026 10:00 AM
+                                    </p>
+                                </div>
+                                <span class="badge badge-info">Low</span>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
+                                Session timeout configuration was modified from 30 minutes to 60 minutes by admin user.
+                            </p>
+                            <div class="action-buttons">
+                                <button class="btn btn-info btn-sm">View Details</button>
+                                <button class="btn btn-success btn-sm">Acknowledge</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Logs -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Recent System Logs</h2>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <select class="form-select" style="width: auto; padding: 0.5rem 1rem; font-size: 0.85rem;">
+                            <option>All Events</option>
+                            <option>Login Events</option>
+                            <option>Security Events</option>
+                            <option>System Events</option>
+                            <option>Error Events</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Event Type</th>
+                                    <th>User</th>
+                                    <th>IP Address</th>
+                                    <th>Action</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Jan 31, 2026 12:45:32</td>
+                                    <td><span class="badge badge-error">Failed Login</span></td>
+                                    <td>rahul_sharma</td>
+                                    <td>192.168.1.45</td>
+                                    <td>Login attempt with incorrect password</td>
+                                    <td><span class="badge badge-error">Failed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Jan 31, 2026 12:40:18</td>
+                                    <td><span class="badge badge-success">Successful Login</span></td>
+                                    <td>priya_patel</td>
+                                    <td>103.45.67.89</td>
+                                    <td>User logged in successfully</td>
+                                    <td><span class="badge badge-success">Success</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Jan 31, 2026 12:35:42</td>
+                                    <td><span class="badge badge-info">Property View</span></td>
+                                    <td>amit_kumar</td>
+                                    <td>192.168.1.78</td>
+                                    <td>Viewed property: Stunning Modern Home</td>
+                                    <td><span class="badge badge-success">Success</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Jan 31, 2026 12:30:15</td>
+                                    <td><span class="badge badge-warning">Password Reset</span></td>
+                                    <td>sneha_reddy</td>
+                                    <td>45.123.67.90</td>
+                                    <td>Requested password reset</td>
+                                    <td><span class="badge badge-success">Success</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Jan 31, 2026 12:25:08</td>
+                                    <td><span class="badge badge-success">Successful Login</span></td>
+                                    <td>vikram_singh</td>
+                                    <td>192.168.1.92</td>
+                                    <td>User logged in successfully</td>
+                                    <td><span class="badge badge-success">Success</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Jan 31, 2026 12:20:33</td>
+                                    <td><span class="badge badge-info">Property Added</span></td>
+                                    <td>priya_patel</td>
+                                    <td>103.45.67.89</td>
+                                    <td>Added new property listing</td>
+                                    <td><span class="badge badge-success">Success</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Jan 31, 2026 12:15:47</td>
+                                    <td><span class="badge badge-error">Failed Login</span></td>
+                                    <td>unknown_user</td>
+                                    <td>185.220.101.45</td>
+                                    <td>Login attempt with invalid username</td>
+                                    <td><span class="badge badge-error">Failed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Jan 31, 2026 12:10:22</td>
+                                    <td><span class="badge badge-success">Logout</span></td>
+                                    <td>rahul_sharma</td>
+                                    <td>192.168.1.45</td>
+                                    <td>User logged out</td>
+                                    <td><span class="badge badge-success">Success</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Jan 31, 2026 12:05:11</td>
+                                    <td><span class="badge badge-info">Profile Update</span></td>
+                                    <td>amit_kumar</td>
+                                    <td>192.168.1.78</td>
+                                    <td>Updated profile information</td>
+                                    <td><span class="badge badge-success">Success</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Jan 31, 2026 12:00:05</td>
+                                    <td><span class="badge badge-warning">System</span></td>
+                                    <td>system</td>
+                                    <td>127.0.0.1</td>
+                                    <td>Database backup completed</td>
+                                    <td><span class="badge badge-success">Success</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="messages" style="display:none;">
+        {% for message in messages %}
+        <div class="django-message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+
+    <script src="{% static 'js/ui.js' %}"></script>
+</body>
+
+</html>

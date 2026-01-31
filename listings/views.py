@@ -8,7 +8,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from .forms import SignupForm, AdminEmailChangeForm
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Profile
+from .models import Profile, PasswordResetOTP
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import HttpResponseForbidden
 import logging
@@ -43,8 +43,8 @@ def signup(request):
             # authenticated users to the home page.
             try:
                 logout(request)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(f"Error during logout in signup: {e}")
             return redirect('listings:signin')
         else:
             messages.error(request, 'Please correct the errors below.')
@@ -87,8 +87,8 @@ def signout(request):
     # session data that could cause another user to appear logged in.
     try:
         request.session.flush()
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"Error flushing session: {e}")
     return redirect('listings:index')
 
 
@@ -195,3 +195,157 @@ def admin_change_email(request, user_id):
     return render(request, 'admin_change_email.html', {'form': form, 'target': target})
 
 
+# Dashboard Views
+@login_required(login_url='listings:signin')
+def buyer_dashboard(request):
+    """Buyer dashboard with property listings and filters"""
+    return render(request, 'buyer_dashboard.html')
+
+
+@login_required(login_url='listings:signin')
+def seller_dashboard(request):
+    """Seller dashboard with property management and buyer interests"""
+    return render(request, 'seller_dashboard.html')
+
+
+@login_required(login_url='listings:signin')
+def admin_dashboard(request):
+    """Admin dashboard with user and property management"""
+    return render(request, 'admin_dashboard.html')
+
+
+@login_required(login_url='listings:signin')
+def security_dashboard(request):
+    """Security analyst dashboard with logs and alerts"""
+    return render(request, 'security_dashboard.html')
+
+
+@login_required(login_url='listings:signin')
+def irt_dashboard(request):
+    """Incident Response Team dashboard"""
+    return render(request, 'irt_dashboard.html')
+
+
+def dashboard_directory(request):
+    """Dashboard directory page for easy navigation"""
+    return render(request, 'dashboard_directory.html')
+
+
+# OTP-based Password Reset Views
+
+def request_password_reset_otp(request):
+    """Request OTP for password reset"""
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        
+        try:
+            user = User.objects.get(email=email)
+            
+            # Invalidate any existing OTPs for this user
+            # Invalidate any existing OTPs for this user
+            PasswordResetOTP.objects.filter(user=user, is_used=False).update(is_used=True)
+            
+            # Create new OTP
+            otp_instance = PasswordResetOTP.objects.create(user=user)
+            
+            # Print OTP to Console (DEBUGGING)
+            # Log OTP (DEBUGGING - In production, log only generation event, not the code)
+            logger.info(f"OTP GENERATED FOR: {email} | CODE: {otp_instance.otp}")
+            
+            # Send OTP via email
+            subject = 'Password Reset OTP - Real Estate With ML'
+            message = f'''Hello {user.username},
+
+You have requested to reset your password. Your OTP is:
+
+{otp_instance.otp}
+
+This OTP will expire in 10 minutes.
+
+If you did not request this, please ignore this email.
+
+Best regards,
+Real Estate With ML Team'''
+            
+            try:
+                send_mail(
+                    subject,
+                    message,
+                    'noreply@realestate.com',
+                    [email],
+                    fail_silently=False,
+                )
+                # DEBUG: SHOW OTP ON SCREEN FOR TESTING
+                messages.success(request, f'✅ DEBUG MODE: Your OTP is {otp_instance.otp}')
+                
+                request.session['reset_email'] = email
+                return redirect('listings:verify_password_reset_otp')
+            except Exception as e:
+                logger.error(f"Error sending email: {e}")
+                logger.error(f"Failed to send OTP email: {e}")
+                messages.error(request, 'Failed to send OTP. Please try again later.')
+        
+        except User.DoesNotExist:
+            logger.warning(f"User with email '{email}' NOT FOUND during password reset request.")
+            # Don't reveal if email exists or not for security
+            messages.info(request, 'If an account with this email exists, an OTP has been sent.')
+            return redirect('listings:verify_password_reset_otp')
+    
+    return render(request, 'password_reset/request_otp.html')
+
+
+def verify_password_reset_otp(request):
+    """Verify OTP and allow password reset"""
+    email = request.session.get('reset_email')
+    
+    if not email:
+        messages.error(request, 'Please request an OTP first.')
+        return redirect('listings:request_password_reset_otp')
+    
+    if request.method == 'POST':
+        otp_entered = request.POST.get('otp', '').strip()
+        new_password = request.POST.get('new_password', '').strip()
+        confirm_password = request.POST.get('confirm_password', '').strip()
+        
+        # Validate passwords match
+        if new_password != confirm_password:
+            messages.error(request, 'Passwords do not match.')
+            return render(request, 'password_reset/verify_otp.html', {'email': email})
+        
+        # Validate password length
+        if len(new_password) < 8:
+            messages.error(request, 'Password must be at least 8 characters long.')
+            return render(request, 'password_reset/verify_otp.html', {'email': email})
+        
+        try:
+            user = User.objects.get(email=email)
+            # Get the latest unused OTP for this user
+            otp_instance = PasswordResetOTP.objects.filter(
+                user=user,
+                otp=otp_entered,
+                is_used=False
+            ).first()
+            
+            if otp_instance and otp_instance.is_valid():
+                # OTP is valid, reset password
+                user.set_password(new_password)
+                user.save()
+                
+                # Mark OTP as used
+                otp_instance.is_used = True
+                otp_instance.save()
+                
+                # Clear session
+                if 'reset_email' in request.session:
+                    del request.session['reset_email']
+                
+                messages.success(request, 'Password reset successful! You can now login with your new password.')
+                return redirect('listings:signin')
+            else:
+                messages.error(request, 'Invalid or expired OTP. Please try again.')
+        
+        except User.DoesNotExist:
+            messages.error(request, 'Invalid request.')
+            return redirect('listings:request_password_reset_otp')
+    
+    return render(request, 'password_reset/verify_otp.html', {'email': email})

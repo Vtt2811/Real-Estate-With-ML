@@ -21,8 +21,11 @@
 body {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: var(--text-primary);
+  font-size: 16px;
+  line-height: 1.7;
   min-height: 100vh;
 }
+
 
 /* Navbar */
 .navbar {
@@ -74,9 +77,11 @@ body {
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
+  font-size: 1rem;
   text-decoration: none;
   transition: all 0.3s ease;
 }
+
 
 .sign-out-btn:hover {
   border-color: var(--accent);

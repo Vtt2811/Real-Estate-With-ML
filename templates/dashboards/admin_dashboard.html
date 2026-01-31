@@ -1,0 +1,404 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — Real Estate With ML</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">Real Estate ML</div>
+                <div class="sidebar-role">Admin Panel</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">👥</span>
+                    <span>User Management</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">🏘️</span>
+                    <span>Property Approval</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">📬</span>
+                    <span>Interest Verification</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">📈</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+                <a href="{% url 'listings:index' %}">
+                    <span class="nav-icon">🏡</span>
+                    <span>Home</span>
+                </a>
+                <a href="{% url 'listings:signout' %}">
+                    <span class="nav-icon">🚪</span>
+                    <span>Sign Out</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div>
+                    <h1 class="dashboard-title">Admin Dashboard</h1>
+                    <p class="dashboard-subtitle">Manage users, properties, and platform operations</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary">
+                        <span>📊</span>
+                        <span>Export Report</span>
+                    </button>
+                    <button class="btn btn-primary">
+                        <span>➕</span>
+                        <span>Add User</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card info">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Users</div>
+                        <div class="stat-icon">👥</div>
+                    </div>
+                    <div class="stat-value">1,247</div>
+                    <div class="stat-change positive">↑ 23 this week</div>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Properties</div>
+                        <div class="stat-icon">🏘️</div>
+                    </div>
+                    <div class="stat-value">342</div>
+                    <div class="stat-change positive">↑ 18 new</div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <div class="stat-title">Pending Approvals</div>
+                        <div class="stat-icon">⏳</div>
+                    </div>
+                    <div class="stat-value">27</div>
+                    <div class="stat-change">Requires action</div>
+                </div>
+
+                <div class="stat-card error">
+                    <div class="stat-header">
+                        <div class="stat-title">Interest Requests</div>
+                        <div class="stat-icon">📬</div>
+                    </div>
+                    <div class="stat-value">156</div>
+                    <div class="stat-change positive">↑ 12% active</div>
+                </div>
+            </div>
+
+            <!-- User Management -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <div class="card-header">
+                    <h2 class="card-title">User Management</h2>
+                    <span class="badge badge-primary">1,247 Users</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Joined</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>rahul_sharma</strong></td>
+                                    <td>rahul@example.com</td>
+                                    <td><span class="badge badge-info">Buyer</span></td>
+                                    <td>Jan 15, 2026</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">Edit</button>
+                                            <button class="btn btn-danger btn-sm">Suspend</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>priya_patel</strong></td>
+                                    <td>priya@example.com</td>
+                                    <td><span class="badge badge-warning">Seller</span></td>
+                                    <td>Jan 10, 2026</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">Edit</button>
+                                            <button class="btn btn-danger btn-sm">Suspend</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>amit_kumar</strong></td>
+                                    <td>amit@example.com</td>
+                                    <td><span class="badge badge-info">Buyer</span></td>
+                                    <td>Jan 8, 2026</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">Edit</button>
+                                            <button class="btn btn-danger btn-sm">Suspend</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>sneha_reddy</strong></td>
+                                    <td>sneha@example.com</td>
+                                    <td><span class="badge badge-warning">Seller</span></td>
+                                    <td>Jan 5, 2026</td>
+                                    <td><span class="badge badge-error">Suspended</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">Edit</button>
+                                            <button class="btn btn-success btn-sm">Activate</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>vikram_singh</strong></td>
+                                    <td>vikram@example.com</td>
+                                    <td><span class="badge badge-info">Buyer</span></td>
+                                    <td>Dec 28, 2025</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">Edit</button>
+                                            <button class="btn btn-danger btn-sm">Suspend</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Approval -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <div class="card-header">
+                    <h2 class="card-title">Property Approval Queue</h2>
+                    <span class="badge badge-warning">27 Pending</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Property Title</th>
+                                    <th>Seller</th>
+                                    <th>Location</th>
+                                    <th>Price</th>
+                                    <th>Submitted</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Stunning Modern Home</strong></td>
+                                    <td>priya_patel</td>
+                                    <td>Bandra West, Mumbai</td>
+                                    <td>₹1,85,00,000</td>
+                                    <td>2 hours ago</td>
+                                    <td><span class="badge badge-warning">Pending</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-success btn-sm">Approve</button>
+                                            <button class="btn btn-danger btn-sm">Reject</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cozy Apartment</strong></td>
+                                    <td>amit_kumar</td>
+                                    <td>Andheri East, Mumbai</td>
+                                    <td>₹68,00,000</td>
+                                    <td>5 hours ago</td>
+                                    <td><span class="badge badge-warning">Pending</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-success btn-sm">Approve</button>
+                                            <button class="btn btn-danger btn-sm">Reject</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Luxury Penthouse</strong></td>
+                                    <td>vikram_singh</td>
+                                    <td>Whitefield, Bangalore</td>
+                                    <td>₹1,12,00,000</td>
+                                    <td>1 day ago</td>
+                                    <td><span class="badge badge-warning">Pending</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-success btn-sm">Approve</button>
+                                            <button class="btn btn-danger btn-sm">Reject</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Garden Villa</strong></td>
+                                    <td>rahul_sharma</td>
+                                    <td>Vasant Kunj, Delhi</td>
+                                    <td>₹1,55,00,000</td>
+                                    <td>2 days ago</td>
+                                    <td><span class="badge badge-success">Approved</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">View</button>
+                                            <button class="btn btn-danger btn-sm">Remove</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Beach House</strong></td>
+                                    <td>sneha_reddy</td>
+                                    <td>ECR, Chennai</td>
+                                    <td>₹2,20,00,000</td>
+                                    <td>3 days ago</td>
+                                    <td><span class="badge badge-error">Rejected</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">View</button>
+                                            <button class="btn btn-danger btn-sm">Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buyer Interest Verification -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Buyer Interest Verification</h2>
+                    <span class="badge badge-info">156 Total</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Buyer</th>
+                                    <th>Property</th>
+                                    <th>Seller</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>rahul_sharma</strong></td>
+                                    <td>Stunning Modern Home</td>
+                                    <td>priya_patel</td>
+                                    <td>Jan 30, 2026</td>
+                                    <td><span class="badge badge-warning">Pending</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">View Details</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>amit_kumar</strong></td>
+                                    <td>Luxury Estate</td>
+                                    <td>vikram_singh</td>
+                                    <td>Jan 29, 2026</td>
+                                    <td><span class="badge badge-success">Accepted</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">View Details</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>priya_patel</strong></td>
+                                    <td>Elegant Family Residence</td>
+                                    <td>rahul_sharma</td>
+                                    <td>Jan 28, 2026</td>
+                                    <td><span class="badge badge-success">Accepted</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">View Details</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>sneha_reddy</strong></td>
+                                    <td>Cozy Apartment</td>
+                                    <td>amit_kumar</td>
+                                    <td>Jan 27, 2026</td>
+                                    <td><span class="badge badge-error">Declined</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">View Details</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>vikram_singh</strong></td>
+                                    <td>Spacious Villa</td>
+                                    <td>priya_patel</td>
+                                    <td>Jan 26, 2026</td>
+                                    <td><span class="badge badge-warning">Pending</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">View Details</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="messages" style="display:none;">
+        {% for message in messages %}
+        <div class="django-message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+
+    <script src="{% static 'js/ui.js' %}"></script>
+</body>
+
+</html>

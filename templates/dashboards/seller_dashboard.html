@@ -1,0 +1,396 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard — Real Estate With ML</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">Real Estate ML</div>
+                <div class="sidebar-role">Seller Dashboard</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active">
+                    <span class="nav-icon">📊</span>
+                    <span>Overview</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">➕</span>
+                    <span>Add Property</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">🏘️</span>
+                    <span>My Listings</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">📬</span>
+                    <span>Buyer Requests</span>
+                </a>
+                <a href="{% url 'listings:profile' %}">
+                    <span class="nav-icon">👤</span>
+                    <span>Profile</span>
+                </a>
+                <a href="{% url 'listings:index' %}">
+                    <span class="nav-icon">🏡</span>
+                    <span>Home</span>
+                </a>
+                <a href="{% url 'listings:signout' %}">
+                    <span class="nav-icon">🚪</span>
+                    <span>Sign Out</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div>
+                    <h1 class="dashboard-title">Seller Dashboard</h1>
+                    <p class="dashboard-subtitle">Manage your property listings and buyer interests</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary">
+                        <span>➕</span>
+                        <span>Add New Property</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card info">
+                    <div class="stat-header">
+                        <div class="stat-title">Active Listings</div>
+                        <div class="stat-icon">🏘️</div>
+                    </div>
+                    <div class="stat-value">7</div>
+                    <div class="stat-change positive">↑ 2 this month</div>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Views</div>
+                        <div class="stat-icon">👁️</div>
+                    </div>
+                    <div class="stat-value">342</div>
+                    <div class="stat-change positive">↑ 18% this week</div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <div class="stat-title">Buyer Interests</div>
+                        <div class="stat-icon">📬</div>
+                    </div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-change">5 pending</div>
+                </div>
+
+                <div class="stat-card error">
+                    <div class="stat-header">
+                        <div class="stat-title">Avg. Response Time</div>
+                        <div class="stat-icon">⏱️</div>
+                    </div>
+                    <div class="stat-value">4h</div>
+                    <div class="stat-change positive">↓ 2h improved</div>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid two-col">
+                <!-- Add Property Form -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Add New Property</h2>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="form-label">Property Title</label>
+                                <input type="text" class="form-input"
+                                    placeholder="e.g., Stunning Modern Home in Bandra">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Price (₹)</label>
+                                <input type="number" class="form-input" placeholder="e.g., 18500000">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Location</label>
+                                <input type="text" class="form-input" placeholder="e.g., Bandra West, Mumbai">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Property Type</label>
+                                <select class="form-select">
+                                    <option>Select Type</option>
+                                    <option>Apartment</option>
+                                    <option>Villa</option>
+                                    <option>Independent House</option>
+                                    <option>Penthouse</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Bedrooms</label>
+                                <input type="number" class="form-input" placeholder="e.g., 3">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Bathrooms</label>
+                                <input type="number" class="form-input" placeholder="e.g., 2">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Area (sq ft)</label>
+                                <input type="number" class="form-input" placeholder="e.g., 1950">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-textarea" placeholder="Describe your property..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Property Images</label>
+                                <input type="file" class="form-input" multiple accept="image/*">
+                            </div>
+
+                            <button type="button" class="btn btn-primary" style="width: 100%;">
+                                Submit Property for Review
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Buyer Interest Requests -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Buyer Interests</h2>
+                        <span class="badge badge-warning">5 Pending</span>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <!-- Interest 1 -->
+                            <div
+                                style="padding: 1.2rem; background: var(--bg-light); border-radius: 8px; border-left: 4px solid var(--warning);">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.8rem;">
+                                    <div>
+                                        <h4 style="font-weight: 700; margin-bottom: 0.3rem;">Rahul Sharma</h4>
+                                        <p style="font-size: 0.85rem; color: var(--muted);">Interested in: Stunning
+                                            Modern Home</p>
+                                    </div>
+                                    <span class="badge badge-warning">Pending</span>
+                                </div>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
+                                    "I'm very interested in this property. Can we schedule a viewing?"
+                                </p>
+                                <div class="action-buttons">
+                                    <button class="btn btn-success btn-sm">Accept</button>
+                                    <button class="btn btn-danger btn-sm">Decline</button>
+                                </div>
+                            </div>
+
+                            <!-- Interest 2 -->
+                            <div
+                                style="padding: 1.2rem; background: var(--bg-light); border-radius: 8px; border-left: 4px solid var(--success);">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.8rem;">
+                                    <div>
+                                        <h4 style="font-weight: 700; margin-bottom: 0.3rem;">Priya Patel</h4>
+                                        <p style="font-size: 0.85rem; color: var(--muted);">Interested in: Elegant
+                                            Family Residence</p>
+                                    </div>
+                                    <span class="badge badge-success">Accepted</span>
+                                </div>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
+                                    "Looking for a family home. This looks perfect!"
+                                </p>
+                                <p style="font-size: 0.85rem; color: var(--success); font-weight: 600;">
+                                    ✓ Viewing scheduled for Jan 15, 2026
+                                </p>
+                            </div>
+
+                            <!-- Interest 3 -->
+                            <div
+                                style="padding: 1.2rem; background: var(--bg-light); border-radius: 8px; border-left: 4px solid var(--warning);">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.8rem;">
+                                    <div>
+                                        <h4 style="font-weight: 700; margin-bottom: 0.3rem;">Amit Kumar</h4>
+                                        <p style="font-size: 0.85rem; color: var(--muted);">Interested in: Luxury Estate
+                                        </p>
+                                    </div>
+                                    <span class="badge badge-warning">Pending</span>
+                                </div>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
+                                    "Interested in making an offer. Please contact me."
+                                </p>
+                                <div class="action-buttons">
+                                    <button class="btn btn-success btn-sm">Accept</button>
+                                    <button class="btn btn-danger btn-sm">Decline</button>
+                                </div>
+                            </div>
+
+                            <!-- Interest 4 -->
+                            <div
+                                style="padding: 1.2rem; background: var(--bg-light); border-radius: 8px; border-left: 4px solid var(--error);">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.8rem;">
+                                    <div>
+                                        <h4 style="font-weight: 700; margin-bottom: 0.3rem;">Sneha Reddy</h4>
+                                        <p style="font-size: 0.85rem; color: var(--muted);">Interested in: Cozy
+                                            Apartment</p>
+                                    </div>
+                                    <span class="badge badge-error">Declined</span>
+                                </div>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary);">
+                                    "Is the price negotiable?"
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Listings -->
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <h2 class="card-title">My Property Listings</h2>
+                    <span class="badge badge-primary">7 Active</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Property</th>
+                                    <th>Location</th>
+                                    <th>Price</th>
+                                    <th>Views</th>
+                                    <th>Interests</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Stunning Modern Home</strong></td>
+                                    <td>Bandra West, Mumbai</td>
+                                    <td>₹1,85,00,000</td>
+                                    <td>87</td>
+                                    <td>5</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">Edit</button>
+                                            <button class="btn btn-danger btn-sm">Remove</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Elegant Family Residence</strong></td>
+                                    <td>Koramangala, Bangalore</td>
+                                    <td>₹95,00,000</td>
+                                    <td>64</td>
+                                    <td>3</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">Edit</button>
+                                            <button class="btn btn-danger btn-sm">Remove</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Luxury Estate with View</strong></td>
+                                    <td>Golf Course Road, Gurgaon</td>
+                                    <td>₹2,45,00,000</td>
+                                    <td>142</td>
+                                    <td>8</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">Edit</button>
+                                            <button class="btn btn-danger btn-sm">Remove</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cozy Apartment</strong></td>
+                                    <td>Andheri East, Mumbai</td>
+                                    <td>₹68,00,000</td>
+                                    <td>52</td>
+                                    <td>2</td>
+                                    <td><span class="badge badge-warning">Pending Review</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">Edit</button>
+                                            <button class="btn btn-danger btn-sm">Remove</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Spacious Villa</strong></td>
+                                    <td>Vasant Kunj, Delhi</td>
+                                    <td>₹1,55,00,000</td>
+                                    <td>98</td>
+                                    <td>6</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-info btn-sm">Edit</button>
+                                            <button class="btn btn-danger btn-sm">Remove</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="messages" style="display:none;">
+        {% for message in messages %}
+        <div class="django-message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+
+    <script src="{% static 'js/ui.js' %}"></script>
+    <script>
+        // Optional: Dashboard guard - verify user has seller role
+        // This is a frontend-only check for demo purposes
+        (function () {
+            const userRole = localStorage.getItem('userRole');
+            const isAuthenticated = {{ user.is_authenticated| yesno: "true,false"
+        }};
+
+        // Only check if user is authenticated
+        if (isAuthenticated && userRole && userRole !== 'seller') {
+            console.log('User role mismatch. Expected: seller, Got:', userRole);
+            // Optionally redirect to correct dashboard or directory
+            // Uncomment below to enable strict role checking
+            // window.location.href = "{% url 'listings:dashboard_directory' %}";
+        }
+      }) ();
+    </script>
+</body>
+
+</html>

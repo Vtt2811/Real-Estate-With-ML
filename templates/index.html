@@ -1,6 +1,7 @@
-{% load static %}
+﻿{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,30 +9,40 @@
   <link rel="stylesheet" href="{% static 'css/index.css' %}" />
   <link rel="stylesheet" href="{% static 'css/ui.css' %}" />
 </head>
+
 <body>
 
   <!-- Navbar -->
   <header class="navbar">
     <div class="logo">Real Estate With ML</div>
 
-    <nav>
-      <a href="#">Home</a>
-      <a href="#">Buy</a>
-      <a href="#">Sell</a>
-    </nav>
+    <button class="hamburger" aria-label="Toggle navigation">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
 
-    <div class="search-section">
-      {% if user.is_authenticated %}
-        <a href="{% url 'listings:profile' %}" class="profile-icon" title="Profile">{{ user.username|slice:":2"|upper }}</a>
-      {% else %}
+    <div class="nav-links">
+      <nav>
+        <a href="#">Home</a>
+        <a href="#">Buy</a>
+        <a href="#">Sell</a>
+      </nav>
+
+      <div class="search-section">
+        {% if user.is_authenticated %}
+        <a href="{% url 'listings:profile' %}" class="profile-icon" title="Profile">{{ user.username|slice:":2"|upper
+          }}</a>
+        {% else %}
         <a href="{% url 'listings:signin' %}" class="sign-in">Sign In</a>
-      {% endif %}
+        {% endif %}
+      </div>
     </div>
   </header>
 
   <div id="messages" style="display:none;">
     {% for message in messages %}
-      <div class="django-message {{ message.tags }}">{{ message }}</div>
+    <div class="django-message {{ message.tags }}">{{ message }}</div>
     {% endfor %}
   </div>
 
@@ -39,27 +50,27 @@
   <section class="hero">
     <div class="hero-content">
       <h1>Find your place with <span>HomeFinder</span></h1>
-      </div>
+    </div>
   </section>
 
   <!-- Featured Listings -->
   <section class="featured">
     <h2>Featured Listings</h2>
     <div class="listings">
-      <a href="{% url 'listings:listing_details' %}" class="listing-card">
-        <img src="{% static 'Depth 5, Frame 0.png' %}" alt="Home" />
+      <a href="#" class="listing-card" data-listing-url="{% url 'listings:listing_details' %}">
+        <img src="{% static 'images/Depth 5, Frame 0.png' %}" alt="Home" />
         <h3>Stunning Modern Home</h3>
         <p>4 Beds • 2 Baths • 2,039 sq ft</p>
       </a>
 
-      <a href="{% url 'listings:listing_details' %}" class="listing-card">
-        <img src="{% static 'Depth 6 Frame 0.png' %}" alt="Home" />
+      <a href="#" class="listing-card" data-listing-url="{% url 'listings:listing_details' %}">
+        <img src="{% static 'images/Depth 6 Frame 0.png' %}" alt="Home" />
         <h3>Elegant Family Residence</h3>
         <p>3 Beds • 2 Baths • 1,950 sq ft</p>
       </a>
 
-      <a href="{% url 'listings:listing_details' %}" class="listing-card">
-        <img src="{% static 'hero sectione.png' %}" alt="Home" />
+      <a href="#" class="listing-card" data-listing-url="{% url 'listings:listing_details' %}">
+        <img src="{% static 'images/hero sectione.png' %}" alt="Home" />
         <h3>Luxury Estate with a View</h3>
         <p>5 Beds • 4 Baths • 3,400 sq ft</p>
       </a>
@@ -71,27 +82,27 @@
     <h2>Explore by City</h2>
     <div class="city-grid">
       <div class="city-card">
-        <img src="{% static 'mumbai.png' %}" alt="Mumbai">
+        <img src="{% static 'images/mumbai.png' %}" alt="Mumbai">
         <p>Mumbai</p>
       </div>
       <div class="city-card">
-        <img src="{% static 'delhi.png' %}" alt="Delhi">
+        <img src="{% static 'images/delhi.png' %}" alt="Delhi">
         <p>Delhi</p>
       </div>
       <div class="city-card">
-        <img src="{% static 'bangalore.png' %}" alt="Bangalore">
+        <img src="{% static 'images/bangalore.png' %}" alt="Bangalore">
         <p>Bangalore</p>
       </div>
       <div class="city-card">
-        <img src="{% static 'chennai.png' %}" alt="Chennai">
+        <img src="{% static 'images/chennai.png' %}" alt="Chennai">
         <p>Chennai</p>
       </div>
       <div class="city-card">
-        <img src="{% static 'kolkata.png' %}" alt="Kolkata">
+        <img src="{% static 'images/kolkata.png' %}" alt="Kolkata">
         <p>Kolkata</p>
       </div>
       <div class="city-card">
-        <img src="{% static 'ahemdabad.png' %}" alt="Ahemdabad">
+        <img src="{% static 'images/ahemdabad.png' %}" alt="Ahemdabad">
         <p>Ahemdabad</p>
       </div>
     </div>
@@ -109,6 +120,65 @@
     <p>Real Estate With ML</p>
   </footer>
 
+  <script src="{% static 'js/ui.js' %}"></script>
+  <script>
+    // Frontend-only authentication and redirection logic
+    document.addEventListener('DOMContentLoaded', function () {
+      const isAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
+
+    console.log('Page loaded. User authenticated:', isAuthenticated);
+
+    // Only auto-redirect if user is authenticated
+    if (isAuthenticated) {
+      const userRole = localStorage.getItem('userRole');
+
+      // Redirect to appropriate dashboard based on role
+      if (userRole === 'buyer') {
+        console.log('Authenticated buyer detected, redirecting to Buyer Dashboard...');
+        window.location.href = "{% url 'listings:buyer_dashboard' %}";
+      } else if (userRole === 'seller') {
+        console.log('Authenticated seller detected, redirecting to Seller Dashboard...');
+        window.location.href = "{% url 'listings:seller_dashboard' %}";
+      }
+      // If no role or unknown role, stay on index page
+    }
+
+    // Add click protection to Featured Listings
+    const listingCards = document.querySelectorAll('.listing-card');
+    console.log('Found', listingCards.length, 'listing cards');
+
+    listingCards.forEach(function (card) {
+      card.addEventListener('click', function (e) {
+        e.preventDefault(); // Prevent default link behavior
+        console.log('Card clicked!');
+
+        const listingUrl = this.getAttribute('data-listing-url');
+
+        if (!isAuthenticated) {
+          // User is not logged in - redirect to login page
+          console.log('User not authenticated. Redirecting to login...');
+          alert('Please login to view property details');
+          window.location.href = "{% url 'listings:signin' %}";
+        } else {
+          // User is logged in - allow access to listing details
+          console.log('User authenticated. Navigating to listing details...');
+          window.location.href = listingUrl;
+        }
+      });
+    });
+
+    // Mobile Menu Toggle
+    const hamburger = document.querySelector('.hamburger');
+    const navLinks = document.querySelector('.nav-links');
+
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', function () {
+        this.classList.toggle('active');
+        navLinks.classList.toggle('active');
+      });
+    }
+    });
+  </script>
 </body>
+
 </html>
-<script src="{% static 'js/ui.js' %}"></script>

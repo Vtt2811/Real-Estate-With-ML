@@ -89,7 +89,7 @@ DATABASES = {
 }
 
 # Configure session engine to use cache for automatic sign-out on server close
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 CACHES = {
     'default': {
@@ -105,7 +105,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 # Serve both the original `photo/` folder and a local `static/` folder for CSS
-STATICFILES_DIRS = [BASE_DIR / 'photo', BASE_DIR / 'static']
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -124,6 +124,9 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
 ]
 
+CSRF_COOKIE_DOMAIN = None
+
+SESSION_COOKIE_DOMAIN = None
 # During local development we don't use secure cookies (HTTPS) so make this
 # explicit. In production these should be True.
 CSRF_COOKIE_SECURE = False
