@@ -199,36 +199,36 @@ def admin_change_email(request, user_id):
 @login_required(login_url='listings:signin')
 def buyer_dashboard(request):
     """Buyer dashboard with property listings and filters"""
-    return render(request, 'buyer_dashboard.html')
+    return render(request, 'dashboards/buyer_dashboard.html')
 
 
 @login_required(login_url='listings:signin')
 def seller_dashboard(request):
     """Seller dashboard with property management and buyer interests"""
-    return render(request, 'seller_dashboard.html')
+    return render(request, 'dashboards/seller_dashboard.html')
 
 
 @login_required(login_url='listings:signin')
 def admin_dashboard(request):
     """Admin dashboard with user and property management"""
-    return render(request, 'admin_dashboard.html')
+    return render(request, 'dashboards/admin_dashboard.html')
 
 
 @login_required(login_url='listings:signin')
 def security_dashboard(request):
     """Security analyst dashboard with logs and alerts"""
-    return render(request, 'security_dashboard.html')
+    return render(request, 'dashboards/security_dashboard.html')
 
 
 @login_required(login_url='listings:signin')
 def irt_dashboard(request):
     """Incident Response Team dashboard"""
-    return render(request, 'irt_dashboard.html')
+    return render(request, 'dashboards/irt_dashboard.html')
 
 
 def dashboard_directory(request):
     """Dashboard directory page for easy navigation"""
-    return render(request, 'dashboard_directory.html')
+    return render(request, 'dashboards/dashboard_directory.html')
 
 
 # OTP-based Password Reset Views
