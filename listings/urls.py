@@ -40,8 +40,7 @@ urlpatterns = [
      path('buyer/dashboard/', views.buyer_dashboard, name='buyer_dashboard'),
      path('seller/dashboard/', views.seller_dashboard, name='seller_dashboard'),
      path('platform-admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
-     path('security/dashboard/', views.security_dashboard, name='security_dashboard'),
-     path('irt/dashboard/', views.irt_dashboard, name='irt_dashboard'),
+
      
      # Redirect /dashboard/ to /dashboards/ for convenience
      path('dashboard/', views.dashboard_directory, name='dashboard_alias'),

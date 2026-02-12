@@ -5,9 +5,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buyer Dashboard — Real Estate With ML</title>
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-    <link rel="stylesheet" href="{% static 'css/ui.css' %}">
+    <title>Buyer Dashboard — Home Finder</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=5">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 </head>
 
@@ -61,9 +61,9 @@
                     <p class="dashboard-subtitle">Explore properties and find your dream home</p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn btn-primary">
+                    <button class="btn btn-primary" onclick="toggleFilters()">
                         <span>🔍</span>
-                        <span>Advanced Search</span>
+                        <span>Filter Properties</span>
                     </button>
                 </div>
             </div>
@@ -107,45 +107,49 @@
                 </div>
             </div>
 
-            <!-- Filter Section -->
-            <div class="filter-section">
+            <!-- Filter Section (Hidden by default) -->
+            <div id="filterSection" class="filter-section" style="display: none;">
+                <div class="filter-header">
+                    <h3 class="filter-title">Refine Your Search</h3>
+                    <button class="btn-close" onclick="toggleFilters()">×</button>
+                </div>
                 <div class="filter-grid">
                     <div class="form-group">
                         <label class="form-label">Location</label>
-                        <select class="form-select">
-                            <option>All Cities</option>
-                            <option>Mumbai</option>
-                            <option>Delhi</option>
-                            <option>Bangalore</option>
-                            <option>Chennai</option>
-                            <option>Kolkata</option>
+                        <select id="filterLocation" class="form-select">
+                            <option value="all">All Cities</option>
+                            <option value="Ahmedabad">Ahmedabad</option>
+                            <option value="Rajkot">Rajkot</option>
+                            <option value="Vadodara">Vadodara</option>
+                            <option value="Surat">Surat</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Price Range</label>
-                        <select class="form-select">
-                            <option>Any Price</option>
-                            <option>Under ₹50 Lakhs</option>
-                            <option>₹50L - ₹1 Cr</option>
-                            <option>₹1 Cr - ₹2 Cr</option>
-                            <option>Above ₹2 Cr</option>
+                        <select id="filterPrice" class="form-select">
+                            <option value="all">Any Price</option>
+                            <option value="5000000">Under ₹50 Lakhs</option>
+                            <option value="5000000-10000000">₹50L - ₹1 Cr</option>
+                            <option value="10000000-20000000">₹1 Cr - ₹2 Cr</option>
+                            <option value="20000000">Above ₹2 Cr</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Property Type</label>
-                        <select class="form-select">
-                            <option>All Types</option>
-                            <option>Apartment</option>
-                            <option>Villa</option>
-                            <option>Independent House</option>
-                            <option>Penthouse</option>
+                        <select id="filterType" class="form-select">
+                            <option value="all">All Types</option>
+                            <option value="Apartment">Apartment</option>
+                            <option value="Villa">Villa</option>
+                            <option value="Independent House">Independent House</option>
+                            <option value="Penthouse">Penthouse</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <button class="btn btn-primary" style="width: 100%;">Apply Filters</button>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="applyFilters()">Apply
+                            Filters</button>
                     </div>
                 </div>
             </div>
@@ -154,85 +158,109 @@
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">Available Properties</h2>
-                    <span class="badge badge-primary">42 Properties</span>
+                    <span id="propertyCount" class="badge badge-primary">6 Properties</span>
                 </div>
                 <div class="card-body">
                     <div class="property-grid">
                         <!-- Property 1 -->
-                        <div class="property-card">
+                        <div class="property-card" data-location="Ahmedabad" data-price="18500000"
+                            data-type="Independent House"
+                            onclick="window.location.href='{% url 'listings:listing_details' %}';"
+                            style="cursor: pointer;">
                             <img src="{% static 'images/Depth 5, Frame 0.png' %}" alt="Property" class="property-image">
                             <div class="property-content">
                                 <h3 class="property-title">Stunning Modern Home</h3>
                                 <p class="property-details">4 Beds • 2 Baths • 2,039 sq ft</p>
-                                <p class="property-details">📍 Bandra West, Mumbai</p>
+                                <p class="property-details">📍 Sindhu Bhavan Road, Ahmedabad</p>
                                 <div class="property-price">₹1,85,00,000</div>
                                 <div class="property-prediction">🤖 Predicted Price: ₹1,82,50,000</div>
-                                <button class="btn btn-primary" style="width: 100%;">Show Interest</button>
+                                <button class="btn btn-primary" style="width: 100%;"
+                                    onclick="event.stopPropagation(); alert('Interest registered!');">Show
+                                    Interest</button>
                             </div>
                         </div>
 
                         <!-- Property 2 -->
-                        <div class="property-card">
+                        <div class="property-card" data-location="Rajkot" data-price="9500000"
+                            data-type="Independent House"
+                            onclick="window.location.href='{% url 'listings:listing_details' %}';"
+                            style="cursor: pointer;">
                             <img src="{% static 'images/Depth 6 Frame 0.png' %}" alt="Property" class="property-image">
                             <div class="property-content">
                                 <h3 class="property-title">Elegant Family Residence</h3>
                                 <p class="property-details">3 Beds • 2 Baths • 1,950 sq ft</p>
-                                <p class="property-details">📍 Koramangala, Bangalore</p>
+                                <p class="property-details">📍 Kalavad Road, Rajkot</p>
                                 <div class="property-price">₹95,00,000</div>
                                 <div class="property-prediction">🤖 Predicted Price: ₹92,75,000</div>
-                                <button class="btn btn-primary" style="width: 100%;">Show Interest</button>
+                                <button class="btn btn-primary" style="width: 100%;"
+                                    onclick="event.stopPropagation(); alert('Interest registered!');">Show
+                                    Interest</button>
                             </div>
                         </div>
 
                         <!-- Property 3 -->
-                        <div class="property-card">
+                        <div class="property-card" data-location="Vadodara" data-price="24500000" data-type="Villa"
+                            onclick="window.location.href='{% url 'listings:listing_details' %}';"
+                            style="cursor: pointer;">
                             <img src="{% static 'images/hero sectione.png' %}" alt="Property" class="property-image">
                             <div class="property-content">
                                 <h3 class="property-title">Luxury Estate with View</h3>
                                 <p class="property-details">5 Beds • 4 Baths • 3,400 sq ft</p>
-                                <p class="property-details">📍 Golf Course Road, Gurgaon</p>
+                                <p class="property-details">📍 Alkapuri, Vadodara</p>
                                 <div class="property-price">₹2,45,00,000</div>
                                 <div class="property-prediction">🤖 Predicted Price: ₹2,38,00,000</div>
-                                <button class="btn btn-primary" style="width: 100%;">Show Interest</button>
+                                <button class="btn btn-primary" style="width: 100%;"
+                                    onclick="event.stopPropagation(); alert('Interest registered!');">Show
+                                    Interest</button>
                             </div>
                         </div>
 
                         <!-- Property 4 -->
-                        <div class="property-card">
+                        <div class="property-card" data-location="Surat" data-price="6800000" data-type="Apartment"
+                            onclick="window.location.href='{% url 'listings:listing_details' %}';"
+                            style="cursor: pointer;">
                             <img src="{% static 'images/mumbai.png' %}" alt="Property" class="property-image">
                             <div class="property-content">
                                 <h3 class="property-title">Cozy Apartment</h3>
                                 <p class="property-details">2 Beds • 2 Baths • 1,200 sq ft</p>
-                                <p class="property-details">📍 Andheri East, Mumbai</p>
+                                <p class="property-details">📍 Vesu, Surat</p>
                                 <div class="property-price">₹68,00,000</div>
                                 <div class="property-prediction">🤖 Predicted Price: ₹65,50,000</div>
-                                <button class="btn btn-primary" style="width: 100%;">Show Interest</button>
+                                <button class="btn btn-primary" style="width: 100%;"
+                                    onclick="event.stopPropagation(); alert('Interest registered!');">Show
+                                    Interest</button>
                             </div>
                         </div>
 
                         <!-- Property 5 -->
-                        <div class="property-card">
+                        <div class="property-card" data-location="Ahmedabad" data-price="15500000" data-type="Villa"
+                            onclick="window.location.href='{% url 'listings:listing_details' %}';"
+                            style="cursor: pointer;">
                             <img src="{% static 'images/delhi.png' %}" alt="Property" class="property-image">
                             <div class="property-content">
                                 <h3 class="property-title">Spacious Villa</h3>
                                 <p class="property-details">4 Beds • 3 Baths • 2,800 sq ft</p>
-                                <p class="property-details">📍 Vasant Kunj, Delhi</p>
+                                <p class="property-details">📍 Bopal, Ahmedabad</p>
                                 <div class="property-price">₹1,55,00,000</div>
                                 <div class="property-prediction">🤖 Predicted Price: ₹1,52,00,000</div>
-                                <button class="btn btn-primary" style="width: 100%;">Show Interest</button>
+                                <button class="btn btn-primary" style="width: 100%;"
+                                    onclick="event.stopPropagation(); alert('Interest registered!');">Show
+                                    Interest</button>
                             </div>
                         </div>
 
                         <!-- Property 6 -->
-                        <div class="property-card">
+                        <div class="property-card" data-location="Vadodara" data-price="11200000" data-type="Penthouse">
                             <img src="{% static 'images/bangalore.png' %}" alt="Property" class="property-image">
                             <div class="property-content">
                                 <h3 class="property-title">Modern Penthouse</h3>
                                 <p class="property-details">3 Beds • 3 Baths • 2,100 sq ft</p>
-                                <p class="property-details">📍 Whitefield, Bangalore</p>
+                                <p class="property-details">📍 Vasna Road, Vadodara</p>
                                 <div class="property-price">₹1,12,00,000</div>
                                 <div class="property-prediction">🤖 Predicted Price: ₹1,08,50,000</div>
-                                <button class="btn btn-primary" style="width: 100%;">Show Interest</button>
+                                <button class="btn btn-primary" style="width: 100%;"
+                                    onclick="event.stopPropagation(); alert('Interest registered!');">Show
+                                    Interest</button>
                             </div>
                         </div>
                     </div>
@@ -250,21 +278,81 @@
 
     <script src="{% static 'js/ui.js' %}"></script>
     <script>
+        function toggleFilters() {
+            const filterSection = document.getElementById('filterSection');
+            if (filterSection.style.display === 'none') {
+                filterSection.style.display = 'block';
+                // Add a small animation class or style if desired here
+                filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                filterSection.style.display = 'none';
+            }
+        }
+
+        function applyFilters() {
+            // Get filter values
+            const location = document.getElementById('filterLocation').value;
+            const price = document.getElementById('filterPrice').value;
+            const type = document.getElementById('filterType').value;
+
+            // Get all property cards
+            const cards = document.querySelectorAll('.property-card');
+            let visibleCount = 0;
+
+            console.log('Filtering:', { location, price, type });
+
+            cards.forEach(card => {
+                const cardLocation = card.getAttribute('data-location');
+                const cardPrice = parseInt(card.getAttribute('data-price'));
+                const cardType = card.getAttribute('data-type');
+
+                let matchesLocation = location === 'all' || cardLocation === location;
+                let matchesType = type === 'all' || cardType === type;
+                let matchesPrice = true;
+
+                if (price !== 'all') {
+                    if (price.includes('-')) {
+                        const [min, max] = price.split('-');
+                        matchesPrice = cardPrice >= parseInt(min) && cardPrice <= parseInt(max);
+                    } else if (price === '5000000') {
+                        matchesPrice = cardPrice < 5000000;
+                    } else if (price === '20000000') {
+                        matchesPrice = cardPrice > 20000000;
+                    }
+                }
+
+                if (matchesLocation && matchesType && matchesPrice) {
+                    card.style.display = 'flex'; // Restore flex display
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Update visible count in UI
+            const countBadge = document.getElementById('propertyCount');
+            countBadge.textContent = visibleCount + (visibleCount === 1 ? ' Property' : ' Properties');
+
+            // On mobile, maybe scroll to results?
+            if (window.innerWidth < 768) {
+                document.querySelector('.card-title').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
         // Optional: Dashboard guard - verify user has buyer role
         // This is a frontend-only check for demo purposes
         (function () {
             const userRole = localStorage.getItem('userRole');
-            const isAuthenticated = {{ user.is_authenticated| yesno: "true,false"
-        }};
+            const isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
 
-        // Only check if user is authenticated
-        if (isAuthenticated && userRole && userRole !== 'buyer') {
-            console.log('User role mismatch. Expected: buyer, Got:', userRole);
-            // Optionally redirect to correct dashboard or directory
-            // Uncomment below to enable strict role checking
-            // window.location.href = "{% url 'listings:dashboard_directory' %}";
-        }
-  }) ();
+            // Only check if user is authenticated
+            if (isAuthenticated && userRole && userRole !== 'buyer') {
+                console.log('User role mismatch. Expected: buyer, Got:', userRole);
+                // Optionally redirect to correct dashboard or directory
+                // Uncomment below to enable strict role checking
+                // window.location.href = "{% url 'listings:dashboard_directory' %}";
+            }
+        })();
     </script>
 </body>
 

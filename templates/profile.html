@@ -1,150 +1,167 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Profile — Real Estate With ML</title>
-  <link rel="stylesheet" href="{% static 'css/profile.css' %}" />
+  <title>Profile — Home Finder</title>
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}?v=2">
   <link rel="stylesheet" href="{% static 'css/ui.css' %}" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-<!-- Navbar -->
-<header class="navbar">
-  <div class="logo">Real Estate With ML</div>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">Home Finder</div>
 
-  <nav>
-    <a href="{% url 'listings:index' %}">Home</a>
-    <a href="#">Sell</a>
-    <a href="#">Buy</a>
-  </nav>
+    <nav>
+      <a href="{% url 'listings:index' %}">Home</a>
+      <a href="#">Sell</a>
+      <a href="#">Buy</a>
+    </nav>
 
-  <div class="search-section">
-    <a href="{% url 'listings:signout' %}" class="sign-out-btn">Sign Out</a>
-  </div>
-</header>
-
-<!-- Messages -->
-<div id="messages" style="display:none;">
-  {% for message in messages %}
-    <div class="django-message {{ message.tags }}">{{ message }}</div>
-  {% endfor %}
-</div>
-
-<!-- Main Content -->
-<main class="profile-container">
-  <!-- Profile Card -->
-  <div class="profile-card">
-    
-    <!-- Header with Avatar -->
-    <div class="profile-header">
-      <div class="profile-avatar">{{ user.username|slice:":2"|upper }}</div>
-      <div class="profile-info">
-        <h1 class="profile-name">
-          {# Show full name intelligently: first+last when both present; otherwise show whichever exists; fallback to username #}
-          {% if user.first_name and user.last_name %}
-            {{ user.first_name }} {{ user.last_name }}
-          {% elif user.first_name %}
-            {{ user.first_name }}
-          {% elif user.last_name %}
-            {{ user.last_name }}
-          {% else %}
-            {{ user.username }}
-          {% endif %}
-        </h1>
-        <p class="profile-role">{{ profile.role|title }} • Member since {{ user.date_joined|date:"M Y" }}</p>
-        <p class="profile-email">{{ user.email }}</p>
-      </div>
+    <div class="search-section">
+      <a href="{% url 'listings:signout' %}" class="sign-out-btn">Sign Out</a>
     </div>
+  </header>
 
-    <!-- Edit Form -->
-    <form method="post" class="profile-form">
-      {% csrf_token %}
-      
-      <!-- Section: Personal Information -->
-      <div class="form-section">
-        <h2 class="section-title">Personal Information</h2>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label for="first_name" class="form-label">First Name</label>
-            <!-- If user has only a single name (stored in either first or last),
-                prefer showing it in the First Name field so the form looks natural. -->
-                     <input type="text" id="first_name" name="first_name" class="form-input"
-                       value="{% if user.first_name %}{{ user.first_name }}{% elif user.last_name %}{{ user.last_name }}{% else %}{% endif %}"
-                       placeholder="John" />
-          </div>
-          
-          <div class="form-group">
-            <label for="last_name" class="form-label">Last Name</label>
-                 <!-- Only prefill the Last Name input when a true last name is present.
-                 If the user only has a single name, we leave it in First Name above. -->
-                         <input type="text" id="last_name" name="last_name" class="form-input"
-                           value="{% if user.first_name and user.last_name %}{{ user.last_name }}{% else %}{% endif %}"
-                           placeholder="" />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="email" class="form-label">Email Address</label>
-          <input type="email" id="email" name="email" class="form-input" value="{{ user.email }}" placeholder="john@example.com" disabled />
-          <small class="form-hint">Email cannot be changed</small>
-        </div>
-
-        <div class="form-group">
-          <label for="username" class="form-label">Username</label>
-          <input type="text" id="username" name="username" class="form-input" value="{{ user.username }}" disabled />
-          <small class="form-hint">Username cannot be changed</small>
-        </div>
-      </div>
-
-      <!-- Section: Account Settings -->
-      <div class="form-section">
-        <h2 class="section-title">Account Settings</h2>
-        
-        <div class="form-group">
-          <label for="role" class="form-label">Account Type</label>
-          <select id="role" name="role" class="form-select">
-            <option value="buyer" {% if profile.role == 'buyer' %}selected{% endif %}>Buyer</option>
-            <option value="seller" {% if profile.role == 'seller' %}selected{% endif %}>Seller</option>
-          </select>
-        </div>
-
-        <div class="account-meta">
-          <div class="meta-item">
-            <span class="meta-label">Account Created</span>
-            <span class="meta-value">{{ user.date_joined|date:"M d, Y" }}</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Last Login</span>
-            <span class="meta-value">{% if user.last_login %}{{ user.last_login|date:"M d, Y \a\t g:i A" }}{% else %}Never{% endif %}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section: Security -->
-      <div class="form-section">
-        <h2 class="section-title">Security</h2>
-        <a href="{% url 'listings:password_reset' %}" class="change-password-btn">Change Password</a>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-        <a href="{% url 'listings:index' %}" class="btn btn-secondary">Cancel</a>
-      </div>
-    </form>
-
+  <!-- Messages -->
+  <div id="messages" style="display:none;">
+    {% for message in messages %}
+    <div class="django-message {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
   </div>
-</main>
 
-<!-- Footer -->
-<footer class="site-footer">
-  <p>&copy; 2025 Real Estate With ML. All rights reserved.</p>
-</footer>
+  <!-- Main Content -->
+  <main class="profile-container">
+    <!-- Profile Card -->
+    <div class="profile-card">
 
-<script src="{% static 'js/ui.js' %}"></script>
+      <!-- Header with Avatar -->
+      <div class="profile-header">
+        <div class="profile-avatar">{{ user.username|slice:":2"|upper }}</div>
+        <div class="profile-info">
+          <h1 class="profile-name">
+            {% if user.first_name and user.last_name %}
+            {{ user.first_name }} {{ user.last_name }}
+            {% elif user.first_name %}
+            {{ user.first_name }}
+            {% elif user.last_name %}
+            {{ user.last_name }}
+            {% else %}
+            {{ user.username }}
+            {% endif %}
+          </h1>
+          <p class="profile-role">{{ profile.role|title }} • Member since {{ user.date_joined|date:"M Y" }}</p>
+          <p class="profile-email">{{ user.email }}</p>
+        </div>
+      </div>
+
+      <!-- Edit Form -->
+      <form method="post" class="profile-form">
+        {% csrf_token %}
+
+        <!-- Section: Personal Information -->
+        <div class="form-section">
+          <h2 class="section-title">Personal Information</h2>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="first_name" class="form-label">First Name</label>
+              <input type="text" id="first_name" name="first_name" class="form-input"
+                value="{% if user.first_name %}{{ user.first_name }}{% elif user.last_name %}{{ user.last_name }}{% else %}{% endif %}"
+                placeholder="John" />
+            </div>
+
+            <div class="form-group">
+              <label for="last_name" class="form-label">Last Name</label>
+              <input type="text" id="last_name" name="last_name" class="form-input"
+                value="{% if user.first_name and user.last_name %}{{ user.last_name }}{% else %}{% endif %}"
+                placeholder="" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" id="email" name="email" class="form-input" value="{{ user.email }}"
+              placeholder="john@example.com" disabled />
+            <small class="form-hint">Email cannot be changed</small>
+          </div>
+
+          <div class="form-group">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" id="username" name="username" class="form-input" value="{{ user.username }}" disabled />
+            <small class="form-hint">Username cannot be changed</small>
+          </div>
+        </div>
+
+        <!-- Section: Account Settings -->
+        <div class="form-section">
+          <h2 class="section-title">Account Settings</h2>
+
+          <div class="form-group">
+            <label for="role" class="form-label">Account Type</label>
+            <select id="role" name="role" class="form-select" data-current-role="{{ profile.role }}">
+              <option value="buyer">Buyer</option>
+              <option value="seller">Seller</option>
+            </select>
+          </div>
+
+          <div class="account-meta">
+            <div class="meta-item">
+              <span class="meta-label">Account Created</span>
+              <span class="meta-value">{{ user.date_joined|date:"M d, Y" }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Last Login</span>
+              <span class="meta-value">
+                {% if user.last_login %}
+                {{ user.last_login|date:"M d, Y \a\t g:i A" }}
+                {% else %}
+                Never
+                {% endif %}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Security -->
+        <div class="form-section">
+          <h2 class="section-title">Security</h2>
+          <a href="{% url 'listings:password_reset' %}" class="change-password-btn">Change Password</a>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <a href="{% url 'listings:index' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+      </form>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>&copy; 2025 Home Finder. All rights reserved.</p>
+  </footer>
+
+  <script src="{% static 'js/ui.js' %}"></script>
+  <script>
+    // Set the selected role option based on current user role
+    document.addEventListener('DOMContentLoaded', function() {
+      const roleSelect = document.getElementById('role');
+      if (roleSelect) {
+        const currentRole = roleSelect.getAttribute('data-current-role');
+        if (currentRole) {
+          roleSelect.value = currentRole;
+        }
+      }
+    });
+  </script>
 </body>
+
 </html>

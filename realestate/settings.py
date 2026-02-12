@@ -138,3 +138,4 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 
 # When CSRF fails, use a custom view which will help debugging in development.
 CSRF_FAILURE_VIEW = 'listings.views.csrf_failure'
+# Trigger reload for template cache clear

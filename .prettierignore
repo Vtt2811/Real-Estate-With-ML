@@ -1,0 +1,3 @@
+# Ignore Django templates to prevent auto-formatting issues
+templates/**/*.html
+*.html

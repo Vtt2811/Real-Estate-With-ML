@@ -214,16 +214,10 @@ def admin_dashboard(request):
     return render(request, 'dashboards/admin_dashboard.html')
 
 
-@login_required(login_url='listings:signin')
-def security_dashboard(request):
-    """Security analyst dashboard with logs and alerts"""
-    return render(request, 'dashboards/security_dashboard.html')
 
 
-@login_required(login_url='listings:signin')
-def irt_dashboard(request):
-    """Incident Response Team dashboard"""
-    return render(request, 'dashboards/irt_dashboard.html')
+
+
 
 
 def dashboard_directory(request):
@@ -253,7 +247,7 @@ def request_password_reset_otp(request):
             logger.info(f"OTP GENERATED FOR: {email} | CODE: {otp_instance.otp}")
             
             # Send OTP via email
-            subject = 'Password Reset OTP - Real Estate With ML'
+            subject = 'Password Reset OTP - Home Finder'
             message = f'''Hello {user.username},
 
 You have requested to reset your password. Your OTP is:
@@ -265,7 +259,7 @@ This OTP will expire in 10 minutes.
 If you did not request this, please ignore this email.
 
 Best regards,
-Real Estate With ML Team'''
+Home Finder Team'''
             
             try:
                 send_mail(

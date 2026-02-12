@@ -6,15 +6,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HomeFinder</title>
-  <link rel="stylesheet" href="{% static 'css/index.css' %}" />
-  <link rel="stylesheet" href="{% static 'css/ui.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/index.css' %}?v=2" />
+  <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=2" />
 </head>
 
 <body>
 
   <!-- Navbar -->
   <header class="navbar">
-    <div class="logo">Real Estate With ML</div>
+    <div class="logo">Home Finder</div>
 
     <button class="hamburger" aria-label="Toggle navigation">
       <span></span>
@@ -24,7 +24,7 @@
 
     <div class="nav-links">
       <nav>
-          <!-- Navigation links removed as per request -->
+        <!-- Navigation links removed as per request -->
       </nav>
 
       <div class="search-section">
@@ -80,28 +80,20 @@
     <h2>Explore by City</h2>
     <div class="city-grid">
       <div class="city-card">
-        <img src="{% static 'images/mumbai.png' %}" alt="Mumbai">
-        <p>Mumbai</p>
+        <img src="{% static 'images/ahemdabad.png' %}" alt="Ahmedabad">
+        <p>Ahmedabad</p>
       </div>
       <div class="city-card">
-        <img src="{% static 'images/delhi.png' %}" alt="Delhi">
-        <p>Delhi</p>
+        <img src="{% static 'images/mumbai.png' %}" alt="Rajkot">
+        <p>Rajkot</p>
       </div>
       <div class="city-card">
-        <img src="{% static 'images/bangalore.png' %}" alt="Bangalore">
-        <p>Bangalore</p>
+        <img src="{% static 'images/bangalore.png' %}" alt="Vadodara">
+        <p>Vadodara</p>
       </div>
       <div class="city-card">
-        <img src="{% static 'images/chennai.png' %}" alt="Chennai">
-        <p>Chennai</p>
-      </div>
-      <div class="city-card">
-        <img src="{% static 'images/kolkata.png' %}" alt="Kolkata">
-        <p>Kolkata</p>
-      </div>
-      <div class="city-card">
-        <img src="{% static 'images/ahemdabad.png' %}" alt="Ahemdabad">
-        <p>Ahemdabad</p>
+        <img src="{% static 'images/chennai.png' %}" alt="Surat">
+        <p>Surat</p>
       </div>
     </div>
   </section>
@@ -115,66 +107,66 @@
       <a href="#">Privacy Policy</a>
       <a href="#">Terms of Service</a>
     </div>
-    <p>Real Estate With ML</p>
+    <p>Home Finder</p>
   </footer>
 
   <script src="{% static 'js/ui.js' %}"></script>
   <script>
     // Frontend-only authentication and redirection logic
     document.addEventListener('DOMContentLoaded', function () {
-      const isAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
+      const isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
 
-    console.log('Page loaded. User authenticated:', isAuthenticated);
+      console.log('Page loaded. User authenticated:', isAuthenticated);
 
-    // Only auto-redirect if user is authenticated
-    if (isAuthenticated) {
-      const userRole = localStorage.getItem('userRole');
+      // Only auto-redirect if user is authenticated
+      if (isAuthenticated) {
+        const userRole = localStorage.getItem('userRole');
 
-      // Redirect to appropriate dashboard based on role
-      if (userRole === 'buyer') {
-        console.log('Authenticated buyer detected, redirecting to Buyer Dashboard...');
-        window.location.href = "{% url 'listings:buyer_dashboard' %}";
-      } else if (userRole === 'seller') {
-        console.log('Authenticated seller detected, redirecting to Seller Dashboard...');
-        window.location.href = "{% url 'listings:seller_dashboard' %}";
-      }
-      // If no role or unknown role, stay on index page
-    }
-
-    // Add click protection to Featured Listings
-    const listingCards = document.querySelectorAll('.listing-card');
-    console.log('Found', listingCards.length, 'listing cards');
-
-    listingCards.forEach(function (card) {
-      card.addEventListener('click', function (e) {
-        e.preventDefault(); // Prevent default link behavior
-        console.log('Card clicked!');
-
-        const listingUrl = this.getAttribute('data-listing-url');
-
-        if (!isAuthenticated) {
-          // User is not logged in - redirect to login page
-          console.log('User not authenticated. Redirecting to login...');
-          alert('Please login to view property details');
-          window.location.href = "{% url 'listings:signin' %}";
-        } else {
-          // User is logged in - allow access to listing details
-          console.log('User authenticated. Navigating to listing details...');
-          window.location.href = listingUrl;
+        // Redirect to appropriate dashboard based on role
+        if (userRole === 'buyer') {
+          console.log('Authenticated buyer detected, redirecting to Buyer Dashboard...');
+          window.location.href = "{% url 'listings:buyer_dashboard' %}";
+        } else if (userRole === 'seller') {
+          console.log('Authenticated seller detected, redirecting to Seller Dashboard...');
+          window.location.href = "{% url 'listings:seller_dashboard' %}";
         }
-      });
-    });
+        // If no role or unknown role, stay on index page
+      }
 
-    // Mobile Menu Toggle
-    const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.querySelector('.nav-links');
+      // Add click protection to Featured Listings
+      const listingCards = document.querySelectorAll('.listing-card');
+      console.log('Found', listingCards.length, 'listing cards');
 
-    if (hamburger && navLinks) {
-      hamburger.addEventListener('click', function () {
-        this.classList.toggle('active');
-        navLinks.classList.toggle('active');
+      listingCards.forEach(function (card) {
+        card.addEventListener('click', function (e) {
+          e.preventDefault(); // Prevent default link behavior
+          console.log('Card clicked!');
+
+          const listingUrl = this.getAttribute('data-listing-url');
+
+          if (!isAuthenticated) {
+            // User is not logged in - redirect to login page
+            console.log('User not authenticated. Redirecting to login...');
+            alert('Please login to view property details');
+            window.location.href = "{% url 'listings:signin' %}";
+          } else {
+            // User is logged in - allow access to listing details
+            console.log('User authenticated. Navigating to listing details...');
+            window.location.href = listingUrl;
+          }
+        });
       });
-    }
+
+      // Mobile Menu Toggle
+      const hamburger = document.querySelector('.hamburger');
+      const navLinks = document.querySelector('.nav-links');
+
+      if (hamburger && navLinks) {
+        hamburger.addEventListener('click', function () {
+          this.classList.toggle('active');
+          navLinks.classList.toggle('active');
+        });
+      }
     });
   </script>
 </body>

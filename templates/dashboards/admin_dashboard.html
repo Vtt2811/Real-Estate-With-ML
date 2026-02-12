@@ -5,9 +5,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard — Real Estate With ML</title>
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-    <link rel="stylesheet" href="{% static 'css/ui.css' %}">
+    <title>Admin Dashboard — Home Finder</title>
+    <!-- Updated to v=5 to match the new Light Theme -->
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=5">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 </head>
 
@@ -33,7 +34,9 @@
                     <span class="nav-icon">🏘️</span>
                     <span>Property Approval</span>
                 </a>
-                <a href="#">
+                <!-- Activated Link -->
+                <a href="#interestSection"
+                    onclick="document.getElementById('interestSection').scrollIntoView({behavior: 'smooth'})">
                     <span class="nav-icon">📬</span>
                     <span>Interest Verification</span>
                 </a>
@@ -230,7 +233,7 @@
                                 <tr>
                                     <td><strong>Stunning Modern Home</strong></td>
                                     <td>priya_patel</td>
-                                    <td>Bandra West, Mumbai</td>
+                                    <td>Sindhu Bhavan Road, Ahmedabad</td>
                                     <td>₹1,85,00,000</td>
                                     <td>2 hours ago</td>
                                     <td><span class="badge badge-warning">Pending</span></td>
@@ -244,7 +247,7 @@
                                 <tr>
                                     <td><strong>Cozy Apartment</strong></td>
                                     <td>amit_kumar</td>
-                                    <td>Andheri East, Mumbai</td>
+                                    <td>Vesu, Surat</td>
                                     <td>₹68,00,000</td>
                                     <td>5 hours ago</td>
                                     <td><span class="badge badge-warning">Pending</span></td>
@@ -258,7 +261,7 @@
                                 <tr>
                                     <td><strong>Luxury Penthouse</strong></td>
                                     <td>vikram_singh</td>
-                                    <td>Whitefield, Bangalore</td>
+                                    <td>Vasna Road, Vadodara</td>
                                     <td>₹1,12,00,000</td>
                                     <td>1 day ago</td>
                                     <td><span class="badge badge-warning">Pending</span></td>
@@ -272,7 +275,7 @@
                                 <tr>
                                     <td><strong>Garden Villa</strong></td>
                                     <td>rahul_sharma</td>
-                                    <td>Vasant Kunj, Delhi</td>
+                                    <td>Bopal, Ahmedabad</td>
                                     <td>₹1,55,00,000</td>
                                     <td>2 days ago</td>
                                     <td><span class="badge badge-success">Approved</span></td>
@@ -286,7 +289,7 @@
                                 <tr>
                                     <td><strong>Beach House</strong></td>
                                     <td>sneha_reddy</td>
-                                    <td>ECR, Chennai</td>
+                                    <td>Kalavad Road, Rajkot</td>
                                     <td>₹2,20,00,000</td>
                                     <td>3 days ago</td>
                                     <td><span class="badge badge-error">Rejected</span></td>
@@ -303,8 +306,8 @@
                 </div>
             </div>
 
-            <!-- Buyer Interest Verification -->
-            <div class="card">
+            <!-- Buyer Interest Verification - ACTIVATED SECTION -->
+            <div id="interestSection" class="card">
                 <div class="card-header">
                     <h2 class="card-title">Buyer Interest Verification</h2>
                     <span class="badge badge-info">156 Total</span>
@@ -331,7 +334,10 @@
                                     <td><span class="badge badge-warning">Pending</span></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="btn btn-info btn-sm">View Details</button>
+                                            <a href="mailto:rahul@example.com?subject=Re: Interest in Stunning Modern Home"
+                                                class="btn btn-primary btn-sm" style="text-decoration: none;">📧 Contact
+                                                Buyer</a>
+                                            <button class="btn btn-success btn-sm">Verify</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -340,10 +346,12 @@
                                     <td>Luxury Estate</td>
                                     <td>vikram_singh</td>
                                     <td>Jan 29, 2026</td>
-                                    <td><span class="badge badge-success">Accepted</span></td>
+                                    <td><span class="badge badge-success">Verified</span></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="btn btn-info btn-sm">View Details</button>
+                                            <a href="mailto:amit@example.com?subject=Re: Interest in Luxury Estate"
+                                                class="btn btn-secondary btn-sm" style="text-decoration: none;">📧
+                                                Contact</a>
                                         </div>
                                     </td>
                                 </tr>
@@ -352,10 +360,12 @@
                                     <td>Elegant Family Residence</td>
                                     <td>rahul_sharma</td>
                                     <td>Jan 28, 2026</td>
-                                    <td><span class="badge badge-success">Accepted</span></td>
+                                    <td><span class="badge badge-success">Verified</span></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="btn btn-info btn-sm">View Details</button>
+                                            <a href="mailto:priya@example.com?subject=Re: Interest in Elegant Family Residence"
+                                                class="btn btn-secondary btn-sm" style="text-decoration: none;">📧
+                                                Contact</a>
                                         </div>
                                     </td>
                                 </tr>
@@ -367,7 +377,7 @@
                                     <td><span class="badge badge-error">Declined</span></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="btn btn-info btn-sm">View Details</button>
+                                            <button class="btn btn-secondary btn-sm" disabled>Closed</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -379,7 +389,10 @@
                                     <td><span class="badge badge-warning">Pending</span></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="btn btn-info btn-sm">View Details</button>
+                                            <a href="mailto:vikram@example.com?subject=Re: Interest in Spacious Villa"
+                                                class="btn btn-primary btn-sm" style="text-decoration: none;">📧 Contact
+                                                Buyer</a>
+                                            <button class="btn btn-success btn-sm">Verify</button>
                                         </div>
                                     </td>
                                 </tr>

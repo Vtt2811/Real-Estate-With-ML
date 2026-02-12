@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Directory — Real Estate With ML</title>
+    <title>Dashboard Directory — Home Finder</title>
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
     <link rel="stylesheet" href="{% static 'css/ui.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -141,17 +141,7 @@
                 <p class="dashboard-desc">Manage users, approve properties, and verify interests</p>
             </a>
 
-            <a href="{% url 'listings:security_dashboard' %}" class="dashboard-link">
-                <span class="dashboard-icon">🛡️</span>
-                <h3 class="dashboard-name">Security Analyst</h3>
-                <p class="dashboard-desc">Monitor system security, logs, and detect threats</p>
-            </a>
 
-            <a href="{% url 'listings:irt_dashboard' %}" class="dashboard-link">
-                <span class="dashboard-icon">🚨</span>
-                <h3 class="dashboard-name">Incident Response</h3>
-                <p class="dashboard-desc">Manage and resolve security incidents</p>
-            </a>
 
             <a href="{% url 'listings:index' %}" class="dashboard-link">
                 <span class="dashboard-icon">🏡</span>
