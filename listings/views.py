@@ -8,10 +8,14 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from .forms import SignupForm, AdminEmailChangeForm
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Profile, PasswordResetOTP
+from .models import Profile, PasswordResetOTP, Property
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
+from django.core.paginator import Paginator
+from django.views.decorators.http import require_POST
 import logging
+import os
+import json
 from django.contrib.admin.views.decorators import staff_member_required
 
 logger = logging.getLogger(__name__)
@@ -22,6 +26,7 @@ def index(request):
 
 
 def listing_details(request):
+    """Static property details page (reverted)"""
     return render(request, 'listing-details.html')
 
 
@@ -198,8 +203,66 @@ def admin_change_email(request, user_id):
 # Dashboard Views
 @login_required(login_url='listings:signin')
 def buyer_dashboard(request):
-    """Buyer dashboard with property listings and filters"""
-    return render(request, 'dashboards/buyer_dashboard.html')
+    """Buyer dashboard with property listings from the database and filters"""
+    properties = Property.objects.filter(is_active=True)
+
+    # --- Filtering ---
+    city = request.GET.get('city', 'all')
+    property_type = request.GET.get('property_type', 'all')
+    price_range = request.GET.get('price', 'all')
+    bedrooms = request.GET.get('bedrooms', 'all')
+    search_area = request.GET.get('area', '').strip()
+
+    if city != 'all':
+        properties = properties.filter(city=city)
+    if property_type != 'all':
+        properties = properties.filter(property_type=property_type)
+    if bedrooms != 'all':
+        try:
+            properties = properties.filter(bedrooms=int(bedrooms))
+        except ValueError:
+            pass
+    if search_area:
+        properties = properties.filter(area__icontains=search_area)
+
+    if price_range != 'all':
+        if price_range == 'under50':
+            properties = properties.filter(price_inr__lt=5000000)
+        elif price_range == '50to1cr':
+            properties = properties.filter(price_inr__gte=5000000, price_inr__lte=10000000)
+        elif price_range == '1crto2cr':
+            properties = properties.filter(price_inr__gte=10000000, price_inr__lte=20000000)
+        elif price_range == 'above2cr':
+            properties = properties.filter(price_inr__gt=20000000)
+
+    # --- Pagination (24 per page) ---
+    paginator = Paginator(properties, 24)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    # --- Stats ---
+    total_properties = Property.objects.filter(is_active=True).count()
+
+    # Filter choices for the template
+    cities = Property.CITY_CHOICES
+    property_types = Property.PROPERTY_TYPE_CHOICES
+
+    context = {
+        'page_obj': page_obj,
+        'properties': page_obj.object_list,
+        'total_properties': total_properties,
+        'filtered_count': paginator.count,
+        # Current filter values
+        'current_city': city,
+        'current_property_type': property_type,
+        'current_price': price_range,
+        'current_bedrooms': bedrooms,
+        'current_area': search_area,
+        # Choices
+        'cities': cities,
+        'property_types': property_types,
+    }
+    return render(request, 'dashboards/buyer_dashboard.html', context)
 
 
 @login_required(login_url='listings:signin')
@@ -209,14 +272,87 @@ def seller_dashboard(request):
 
 
 @login_required(login_url='listings:signin')
+def price_prediction(request):
+    """Separate page for ML price prediction"""
+    return render(request, 'dashboards/price_prediction.html')
+
+
+@login_required(login_url='listings:signin')
 def admin_dashboard(request):
     """Admin dashboard with user and property management"""
     return render(request, 'dashboards/admin_dashboard.html')
 
 
+# --- ML Price Prediction ---
+_ml_pipeline = None
+
+def _get_pipeline():
+    """Load the ML pipeline once and cache it."""
+    global _ml_pipeline
+    if _ml_pipeline is None:
+        import joblib
+        from django.conf import settings
+        pkl_path = os.path.join(settings.BASE_DIR, 'ML_pipeline.pkl')
+        _ml_pipeline = joblib.load(pkl_path)
+        logger.info('ML pipeline loaded from %s', pkl_path)
+    return _ml_pipeline
 
 
+@login_required(login_url='listings:signin')
+@require_POST
+def predict_price(request):
+    """API endpoint: predict property price using the ML pipeline.
 
+    Expects a JSON body with keys matching the pipeline features:
+      City, Area, Property_Type, Size_sqft, Bedrooms,
+      Age_of_Property_years, Distance_to_City_Center_km, Year
+    """
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    required = [
+        'City', 'Area', 'Property_Type', 'Size_sqft',
+        'Bedrooms', 'Age_of_Property_years',
+        'Distance_to_City_Center_km', 'Year',
+    ]
+    missing = [f for f in required if f not in data]
+    if missing:
+        return JsonResponse({'error': f'Missing fields: {", ".join(missing)}'}, status=400)
+
+    try:
+        import pandas as pd
+        input_df = pd.DataFrame([{
+            'City': data['City'],
+            'Area': data['Area'],
+            'Property_Type': data['Property_Type'],
+            'Size_sqft': int(data['Size_sqft']),
+            'Bedrooms': int(data['Bedrooms']),
+            'Age_of_Property_years': int(data['Age_of_Property_years']),
+            'Distance_to_City_Center_km': float(data['Distance_to_City_Center_km']),
+            'Year': int(data['Year']),
+        }])
+
+        pipeline = _get_pipeline()
+        prediction = pipeline.predict(input_df)
+        predicted_price = round(float(prediction[0]), 2)
+
+        # Format for display
+        if predicted_price >= 10000000:
+            formatted = f'₹{predicted_price / 10000000:.2f} Cr'
+        elif predicted_price >= 100000:
+            formatted = f'₹{predicted_price / 100000:.2f} L'
+        else:
+            formatted = f'₹{predicted_price:,.0f}'
+
+        return JsonResponse({
+            'predicted_price': predicted_price,
+            'formatted_price': formatted,
+        })
+    except Exception as e:
+        logger.error('Prediction error: %s', e, exc_info=True)
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 

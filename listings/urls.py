@@ -38,8 +38,12 @@ urlpatterns = [
      # Dashboard URLs
      path('dashboards/', views.dashboard_directory, name='dashboard_directory'),
      path('buyer/dashboard/', views.buyer_dashboard, name='buyer_dashboard'),
+     path('buyer/prediction/', views.price_prediction, name='price_prediction'),
      path('seller/dashboard/', views.seller_dashboard, name='seller_dashboard'),
      path('platform-admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
+
+     # ML Prediction API
+     path('api/predict-price/', views.predict_price, name='predict_price'),
 
      
      # Redirect /dashboard/ to /dashboards/ for convenience

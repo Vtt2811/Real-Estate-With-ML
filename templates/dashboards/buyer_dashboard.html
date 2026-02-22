@@ -6,8 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buyer Dashboard — Home Finder</title>
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=5">
-    <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=6">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=4">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 </head>
 
@@ -29,7 +29,7 @@
                     <span class="nav-icon">❤️</span>
                     <span>Saved Properties</span>
                 </a>
-                <a href="#">
+                <a href="{% url 'listings:price_prediction' %}">
                     <span class="nav-icon">📊</span>
                     <span>Price Predictions</span>
                 </a>
@@ -72,40 +72,42 @@
             <div class="stats-grid">
                 <div class="stat-card info">
                     <div class="stat-header">
-                        <div class="stat-title">Properties Viewed</div>
-                        <div class="stat-icon">👁️</div>
+                        <div class="stat-title">Total Properties</div>
+                        <div class="stat-icon">🏘️</div>
                     </div>
-                    <div class="stat-value">24</div>
-                    <div class="stat-change positive">↑ 12% this week</div>
+                    <div class="stat-value">{{ total_properties|default:"0" }}</div>
+                    <div class="stat-change positive">Available listings</div>
                 </div>
 
                 <div class="stat-card success">
                     <div class="stat-header">
-                        <div class="stat-title">Saved Favorites</div>
-                        <div class="stat-icon">❤️</div>
+                        <div class="stat-title">Filtered Results</div>
+                        <div class="stat-icon">🔍</div>
                     </div>
-                    <div class="stat-value">8</div>
-                    <div class="stat-change positive">↑ 3 new</div>
+                    <div class="stat-value">{{ filtered_count|default:"0" }}</div>
+                    <div class="stat-change">Matching your criteria</div>
                 </div>
 
                 <div class="stat-card warning">
                     <div class="stat-header">
-                        <div class="stat-title">Interest Requests</div>
-                        <div class="stat-icon">📝</div>
+                        <div class="stat-title">Cities Covered</div>
+                        <div class="stat-icon">🌆</div>
                     </div>
                     <div class="stat-value">5</div>
-                    <div class="stat-change">2 pending response</div>
+                    <div class="stat-change">Gujarat region</div>
                 </div>
 
                 <div class="stat-card error">
                     <div class="stat-header">
-                        <div class="stat-title">Avg. Budget</div>
-                        <div class="stat-icon">💰</div>
+                        <div class="stat-title">Property Types</div>
+                        <div class="stat-icon">🏗️</div>
                     </div>
-                    <div class="stat-value">₹75L</div>
-                    <div class="stat-change">Your range</div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-change">Flat, House, Plot</div>
                 </div>
             </div>
+
+
 
             <!-- Filter Section (Hidden by default) -->
             <div id="filterSection" class="filter-section" style="display: none;">
@@ -113,157 +115,140 @@
                     <h3 class="filter-title">Refine Your Search</h3>
                     <button class="btn-close" onclick="toggleFilters()">×</button>
                 </div>
-                <div class="filter-grid">
-                    <div class="form-group">
-                        <label class="form-label">Location</label>
-                        <select id="filterLocation" class="form-select">
-                            <option value="all">All Cities</option>
-                            <option value="Ahmedabad">Ahmedabad</option>
-                            <option value="Rajkot">Rajkot</option>
-                            <option value="Vadodara">Vadodara</option>
-                            <option value="Surat">Surat</option>
-                        </select>
-                    </div>
+                <form method="get" action="{% url 'listings:buyer_dashboard' %}" id="filterForm">
+                    <div class="filter-grid">
+                        <div class="form-group">
+                            <label class="form-label">City</label>
+                            <select name="city" id="filterCity" class="form-select">
+                                <option value="all" {% if current_city == 'all' %}selected{% endif %}>All Cities</option>
+                                {% for value, label in cities %}
+                                <option value="{{ value }}" {% if current_city == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Price Range</label>
-                        <select id="filterPrice" class="form-select">
-                            <option value="all">Any Price</option>
-                            <option value="5000000">Under ₹50 Lakhs</option>
-                            <option value="5000000-10000000">₹50L - ₹1 Cr</option>
-                            <option value="10000000-20000000">₹1 Cr - ₹2 Cr</option>
-                            <option value="20000000">Above ₹2 Cr</option>
-                        </select>
-                    </div>
+                        <div class="form-group">
+                            <label class="form-label">Property Type</label>
+                            <select name="property_type" id="filterType" class="form-select">
+                                <option value="all" {% if current_property_type == 'all' %}selected{% endif %}>All Types</option>
+                                {% for value, label in property_types %}
+                                <option value="{{ value }}" {% if current_property_type == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Property Type</label>
-                        <select id="filterType" class="form-select">
-                            <option value="all">All Types</option>
-                            <option value="Apartment">Apartment</option>
-                            <option value="Villa">Villa</option>
-                            <option value="Independent House">Independent House</option>
-                            <option value="Penthouse">Penthouse</option>
-                        </select>
-                    </div>
+                        <div class="form-group">
+                            <label class="form-label">Price Range</label>
+                            <select name="price" id="filterPrice" class="form-select">
+                                <option value="all" {% if current_price == 'all' %}selected{% endif %}>Any Price</option>
+                                <option value="under50" {% if current_price == 'under50' %}selected{% endif %}>Under ₹50 Lakhs</option>
+                                <option value="50to1cr" {% if current_price == '50to1cr' %}selected{% endif %}>₹50L - ₹1 Cr</option>
+                                <option value="1crto2cr" {% if current_price == '1crto2cr' %}selected{% endif %}>₹1 Cr - ₹2 Cr</option>
+                                <option value="above2cr" {% if current_price == 'above2cr' %}selected{% endif %}>Above ₹2 Cr</option>
+                            </select>
+                        </div>
 
-                    <div class="form-group">
-                        <button class="btn btn-primary" style="width: 100%;" onclick="applyFilters()">Apply
-                            Filters</button>
+                        <div class="form-group">
+                            <label class="form-label">Bedrooms</label>
+                            <select name="bedrooms" id="filterBedrooms" class="form-select">
+                                <option value="all" {% if current_bedrooms == 'all' %}selected{% endif %}>Any</option>
+                                <option value="0" {% if current_bedrooms == '0' %}selected{% endif %}>0 (Plot)</option>
+                                <option value="1" {% if current_bedrooms == '1' %}selected{% endif %}>1 BHK</option>
+                                <option value="2" {% if current_bedrooms == '2' %}selected{% endif %}>2 BHK</option>
+                                <option value="3" {% if current_bedrooms == '3' %}selected{% endif %}>3 BHK</option>
+                                <option value="4" {% if current_bedrooms == '4' %}selected{% endif %}>4 BHK</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Area / Locality</label>
+                            <select name="area" id="filterArea" class="form-select" disabled>
+                                <option value="">Select City First</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" style="display: flex; gap: 0.5rem; align-items: end;">
+                            <button type="submit" class="btn btn-primary" style="flex: 1;">Apply Filters</button>
+                            <a href="{% url 'listings:buyer_dashboard' %}" class="btn btn-secondary" style="flex: 0.5; text-align: center; text-decoration: none;">Reset</a>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
 
             <!-- Property Listings -->
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">Available Properties</h2>
-                    <span id="propertyCount" class="badge badge-primary">6 Properties</span>
+                    <span id="propertyCount" class="badge badge-primary">{{ filtered_count }} Propert{{ filtered_count|pluralize:"y,ies" }}</span>
                 </div>
                 <div class="card-body">
+                    {% if properties %}
                     <div class="property-grid">
-                        <!-- Property 1 -->
-                        <div class="property-card" data-location="Ahmedabad" data-price="18500000"
-                            data-type="Independent House"
-                            onclick="window.location.href='{% url 'listings:listing_details' %}';"
+                        {% for prop in properties %}
+                        <div class="property-card"
+                            data-city="{{ prop.city }}"
+                            data-price="{{ prop.price_inr }}"
+                            data-type="{{ prop.property_type }}"
+                            data-url="{% url 'listings:listing_details' %}"
+                            onclick="window.location.href=this.getAttribute('data-url');"
                             style="cursor: pointer;">
-                            <img src="{% static 'images/Depth 5, Frame 0.png' %}" alt="Property" class="property-image">
+                            <!-- Property type badge overlay -->
+                            <div class="property-type-badge">{{ prop.property_type }}</div>
                             <div class="property-content">
-                                <h3 class="property-title">Stunning Modern Home</h3>
-                                <p class="property-details">4 Beds • 2 Baths • 2,039 sq ft</p>
-                                <p class="property-details">📍 Sindhu Bhavan Road, Ahmedabad</p>
-                                <div class="property-price">₹1,85,00,000</div>
-                                <div class="property-prediction">🤖 Predicted Price: ₹1,82,50,000</div>
-                                <button class="btn btn-primary" style="width: 100%;"
-                                    onclick="event.stopPropagation(); alert('Interest registered!');">Show
+                                <h3 class="property-title">{{ prop.title }}</h3>
+                                <div class="property-meta-grid">
+                                    {% if prop.bedrooms > 0 %}
+                                    <span class="property-meta-item">🛏️ {{ prop.bedrooms }} Bed{{ prop.bedrooms|pluralize }}</span>
+                                    {% endif %}
+                                    <span class="property-meta-item">📐 {{ prop.size_sqft|floatformat:0 }} sq ft</span>
+                                    <span class="property-meta-item">🏗️ {{ prop.age_of_property_years }} yrs old</span>
+                                    <span class="property-meta-item">⭐ Infra: {{ prop.nearby_infrastructure_score }}/10</span>
+                                </div>
+                                <p class="property-details">📍 {{ prop.area }}, {{ prop.city }}</p>
+                                <p class="property-details" style="font-size: 0.8rem; color: var(--muted);">
+                                    📏 {{ prop.distance_to_city_center_km }} km from city center • 📅 Year {{ prop.year }}
+                                </p>
+                                <div class="property-price">{{ prop.formatted_price }}</div>
+                                <button class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;"
+                                    onclick="event.stopPropagation(); alert('Interest registered for this property!');">Show
                                     Interest</button>
                             </div>
                         </div>
+                        {% endfor %}
+                    </div>
 
-                        <!-- Property 2 -->
-                        <div class="property-card" data-location="Rajkot" data-price="9500000"
-                            data-type="Independent House"
-                            onclick="window.location.href='{% url 'listings:listing_details' %}';"
-                            style="cursor: pointer;">
-                            <img src="{% static 'images/Depth 6 Frame 0.png' %}" alt="Property" class="property-image">
-                            <div class="property-content">
-                                <h3 class="property-title">Elegant Family Residence</h3>
-                                <p class="property-details">3 Beds • 2 Baths • 1,950 sq ft</p>
-                                <p class="property-details">📍 Kalavad Road, Rajkot</p>
-                                <div class="property-price">₹95,00,000</div>
-                                <div class="property-prediction">🤖 Predicted Price: ₹92,75,000</div>
-                                <button class="btn btn-primary" style="width: 100%;"
-                                    onclick="event.stopPropagation(); alert('Interest registered!');">Show
-                                    Interest</button>
-                            </div>
-                        </div>
+                    <!-- Pagination -->
+                    {% if page_obj.paginator.num_pages > 1 %}
+                    <div class="pagination-wrapper">
+                        <div class="pagination">
+                            {% if page_obj.has_previous %}
+                            <a href="?page=1{% if current_city != 'all' %}&city={{ current_city }}{% endif %}{% if current_property_type != 'all' %}&property_type={{ current_property_type }}{% endif %}{% if current_price != 'all' %}&price={{ current_price }}{% endif %}{% if current_bedrooms != 'all' %}&bedrooms={{ current_bedrooms }}{% endif %}{% if current_area %}&area={{ current_area }}{% endif %}"
+                                class="pagination-btn">« First</a>
+                            <a href="?page={{ page_obj.previous_page_number }}{% if current_city != 'all' %}&city={{ current_city }}{% endif %}{% if current_property_type != 'all' %}&property_type={{ current_property_type }}{% endif %}{% if current_price != 'all' %}&price={{ current_price }}{% endif %}{% if current_bedrooms != 'all' %}&bedrooms={{ current_bedrooms }}{% endif %}{% if current_area %}&area={{ current_area }}{% endif %}"
+                                class="pagination-btn">‹ Previous</a>
+                            {% endif %}
 
-                        <!-- Property 3 -->
-                        <div class="property-card" data-location="Vadodara" data-price="24500000" data-type="Villa"
-                            onclick="window.location.href='{% url 'listings:listing_details' %}';"
-                            style="cursor: pointer;">
-                            <img src="{% static 'images/hero sectione.png' %}" alt="Property" class="property-image">
-                            <div class="property-content">
-                                <h3 class="property-title">Luxury Estate with View</h3>
-                                <p class="property-details">5 Beds • 4 Baths • 3,400 sq ft</p>
-                                <p class="property-details">📍 Alkapuri, Vadodara</p>
-                                <div class="property-price">₹2,45,00,000</div>
-                                <div class="property-prediction">🤖 Predicted Price: ₹2,38,00,000</div>
-                                <button class="btn btn-primary" style="width: 100%;"
-                                    onclick="event.stopPropagation(); alert('Interest registered!');">Show
-                                    Interest</button>
-                            </div>
-                        </div>
+                            <span class="pagination-info">
+                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </span>
 
-                        <!-- Property 4 -->
-                        <div class="property-card" data-location="Surat" data-price="6800000" data-type="Apartment"
-                            onclick="window.location.href='{% url 'listings:listing_details' %}';"
-                            style="cursor: pointer;">
-                            <img src="{% static 'images/mumbai.png' %}" alt="Property" class="property-image">
-                            <div class="property-content">
-                                <h3 class="property-title">Cozy Apartment</h3>
-                                <p class="property-details">2 Beds • 2 Baths • 1,200 sq ft</p>
-                                <p class="property-details">📍 Vesu, Surat</p>
-                                <div class="property-price">₹68,00,000</div>
-                                <div class="property-prediction">🤖 Predicted Price: ₹65,50,000</div>
-                                <button class="btn btn-primary" style="width: 100%;"
-                                    onclick="event.stopPropagation(); alert('Interest registered!');">Show
-                                    Interest</button>
-                            </div>
-                        </div>
-
-                        <!-- Property 5 -->
-                        <div class="property-card" data-location="Ahmedabad" data-price="15500000" data-type="Villa"
-                            onclick="window.location.href='{% url 'listings:listing_details' %}';"
-                            style="cursor: pointer;">
-                            <img src="{% static 'images/delhi.png' %}" alt="Property" class="property-image">
-                            <div class="property-content">
-                                <h3 class="property-title">Spacious Villa</h3>
-                                <p class="property-details">4 Beds • 3 Baths • 2,800 sq ft</p>
-                                <p class="property-details">📍 Bopal, Ahmedabad</p>
-                                <div class="property-price">₹1,55,00,000</div>
-                                <div class="property-prediction">🤖 Predicted Price: ₹1,52,00,000</div>
-                                <button class="btn btn-primary" style="width: 100%;"
-                                    onclick="event.stopPropagation(); alert('Interest registered!');">Show
-                                    Interest</button>
-                            </div>
-                        </div>
-
-                        <!-- Property 6 -->
-                        <div class="property-card" data-location="Vadodara" data-price="11200000" data-type="Penthouse">
-                            <img src="{% static 'images/bangalore.png' %}" alt="Property" class="property-image">
-                            <div class="property-content">
-                                <h3 class="property-title">Modern Penthouse</h3>
-                                <p class="property-details">3 Beds • 3 Baths • 2,100 sq ft</p>
-                                <p class="property-details">📍 Vasna Road, Vadodara</p>
-                                <div class="property-price">₹1,12,00,000</div>
-                                <div class="property-prediction">🤖 Predicted Price: ₹1,08,50,000</div>
-                                <button class="btn btn-primary" style="width: 100%;"
-                                    onclick="event.stopPropagation(); alert('Interest registered!');">Show
-                                    Interest</button>
-                            </div>
+                            {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}{% if current_city != 'all' %}&city={{ current_city }}{% endif %}{% if current_property_type != 'all' %}&property_type={{ current_property_type }}{% endif %}{% if current_price != 'all' %}&price={{ current_price }}{% endif %}{% if current_bedrooms != 'all' %}&bedrooms={{ current_bedrooms }}{% endif %}{% if current_area %}&area={{ current_area }}{% endif %}"
+                                class="pagination-btn">Next ›</a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}{% if current_city != 'all' %}&city={{ current_city }}{% endif %}{% if current_property_type != 'all' %}&property_type={{ current_property_type }}{% endif %}{% if current_price != 'all' %}&price={{ current_price }}{% endif %}{% if current_bedrooms != 'all' %}&bedrooms={{ current_bedrooms }}{% endif %}{% if current_area %}&area={{ current_area }}{% endif %}"
+                                class="pagination-btn">Last »</a>
+                            {% endif %}
                         </div>
                     </div>
+                    {% endif %}
+
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">🏠</div>
+                        <h3>No Properties Found</h3>
+                        <p>Try adjusting your filters or <a href="{% url 'listings:buyer_dashboard' %}">reset all filters</a>.</p>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -282,75 +267,80 @@
             const filterSection = document.getElementById('filterSection');
             if (filterSection.style.display === 'none') {
                 filterSection.style.display = 'block';
-                // Add a small animation class or style if desired here
                 filterSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             } else {
                 filterSection.style.display = 'none';
             }
         }
 
-        function applyFilters() {
-            // Get filter values
-            const location = document.getElementById('filterLocation').value;
-            const price = document.getElementById('filterPrice').value;
-            const type = document.getElementById('filterType').value;
+        // City-Area Mapping
+        const cityAreaMapping = {
+            "Ahmedabad": ["Bopal", "Maninagar", "Satellite", "Gota"],
+            "Gandhinagar": ["Infocity", "Sector 7"],
+            "Rajkot": ["Kalavad Road", "Mavdi"],
+            "Surat": ["Adajan", "Varachha", "Vesu"],
+            "Vadodara": ["Alkapuri", "Gotri", "Manjalpur"]
+        };
 
-            // Get all property cards
-            const cards = document.querySelectorAll('.property-card');
-            let visibleCount = 0;
+        const citySelect = document.getElementById('filterCity');
+        const areaSelect = document.getElementById('filterArea');
 
-            console.log('Filtering:', { location, price, type });
-
-            cards.forEach(card => {
-                const cardLocation = card.getAttribute('data-location');
-                const cardPrice = parseInt(card.getAttribute('data-price'));
-                const cardType = card.getAttribute('data-type');
-
-                let matchesLocation = location === 'all' || cardLocation === location;
-                let matchesType = type === 'all' || cardType === type;
-                let matchesPrice = true;
-
-                if (price !== 'all') {
-                    if (price.includes('-')) {
-                        const [min, max] = price.split('-');
-                        matchesPrice = cardPrice >= parseInt(min) && cardPrice <= parseInt(max);
-                    } else if (price === '5000000') {
-                        matchesPrice = cardPrice < 5000000;
-                    } else if (price === '20000000') {
-                        matchesPrice = cardPrice > 20000000;
-                    }
-                }
-
-                if (matchesLocation && matchesType && matchesPrice) {
-                    card.style.display = 'flex'; // Restore flex display
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            // Update visible count in UI
-            const countBadge = document.getElementById('propertyCount');
-            countBadge.textContent = visibleCount + (visibleCount === 1 ? ' Property' : ' Properties');
-
-            // On mobile, maybe scroll to results?
-            if (window.innerWidth < 768) {
-                document.querySelector('.card-title').scrollIntoView({ behavior: 'smooth' });
+        function updateAreas(selectedCity, selectedArea = "") {
+            areaSelect.innerHTML = '';
+            if (selectedCity && selectedCity !== 'all' && cityAreaMapping[selectedCity]) {
+                areaSelect.disabled = false;
+                const defaultOpt = document.createElement('option');
+                defaultOpt.value = '';
+                defaultOpt.textContent = 'All Areas';
+                areaSelect.appendChild(defaultOpt);
+                
+                cityAreaMapping[selectedCity].forEach(area => {
+                    const opt = document.createElement('option');
+                    opt.value = area;
+                    opt.textContent = area;
+                    if (area === selectedArea) opt.selected = true;
+                    areaSelect.appendChild(opt);
+                });
+            } else {
+                areaSelect.disabled = true;
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = selectedCity === 'all' ? 'Select a City' : 'Select City First';
+                areaSelect.appendChild(opt);
             }
         }
 
-        // Optional: Dashboard guard - verify user has buyer role
-        // This is a frontend-only check for demo purposes
+        if (citySelect && areaSelect) {
+            citySelect.addEventListener('change', function() {
+                updateAreas(this.value);
+            });
+        }
+
+        // Auto-show filters if any filter is active
+        (function () {
+            const params = new URLSearchParams(window.location.search);
+            const currentCity = params.get('city');
+            const currentArea = params.get('area');
+
+            if (currentCity && currentCity !== 'all') {
+                updateAreas(currentCity, currentArea);
+            }
+
+            const hasFilter = ['city', 'property_type', 'price', 'bedrooms', 'area'].some(
+                key => params.has(key) && params.get(key) !== 'all' && params.get(key) !== ''
+            );
+            if (hasFilter) {
+                document.getElementById('filterSection').style.display = 'block';
+            }
+        })();
+
+        // Optional: Dashboard guard
         (function () {
             const userRole = localStorage.getItem('userRole');
             const isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
 
-            // Only check if user is authenticated
             if (isAuthenticated && userRole && userRole !== 'buyer') {
                 console.log('User role mismatch. Expected: buyer, Got:', userRole);
-                // Optionally redirect to correct dashboard or directory
-                // Uncomment below to enable strict role checking
-                // window.location.href = "{% url 'listings:dashboard_directory' %}";
             }
         })();
     </script>

@@ -72,6 +72,9 @@ Thumbs.db
 *.pem
 secrets.json
 
+# Excel temp files
+~$*
+
 # Ignore migrations if you prefer (project currently has initial migration)
 # listings/migrations/*.pyc
 # listings/migrations/0002_*.py

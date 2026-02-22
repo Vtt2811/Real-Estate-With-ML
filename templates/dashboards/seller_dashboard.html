@@ -119,54 +119,80 @@
                             {% csrf_token %}
                             <div class="form-group">
                                 <label class="form-label">Property Title</label>
-                                <input type="text" class="form-input"
-                                    placeholder="e.g., Stunning Modern Home in Bandra">
+                                <input type="text" name="title" class="form-input"
+                                    placeholder="e.g., Spacious Flat in Bopal">
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Price (₹)</label>
-                                <input type="number" class="form-input" placeholder="e.g., 18500000">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Location</label>
-                                <input type="text" class="form-input" placeholder="e.g., Sindhu Bhavan Road, Ahmedabad">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Property Type</label>
-                                <select class="form-select">
-                                    <option>Select Type</option>
-                                    <option>Apartment</option>
-                                    <option>Villa</option>
-                                    <option>Independent House</option>
-                                    <option>Penthouse</option>
+                                <label class="form-label">City</label>
+                                <select name="city" id="sellerCity" class="form-select" required>
+                                    <option value="">Select City</option>
+                                    <option value="Ahmedabad">Ahmedabad</option>
+                                    <option value="Gandhinagar">Gandhinagar</option>
+                                    <option value="Rajkot">Rajkot</option>
+                                    <option value="Surat">Surat</option>
+                                    <option value="Vadodara">Vadodara</option>
                                 </select>
                             </div>
 
                             <div class="form-group">
+                                <label class="form-label">Area / Locality</label>
+                                <select name="area" id="sellerArea" class="form-select" required disabled>
+                                    <option value="">Select City First</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Property Type</label>
+                                <select name="property_type" class="form-select" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Flat">Flat</option>
+                                    <option value="House">House</option>
+                                    <option value="Plot">Plot</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Size (sq ft)</label>
+                                <input type="number" name="size_sqft" class="form-input" placeholder="e.g., 1200" min="100" max="10000" required>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="form-label">Bedrooms</label>
-                                <input type="number" class="form-input" placeholder="e.g., 3">
+                                <select name="bedrooms" class="form-select" required>
+                                    <option value="0">0 (Plot / Studio)</option>
+                                    <option value="1">1 BHK</option>
+                                    <option value="2" selected>2 BHK</option>
+                                    <option value="3">3 BHK</option>
+                                    <option value="4">4 BHK</option>
+                                </select>
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Bathrooms</label>
-                                <input type="number" class="form-input" placeholder="e.g., 2">
+                                <label class="form-label">Age of Property (years)</label>
+                                <input type="number" name="age_of_property_years" class="form-input" placeholder="e.g., 5" min="0" max="50" required>
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Area (sq ft)</label>
-                                <input type="number" class="form-input" placeholder="e.g., 1950">
+                                <label class="form-label">Nearby Infrastructure Score (1-10)</label>
+                                <input type="number" name="nearby_infrastructure_score" class="form-input" placeholder="e.g., 7" min="1" max="10" required>
+                                <small style="color: var(--muted); font-size: 0.8rem;">Rate based on nearby schools, hospitals, malls, transport (1 = poor, 10 = excellent)</small>
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Description</label>
-                                <textarea class="form-textarea" placeholder="Describe your property..."></textarea>
+                                <label class="form-label">Distance to City Center (km)</label>
+                                <input type="number" name="distance_to_city_center_km" class="form-input" placeholder="e.g., 8.5" min="0" max="50" step="0.1" required>
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Property Images</label>
-                                <input type="file" class="form-input" multiple accept="image/*">
+                                <label class="form-label">Year</label>
+                                <input type="number" name="year" class="form-input" placeholder="e.g., 2024" min="2000" max="2035" required>
+                                <small style="color: var(--muted); font-size: 0.8rem;">Year of construction or listing</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Price (₹ INR)</label>
+                                <input type="number" name="price_inr" class="form-input" placeholder="e.g., 7500000" min="100000" required>
                             </div>
 
                             <button type="button" class="btn btn-primary" style="width: 100%;">
@@ -375,6 +401,46 @@
 
     <script src="{% static 'js/ui.js' %}"></script>
     <script>
+        // City-Area Mapping for Seller Dashboard
+        const cityAreaMapping = {
+            "Ahmedabad": ["Bopal", "Maninagar", "Satellite", "Gota"],
+            "Gandhinagar": ["Infocity", "Sector 7"],
+            "Rajkot": ["Kalavad Road", "Mavdi"],
+            "Surat": ["Adajan", "Varachha", "Vesu"],
+            "Vadodara": ["Alkapuri", "Gotri", "Manjalpur"]
+        };
+
+        const citySelect = document.getElementById('sellerCity');
+        const areaSelect = document.getElementById('sellerArea');
+
+        if (citySelect && areaSelect) {
+            citySelect.addEventListener('change', function() {
+                const selectedCity = this.value;
+                areaSelect.innerHTML = '';
+                
+                if (selectedCity && cityAreaMapping[selectedCity]) {
+                    areaSelect.disabled = false;
+                    const defaultOpt = document.createElement('option');
+                    defaultOpt.value = '';
+                    defaultOpt.textContent = 'Select Locality';
+                    areaSelect.appendChild(defaultOpt);
+                    
+                    cityAreaMapping[selectedCity].forEach(area => {
+                        const opt = document.createElement('option');
+                        opt.value = area;
+                        opt.textContent = area;
+                        areaSelect.appendChild(opt);
+                    });
+                } else {
+                    areaSelect.disabled = true;
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = 'Select City First';
+                    areaSelect.appendChild(opt);
+                }
+            });
+        }
+
         // Optional: Dashboard guard - verify user has seller role
         // This is a frontend-only check for demo purposes
         (function () {
