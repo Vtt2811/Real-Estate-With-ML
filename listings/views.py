@@ -277,12 +277,6 @@ def price_prediction(request):
     return render(request, 'dashboards/price_prediction.html')
 
 
-@login_required(login_url='listings:signin')
-def admin_dashboard(request):
-    """Admin dashboard with user and property management"""
-    return render(request, 'dashboards/admin_dashboard.html')
-
-
 # --- ML Price Prediction ---
 _ml_pipeline = None
 
