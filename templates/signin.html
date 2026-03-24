@@ -38,16 +38,16 @@
       <label for="id_username">Username</label>
       {{ form.username }}
       {% if form.username.errors %}
-      <p style="color: #e53e3e; font-size: 13px; margin-top: -8px;">{{ form.username.errors|first }}</p>
+      <p style="color: #e53e3e; font-size: 17px; margin-top: -8px;">{{ form.username.errors|first }}</p>
       {% endif %}
 
       <label for="id_password">Password</label>
       {{ form.password }}
       {% if form.password.errors %}
-      <p style="color: #e53e3e; font-size: 13px; margin-top: -8px;">{{ form.password.errors|first }}</p>
+      <p style="color: #e53e3e; font-size: 17px; margin-top: -8px;">{{ form.password.errors|first }}</p>
       {% endif %}
 
-      <a href="{% url 'listings:request_password_reset_otp' %}" class="forgot">Forgot password?</a>>
+      <a href="{% url 'listings:request_password_reset_otp' %}" class="forgot">Forgot password?</a>
 
       <button type="submit" class="signin-btn">Sign in</button>
 

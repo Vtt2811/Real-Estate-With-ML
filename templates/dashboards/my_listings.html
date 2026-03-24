@@ -1,0 +1,211 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Listings — Home Finder</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=5">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=3">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">Real Estate ML</div>
+                <div class="sidebar-role">Seller Dashboard</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{% url 'listings:seller_dashboard' %}">
+                    <span class="nav-icon">📊</span>
+                    <span>Overview</span>
+                </a>
+                <a href="{% url 'listings:add_property' %}">
+                    <span class="nav-icon">➕</span>
+                    <span>Add Property</span>
+                </a>
+                <a href="{% url 'listings:my_listings' %}" class="active">
+                    <span class="nav-icon">🏘️</span>
+                    <span>My Listings</span>
+                </a>
+                <a href="{% url 'listings:profile' %}">
+                    <span class="nav-icon">👤</span>
+                    <span>Profile</span>
+                </a>
+                <a href="{% url 'listings:signout' %}">
+                    <span class="nav-icon">🚪</span>
+                    <span>Sign Out</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="dashboard-header">
+                <div>
+                    <h1 class="dashboard-title">My Property Listings</h1>
+                    <p class="dashboard-subtitle">View and manage all your property listings</p>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-grid">
+                <div class="stat-card info">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Properties</div>
+                        <div class="stat-icon">🏘️</div>
+                    </div>
+                    <div class="stat-value">{{ property_count }}</div>
+                    <div class="stat-change">Active listings</div>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Views</div>
+                        <div class="stat-icon">👁️</div>
+                    </div>
+                    <div class="stat-value">342</div>
+                    <div class="stat-change positive">↑ 18% this week</div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <div class="stat-title">Interested Buyers</div>
+                        <div class="stat-icon">📬</div>
+                    </div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-change">5 pending</div>
+                </div>
+
+                <div class="stat-card error">
+                    <div class="stat-header">
+                        <div class="stat-title">Inquiries</div>
+                        <div class="stat-icon">💬</div>
+                    </div>
+                    <div class="stat-value">28</div>
+                    <div class="stat-change positive">↑ 5 new</div>
+                </div>
+            </div>
+
+            <!-- Listings Section -->
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <h2 class="card-title">All Properties</h2>
+                    <span class="badge badge-primary">{{ property_count }} Active</span>
+                </div>
+                <div class="card-body">
+                    {% if user_properties %}
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Property Title</th>
+                                        <th>Location</th>
+                                        <th>Property Type</th>
+                                        <th>Size (sq ft)</th>
+                                        <th>Bedrooms</th>
+                                        <th>Price</th>
+                                        <th>Added Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for property in user_properties %}
+                                    <tr>
+                                        <td><strong>{{ property.title }}</strong></td>
+                                        <td>{{ property.area }}, {{ property.city }}</td>
+                                        <td>{{ property.property_type }}</td>
+                                        <td>{{ property.size_sqft }}</td>
+                                        <td>{{ property.get_bedrooms_display }}</td>
+                                        <td><strong>{{ property.formatted_price }}</strong></td>
+                                        <td>{{ property.created_at|date:"M d, Y" }}</td>
+                                        <td><span class="badge badge-success">Active</span></td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <button class="btn btn-info btn-sm" title="View Details">👁️</button>
+                                                <button class="btn btn-warning btn-sm" title="Edit">✏️</button>
+                                                <button class="btn btn-danger btn-sm" title="Delete">🗑️</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div style="text-align: center; padding: 3rem; color: var(--muted);">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
+                            <p style="font-size: 1.2rem; margin-bottom: 1rem; font-weight: 600;">No properties added yet</p>
+                            <p style="font-size: 1rem; margin-bottom: 2rem;">Start building your portfolio by adding your first property.</p>
+                            <a href="{% url 'listings:add_property' %}" style="display: inline-block; background: var(--primary); color: white; border: none; padding: 0.75rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 1rem; text-decoration: none;">
+                                ➕ Add Your First Property
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Property Details Modal (for detailed view) -->
+            <div id="propertyDetailsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; overflow-y: auto;">
+                <div style="background: white; margin: 2rem auto; border-radius: 8px; max-width: 700px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);">
+                    <!-- Modal Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #eee;">
+                        <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700;">Property Details</h2>
+                        <button id="closeDetailsModal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">&times;</button>
+                    </div>
+                    
+                    <!-- Modal Body -->
+                    <div style="padding: 2rem;">
+                        <div id="detailsContent"></div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="messages" style="display:none;">
+        {% for message in messages %}
+        <div class="django-message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+
+    <script src="{% static 'js/ui.js' %}"></script>
+    <script>
+        // Close details modal
+        const closeDetailsModal = document.getElementById('closeDetailsModal');
+        const propertyDetailsModal = document.getElementById('propertyDetailsModal');
+
+        if (closeDetailsModal) {
+            closeDetailsModal.addEventListener('click', function() {
+                propertyDetailsModal.style.display = 'none';
+            });
+        }
+
+        // Close modal when clicking outside
+        propertyDetailsModal.addEventListener('click', function(e) {
+            if (e.target === propertyDetailsModal) {
+                propertyDetailsModal.style.display = 'none';
+            }
+        });
+
+        // Optional: Dashboard guard - verify user has seller role
+        (function () {
+            const userRole = localStorage.getItem('userRole');
+            const isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+
+            if (isAuthenticated && userRole && userRole !== 'seller') {
+                console.log('User role mismatch. Expected: seller, Got:', userRole);
+            }
+        })();
+    </script>
+</body>
+
+</html>

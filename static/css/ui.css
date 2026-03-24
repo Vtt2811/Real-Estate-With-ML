@@ -34,8 +34,8 @@
   transform: translateX(400px) scale(0.9);
   transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   font-weight: 500;
-  font-size: 14px;
-  max-width: 320px;
+  font-size: 18px;
+  max-width: 400px;
   word-wrap: break-word;
   border-left: 4px solid #667eea;
 }
@@ -74,14 +74,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   background: var(--accent);
   color: #fff;
   border-radius: 999px;
   font-weight: 600;
   text-decoration: none;
-  font-size: 13px;
+  font-size: 16px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   transition: all 0.2s ease;

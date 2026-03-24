@@ -1,0 +1,381 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Property — Home Finder</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=5">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=3">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">Real Estate ML</div>
+                <div class="sidebar-role">Seller Dashboard</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{% url 'listings:seller_dashboard' %}">
+                    <span class="nav-icon">📊</span>
+                    <span>Overview</span>
+                </a>
+                <a href="{% url 'listings:add_property' %}" class="active">
+                    <span class="nav-icon">➕</span>
+                    <span>Add Property</span>
+                </a>
+                <a href="{% url 'listings:my_listings' %}">
+                    <span class="nav-icon">🏘️</span>
+                    <span>My Listings</span>
+                </a>
+                <a href="{% url 'listings:profile' %}">
+                    <span class="nav-icon">👤</span>
+                    <span>Profile</span>
+                </a>
+                <a href="{% url 'listings:signout' %}">
+                    <span class="nav-icon">🚪</span>
+                    <span>Sign Out</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="dashboard-header">
+                <div>
+                    <h1 class="dashboard-title">Add New Property</h1>
+                    <p class="dashboard-subtitle">Fill in the details to list your property</p>
+                </div>
+            </div>
+
+            <!-- Add Property Form Card -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <div class="card-header">
+                    <h2 class="card-title">Property Details</h2>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">All fields are required</span>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div style="padding: 1rem; margin-bottom: 1.5rem; border-radius: 6px; background: {% if message.tags == 'success' %}#d4edda{% else %}#f8d7da{% endif %}; color: {% if message.tags == 'success' %}#155724{% else %}#721c24{% endif %}; border: 1px solid {% if message.tags == 'success' %}#c3e6cb{% else %}#f5c6cb{% endif %};">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" id="propertyForm">
+                        {% csrf_token %}
+                        
+                        <!-- Two Column Layout -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <!-- Left Column -->
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">🏷️ Property Title</label>
+                                    {{ form.title }}
+                                    {% if form.title.errors %}
+                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.title.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">🏙️ City</label>
+                                    {{ form.city }}
+                                    {% if form.city.errors %}
+                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.city.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">📍 Area / Locality</label>
+                                    {{ form.area }}
+                                    {% if form.area.errors %}
+                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.area.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">🏢 Property Type</label>
+                                    {{ form.property_type }}
+                                    {% if form.property_type.errors %}
+                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.property_type.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">📏 Size (sq ft)</label>
+                                    {{ form.size_sqft }}
+                                    {% if form.size_sqft.errors %}
+                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.size_sqft.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group" id="bedroomsContainer">
+                                    <label class="form-label">🛏️ Bedrooms</label>
+                                    {{ form.bedrooms }}
+                                    {% if form.bedrooms.errors %}
+                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.bedrooms.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Right Column -->
+                            <div>
+                                <div class="form-group" id="ageContainer">
+                                    <label class="form-label">📅 Age of Property (years)</label>
+                                    {{ form.age_of_property_years }}
+                                    {% if form.age_of_property_years.errors %}
+                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.age_of_property_years.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">🏫 Nearby Infrastructure Score (1-10)</label>
+                                    {{ form.nearby_infrastructure_score }}
+                                    <small style="color: var(--muted); font-size: 0.8rem; display: block; margin-top: 0.4rem;">Rate based on nearby schools, hospitals, malls, transport</small>
+                                    {% if form.nearby_infrastructure_score.errors %}
+                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.nearby_infrastructure_score.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">🗺️ Distance to City Center (km)</label>
+                                    {{ form.distance_to_city_center_km }}
+                                    {% if form.distance_to_city_center_km.errors %}
+                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.distance_to_city_center_km.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">📆 Year</label>
+                                    {{ form.year }}
+                                    <small style="color: var(--muted); font-size: 0.8rem; display: block; margin-top: 0.4rem;">Year of construction or listing</small>
+                                    {% if form.year.errors %}
+                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.year.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">💰 Price (₹)</label>
+                                    {{ form.price_inr }}
+                                    <small style="color: var(--muted); font-size: 0.8rem; display: block; margin-top: 0.4rem;">Minimum: ₹1,00,000</small>
+                                    {% if form.price_inr.errors %}
+                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.price_inr.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div style="display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #eee;">
+                            <a href="{% url 'listings:seller_dashboard' %}" class="btn" style="background: white; color: #666; border: 1px solid #ddd; padding: 0.75rem 2rem; border-radius: 6px; cursor: pointer; font-weight: 600; text-decoration: none;">
+                                ← Cancel
+                            </a>
+                            <button type="button" id="submitBtn" class="btn btn-primary" style="background: var(--primary); color: white; border: none; padding: 0.75rem 2rem; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                ✓ Add Property
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Info Section -->
+            <div class="stats-grid">
+                <div class="stat-card info">
+                    <div class="stat-header">
+                        <div class="stat-title">Quick Tips</div>
+                        <div class="stat-icon">💡</div>
+                    </div>
+                    <div style="font-size: 0.95rem; line-height: 1.6;">
+                        <p><strong>Title:</strong> Make it descriptive and attractive</p>
+                        <p><strong>Price:</strong> Should be realistic and competitive</p>
+                        <p><strong>Infrastructure Score:</strong> Rate how well-connected the area is</p>
+                    </div>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <div class="stat-title">Perfect Property Details</div>
+                        <div class="stat-icon">⭐</div>
+                    </div>
+                    <div style="font-size: 0.95rem; line-height: 1.6;">
+                        <p>✓ Clear and detailed title</p>
+                        <p>✓ All infrastructure info filled</p>
+                        <p>✓ Realistic price estimation</p>
+                    </div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <div class="stat-title">Availability</div>
+                        <div class="stat-icon">📅</div>
+                    </div>
+                    <div style="font-size: 0.95rem; line-height: 1.6;">
+                        <p>After adding, your property will be:</p>
+                        <p>✓ Visible on the platform</p>
+                        <p>✓ Available for buyers to find</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="messages" style="display:none;">
+        {% for message in messages %}
+        <div class="django-message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+
+    <script src="{% static 'js/ui.js' %}"></script>
+    <script>
+        // City-Area Mapping (synced with Price Prediction)
+        const cityAreaMapping = {
+            "Ahmedabad": ["Bopal", "Gota", "Maninagar"],
+            "Gandhinagar": ["Infocity"],
+            "Rajkot": ["Kalavad Road", "Mavdi", "Rajkot"],
+            "Surat": ["Adajan", "Surat", "Varachha", "Vesu"],
+            "Vadodara": ["Alkapuri", "Gotri", "Manjalpur"]
+        };
+
+        const citySelect = document.getElementById('id_city');
+        const areaSelect = document.getElementById('id_area');
+        const currentAreaValue = areaSelect ? areaSelect.value : '';
+
+        // Function to populate area dropdown
+        function populateAreaDropdown(selectedCity) {
+            if (!areaSelect) return;
+            
+            // Clear existing options
+            areaSelect.innerHTML = '';
+            
+            if (selectedCity && cityAreaMapping[selectedCity]) {
+                // Enable and populate dropdown
+                areaSelect.disabled = false;
+                
+                // Add default option
+                const defaultOpt = document.createElement('option');
+                defaultOpt.value = '';
+                defaultOpt.textContent = 'Select Locality';
+                areaSelect.appendChild(defaultOpt);
+                
+                // Add city-specific areas
+                cityAreaMapping[selectedCity].forEach(area => {
+                    const opt = document.createElement('option');
+                    opt.value = area;
+                    opt.textContent = area;
+                    areaSelect.appendChild(opt);
+                });
+                
+                // Restore previously selected area if it exists
+                if (currentAreaValue) {
+                    areaSelect.value = currentAreaValue;
+                }
+            } else {
+                // Disable if no city selected
+                areaSelect.disabled = true;
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = 'Select City First';
+                areaSelect.appendChild(opt);
+            }
+        }
+
+        if (citySelect && areaSelect) {
+            // On page load, if a city is already selected (e.g., after form validation error)
+            if (citySelect.value) {
+                populateAreaDropdown(citySelect.value);
+            }
+
+            // When city changes
+            citySelect.addEventListener('change', function() {
+                populateAreaDropdown(this.value);
+            });
+        }
+
+        // Toggle Fields for Plots (hide Bedrooms and Age when Plot is selected)
+        const propertyTypeSelect = document.getElementById('id_property_type');
+        const bedroomsContainer = document.getElementById('bedroomsContainer');
+        const ageContainer = document.getElementById('ageContainer');
+
+        if (propertyTypeSelect && bedroomsContainer && ageContainer) {
+            // Function to toggle and clear Plot fields
+            function handlePlotTypeToggle() {
+                if (propertyTypeSelect.value === 'Plot') {
+                    bedroomsContainer.style.display = 'none';
+                    ageContainer.style.display = 'none';
+                    // Clear values when hiding
+                    document.getElementById('id_bedrooms').value = '0';
+                    document.getElementById('id_age_of_property_years').value = '0';
+                } else {
+                    bedroomsContainer.style.display = 'block';
+                    ageContainer.style.display = 'block';
+                }
+            }
+            
+            // Check initial state on page load
+            handlePlotTypeToggle();
+
+            // Listen for property type changes
+            propertyTypeSelect.addEventListener('change', handlePlotTypeToggle);
+        }
+
+        // Form Submission with Validation
+        const submitBtn = document.getElementById('submitBtn');
+        const propertyForm = document.getElementById('propertyForm');
+
+        if (submitBtn) {
+            submitBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Get form fields
+                const titleField = document.getElementById('id_title');
+                const cityField = document.getElementById('id_city');
+                const areaField = document.getElementById('id_area');
+                const propertyTypeField = document.getElementById('id_property_type');
+                const sizeField = document.getElementById('id_size_sqft');
+                const bedroomsField = document.getElementById('id_bedrooms');
+                const ageField = document.getElementById('id_age_of_property_years');
+                const infrastructureField = document.getElementById('id_nearby_infrastructure_score');
+                const distanceField = document.getElementById('id_distance_to_city_center_km');
+                const yearField = document.getElementById('id_year');
+                const priceField = document.getElementById('id_price_inr');
+                
+                // Basic validation
+                let errors = [];
+                
+                if (!titleField.value.trim()) errors.push('✗ Property Title is required');
+                if (!cityField.value) errors.push('✗ City is required');
+                if (!areaField.value) errors.push('✗ Area/Locality is required');
+                if (!propertyTypeField.value) errors.push('✗ Property Type is required');
+                if (!sizeField.value) errors.push('✗ Size is required');
+                if (!infrastructureField.value) errors.push('✗ Infrastructure Score is required');
+                if (!distanceField.value) errors.push('✗ Distance to City Center is required');
+                if (!yearField.value) errors.push('✗ Year is required');
+                if (!priceField.value) errors.push('✗ Price is required');
+                
+                // For non-plot types, check bedrooms and age
+                if (propertyTypeField.value !== 'Plot') {
+                    if (!bedroomsField.value && bedroomsField.value !== '0') errors.push('✗ Bedrooms is required');
+                    if (!ageField.value && ageField.value !== '0') errors.push('✗ Age of Property is required');
+                }
+                
+                if (errors.length > 0) {
+                    alert('Please fill all required fields:\n\n' + errors.join('\n'));
+                    return;
+                }
+                
+                // If validation passes, submit the form
+                propertyForm.submit();
+            });
+        }
+    </script>
+</body>
+
+</html>

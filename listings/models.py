@@ -79,6 +79,21 @@ class Property(models.Model):
             return f"₹{p / 100000:.2f} L"
         else:
             return f"₹{p:,}"
+    
+    def get_bedrooms_display(self):
+        """Return formatted bedroom display string."""
+        if self.bedrooms == 0:
+            return "Studio/Plot"
+        elif self.bedrooms == 1:
+            return "1 BHK"
+        elif self.bedrooms == 2:
+            return "2 BHK"
+        elif self.bedrooms == 3:
+            return "3 BHK"
+        elif self.bedrooms == 4:
+            return "4 BHK"
+        else:
+            return f"{self.bedrooms} BHK"
 
 
 class PasswordResetOTP(models.Model):

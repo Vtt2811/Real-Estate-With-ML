@@ -3,13 +3,15 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 body {
   background-color: #f3f4f6;
   /* Dashboard Light Gray */
   color: #1f2937;
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1.5;
   min-height: 100vh;
   display: flex;
@@ -31,7 +33,7 @@ nav a {
   text-decoration: none;
   color: #e5e7eb;
   /* Light Gray text on Navy */
-  font-size: 0.95rem;
+  font-size: 1.2rem;
   font-weight: 500;
   transition: color 0.2s;
 }
@@ -52,7 +54,7 @@ nav a:hover {
   border: none;
   padding: 0.5rem 1.25rem;
   border-radius: 6px;
-  font-size: 0.9rem;
+  font-size: 1.15rem;
   cursor: pointer;
   font-weight: 600;
   color: #fff;
@@ -66,7 +68,7 @@ nav a:hover {
 /* MAIN CONTENT */
 .container {
   width: 100%;
-  max-width: 400px;
+  max-width: 480px;
   /* Slightly tighter width */
   margin: 80px auto;
   background: #fff;
@@ -78,7 +80,7 @@ nav a:hover {
 
 h2 {
   text-align: center;
-  font-size: 1.875rem;
+  font-size: 2.4rem;
   font-weight: 800;
   margin-bottom: 2rem;
   color: #111827;
@@ -91,7 +93,7 @@ form {
 }
 
 label {
-  font-size: 0.875rem;
+  font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
   color: #374151;
@@ -102,7 +104,7 @@ input {
   border: 1px solid #d1d5db;
   border-radius: 6px;
   margin-bottom: 1.25rem;
-  font-size: 0.95rem;
+  font-size: 1.2rem;
   transition: all 0.2s;
   background: #fff;
   width: 100%;
@@ -116,7 +118,7 @@ input:focus {
 }
 
 .forgot {
-  font-size: 0.875rem;
+  font-size: 1.1rem;
   color: #2563eb;
   text-decoration: none;
   margin-bottom: 1.5rem;
@@ -135,7 +137,7 @@ input:focus {
   color: #fff;
   border: none;
   padding: 0.75rem;
-  font-size: 1rem;
+  font-size: 1.3rem;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
@@ -149,7 +151,7 @@ input:focus {
 
 .bottom-text {
   text-align: center;
-  font-size: 0.875rem;
+  font-size: 1.1rem;
   color: #6b7280;
   margin-top: 1.5rem;
 }
@@ -167,7 +169,7 @@ input:focus {
 
 .errors {
   color: #b91c1c;
-  font-size: 0.875rem;
+  font-size: 1.1rem;
   margin-bottom: 1.5rem;
   padding: 0.75rem;
   background: #fef2f2;

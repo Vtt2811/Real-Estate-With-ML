@@ -40,6 +40,8 @@ urlpatterns = [
      path('buyer/dashboard/', views.buyer_dashboard, name='buyer_dashboard'),
      path('buyer/prediction/', views.price_prediction, name='price_prediction'),
      path('seller/dashboard/', views.seller_dashboard, name='seller_dashboard'),
+     path('seller/add-property/', views.add_property, name='add_property'),
+     path('seller/listings/', views.my_listings, name='my_listings'),
 
      # ML Prediction API
      path('api/predict-price/', views.predict_price, name='predict_price'),

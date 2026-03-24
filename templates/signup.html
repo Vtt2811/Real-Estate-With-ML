@@ -45,8 +45,13 @@
           <span class="label">Username</span>
           {{ form.username }}
           {% if form.username.errors %}
-          <span style="color: #e53e3e; font-size: 12px; display: block; margin-top: 4px;">{{ form.username.errors|first
-            }}</span>
+          <p style="color: #e53e3e; font-size: 16px; display: block; margin-top: 4px;">
+            {% if 'Username must contain both letters and numbers.' in form.username.errors %}
+              Username must contain both letters and numbers.
+            {% else %}
+              {{ form.username.errors|first }}
+            {% endif %}
+          </p>
           {% endif %}
         </label>
 
@@ -54,8 +59,7 @@
           <span class="label">Full name</span>
           {{ form.full_name }}
           {% if form.full_name.errors %}
-          <span style="color: #e53e3e; font-size: 12px; display: block; margin-top: 4px;">{{ form.full_name.errors|first
-            }}</span>
+          <p style="color: #e53e3e; font-size: 16px; display: block; margin-top: 4px;">{{ form.full_name.errors|first }}</p>
           {% endif %}
         </label>
 
@@ -63,8 +67,7 @@
           <span class="label">Email address</span>
           {{ form.email }}
           {% if form.email.errors %}
-          <span style="color: #e53e3e; font-size: 12px; display: block; margin-top: 4px;">{{ form.email.errors|first
-            }}</span>
+          <p style="color: #e53e3e; font-size: 16px; display: block; margin-top: 4px;">{{ form.email.errors|first }}</p>
           {% endif %}
         </label>
 
@@ -72,17 +75,23 @@
           <span class="label">Password</span>
           {{ form.password1 }}
           {% if form.password1.errors %}
-          <span style="color: #e53e3e; font-size: 12px; display: block; margin-top: 4px;">{{ form.password1.errors|first
-            }}</span>
+          <p style="color: #e53e3e; font-size: 16px; display: block; margin-top: 4px;">{{ form.password1.errors|first }}</p>
           {% endif %}
         </label>
+
+        <div style="font-size: 15px; color: #555; margin-bottom: 10px;">
+          <strong>Password tips:</strong>
+          <ul style="margin: 4px 0 0 18px; padding: 0;">
+            <li>Password must be at least 8 characters long.</li>
+            <li>Use a mix of letters, numbers, and symbols for a stronger password.</li>
+          </ul>
+        </div>
 
         <label for="id_password2">
           <span class="label">Confirm password</span>
           {{ form.password2 }}
           {% if form.password2.errors %}
-          <span style="color: #e53e3e; font-size: 12px; display: block; margin-top: 4px;">{{ form.password2.errors|first
-            }}</span>
+          <p style="color: #e53e3e; font-size: 16px; display: block; margin-top: 4px;">{{ form.password2.errors|first }}</p>
           {% endif %}
         </label>
 
@@ -90,7 +99,7 @@
           <span class="label">Role</span>
           {{ form.role }}
           {% if form.role.errors %}
-          <span style="color: #e53e3e; font-size: 12px; display: block; margin-top: 4px;">{{ form.role.errors|first
+          <span style="color: #e53e3e; font-size: 16px; display: block; margin-top: 4px;">{{ form.role.errors|first
             }}</span>
           {% endif %}
         </label>

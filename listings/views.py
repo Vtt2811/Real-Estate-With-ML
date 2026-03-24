@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
-from .forms import SignupForm, AdminEmailChangeForm
+from .forms import SignupForm, AdminEmailChangeForm, PropertyForm
 from django.contrib.auth.forms import AuthenticationForm
 from .models import Profile, PasswordResetOTP, Property
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -22,7 +22,8 @@ logger = logging.getLogger(__name__)
 
 
 def index(request):
-    return render(request, 'index.html')
+    featured_properties = Property.objects.filter(is_active=True).order_by('-created_at')[:6]
+    return render(request, 'index.html', {'featured_properties': featured_properties})
 
 
 def listing_details(request):
@@ -267,8 +268,50 @@ def buyer_dashboard(request):
 
 @login_required(login_url='listings:signin')
 def seller_dashboard(request):
-    """Seller dashboard with property management and buyer interests"""
-    return render(request, 'dashboards/seller_dashboard.html')
+    """Seller dashboard overview"""
+    # Get user's properties (My Listings)
+    user_properties = Property.objects.filter(seller=request.user, is_active=True).order_by('-created_at')
+    
+    context = {
+        'user_properties': user_properties,
+        'property_count': user_properties.count(),
+    }
+    return render(request, 'dashboards/seller_dashboard.html', context)
+
+
+@login_required(login_url='listings:signin')
+def add_property(request):
+    """Dedicated page for adding a new property"""
+    if request.method == 'POST':
+        form = PropertyForm(request.POST)
+        if form.is_valid():
+            # Create property with current user as seller
+            property_obj = form.save(commit=False)
+            property_obj.seller = request.user
+            property_obj.save()
+            messages.success(request, f'✓ Property "{property_obj.title}" added successfully! View it in My Listings.')
+            return redirect('listings:my_listings')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = PropertyForm()
+    
+    context = {
+        'form': form,
+    }
+    return render(request, 'dashboards/add_property.html', context)
+
+
+@login_required(login_url='listings:signin')
+def my_listings(request):
+    """Display all properties added by the seller (read-only)"""
+    user_properties = Property.objects.filter(seller=request.user, is_active=True).order_by('-created_at')
+    
+    context = {
+        'user_properties': user_properties,
+        'property_count': user_properties.count(),
+    }
+    return render(request, 'dashboards/my_listings.html', context)
 
 
 @login_required(login_url='listings:signin')
