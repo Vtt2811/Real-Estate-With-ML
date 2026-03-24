@@ -11,7 +11,7 @@ body {
   background-color: #f3f4f6;
   /* Dashboard Light Gray */
   color: #1f2937;
-  font-size: 20px;
+  font-size: clamp(14px, calc(10px + 0.8vw), 24px);
   line-height: 1.5;
   min-height: 100vh;
   display: flex;

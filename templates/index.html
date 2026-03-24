@@ -1,4 +1,4 @@
-﻿{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -55,23 +55,27 @@
   <section class="featured">
     <h2>Featured Listings</h2>
     <div class="listings">
+      {% for prop in featured_properties %}
       <a href="#" class="listing-card" data-listing-url="{% url 'listings:listing_details' %}">
+        {% if forloop.counter0|divisibleby:3 %}
         <img src="{% static 'images/Depth 5, Frame 0.png' %}" alt="Home" />
-        <h3>Stunning Modern Home</h3>
-        <p>4 Beds • 2 Baths • 2,039 sq ft</p>
-      </a>
-
-      <a href="#" class="listing-card" data-listing-url="{% url 'listings:listing_details' %}">
+        {% elif forloop.counter0|add:"-1"|divisibleby:3 %}
         <img src="{% static 'images/Depth 6 Frame 0.png' %}" alt="Home" />
-        <h3>Elegant Family Residence</h3>
-        <p>3 Beds • 2 Baths • 1,950 sq ft</p>
-      </a>
-
-      <a href="#" class="listing-card" data-listing-url="{% url 'listings:listing_details' %}">
+        {% else %}
         <img src="{% static 'images/hero sectione.png' %}" alt="Home" />
-        <h3>Luxury Estate with a View</h3>
-        <p>5 Beds • 4 Baths • 3,400 sq ft</p>
+        {% endif %}
+        <h3>
+          {% if prop.title %}
+            {{ prop.title }}
+          {% else %}
+            {{ prop.property_type }} in {{ prop.area }}
+          {% endif %}
+        </h3>
+        <p>{% if prop.bedrooms > 0 %}{{ prop.get_bedrooms_display }} • {% endif %}{{ prop.size_sqft|floatformat:0 }} sq ft • {{ prop.formatted_price }}</p>
       </a>
+      {% empty %}
+      <p style="grid-column: 1 / -1; text-align: center; color: var(--text-secondary); font-size: 1.3rem;">No properties available currently.</p>
+      {% endfor %}
     </div>
   </section>
 

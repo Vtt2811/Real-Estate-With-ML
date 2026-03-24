@@ -27,7 +27,7 @@
 body {
   background-color: var(--bg-body);
   color: var(--text-primary);
-  font-size: 20px;
+  font-size: clamp(14px, calc(10px + 0.8vw), 24px);
   line-height: 1.5;
   min-height: 100vh;
 }

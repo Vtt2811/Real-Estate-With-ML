@@ -28,6 +28,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  font-size: clamp(14px, calc(10px + 0.8vw), 24px);
 }
 
 /* Header */
