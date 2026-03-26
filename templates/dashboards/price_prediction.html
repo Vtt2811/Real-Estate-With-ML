@@ -6,11 +6,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Price Prediction — Home Finder</title>
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=6">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=9">
     <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=4">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <!-- Chart.js for visualizations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -19,24 +20,31 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="sidebar-logo">Real Estate ML</div>
-                <div class="sidebar-role">Buyer Dashboard</div>
+                <a href="{% url 'listings:index' %}" class="sidebar-logo" style="display: flex; align-items: center; gap: 0.8rem; text-decoration: none;">
+                    <img src="{% static 'images/homefinder_icon.png' %}" alt="HomeFinder Logo" style="height: 35px; width: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);" />
+                    <span style="font-size: 1.6rem; font-weight: 800; color: #1e293b; letter-spacing: -0.04em;">HomeFinder</span>
+                </a>
+                <div class="sidebar-role" style="font-weight: 800; text-transform: uppercase;">Buyer Dashboard</div>
             </div>
             <nav class="sidebar-nav">
                 <a href="{% url 'listings:buyer_dashboard' %}">
-                    <span class="nav-icon">🏠</span>
+                    <span class="nav-icon"><i data-lucide="home"></i></span>
                     <span>Browse Properties</span>
                 </a>
                 <a href="{% url 'listings:price_prediction' %}" class="active">
-                    <span class="nav-icon">📊</span>
+                    <span class="nav-icon"><i data-lucide="bar-chart-2"></i></span>
                     <span>Price Predictions</span>
                 </a>
+                <a href="{% url 'listings:messages' %}?view=buyer">
+                    <span class="nav-icon"><i data-lucide="message-square"></i></span>
+                    <span>Messages</span>
+                </a>
                 <a href="{% url 'listings:profile' %}">
-                    <span class="nav-icon">👤</span>
+                    <span class="nav-icon"><i data-lucide="user"></i></span>
                     <span>Profile</span>
                 </a>
                 <a href="{% url 'listings:signout' %}">
-                    <span class="nav-icon">🚪</span>
+                    <span class="nav-icon"><i data-lucide="log-out"></i></span>
                     <span>Sign Out</span>
                 </a>
             </nav>
@@ -47,21 +55,21 @@
 
 
             <!-- Price Prediction Section -->
-            <div id="predictionSection" class="card" style="margin-bottom: 2rem; border: 2px solid var(--accent-light);">
-                <div class="card-header" style="background: var(--accent-light); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-                    <h2 class="card-title" style="display: flex; align-items: center; gap: 10px;">
-                        <span style="background: white; padding: 6px 12px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); font-size: 1.55rem;">🤖 ⚡ 📊</span>
-                        Price Predictions
+            <div id="predictionSection" class="filter-section" style="margin-bottom: 2rem; padding: 3rem;">
+                <div class="filter-header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 1.5rem;">
+                    <h2 class="filter-title" style="display: flex; align-items: center; gap: 10px; font-size: 2rem;">
+                        <span style="background: rgba(255,255,255,0.8); padding: 8px 14px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); font-size: 1.8rem;"><i data-lucide="sparkles"></i></span>
+                        AI Price Prediction
                     </h2>
-                    <span class="badge badge-primary" style="background: linear-gradient(to right, #4361ee, #7209b7); border: none;">AI Model Online</span>
+                    <span class="badge badge-primary" style="background: linear-gradient(to right, var(--accent-purple), var(--accent-cyan)); border: none; font-size: 1.1rem; padding: 0.5rem 1rem;">Model Active</span>
                 </div>
-                <div class="card-body">
+                <div>
                     <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Enter the property details below to calculate the estimated market value using our trained Machine Learning pipeline. <br><small><i>Note: Current model is optimized for major Gujarat property hubs.</i></small></p>
                     
-                    <form id="predictionForm" class="filter-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                    <form id="predictionForm" class="filter-grid" autocomplete="off" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
                         {% csrf_token %}
                         <div class="form-group">
-                            <label class="form-label">1️⃣ City</label>
+                            <label class="form-label"><i data-lucide="building-2"></i> City</label>
                             <select id="predictCity" class="form-select" required>
                                 <option value="">Select City</option>
                                 <option value="Ahmedabad">Ahmedabad</option>
@@ -73,78 +81,78 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">2️⃣ Area / Locality</label>
+                            <label class="form-label"><i data-lucide="map-pin"></i> Area / Locality</label>
                             <select id="predictArea" class="form-select" required disabled>
                                 <option value="">Select City First</option>
                             </select>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">3️⃣ Property Type</label>
+                            <label class="form-label"><i data-lucide="home"></i> Property Type</label>
                             <select id="predictType" class="form-select" required style="border: 2px solid var(--accent-light);">
-                                <option value="Flat">🏢 Flat / Apartment</option>
-                                <option value="House">🏠 Independent House</option>
-                                <option value="Plot">🚜 Residential Plot</option>
+                                <option value="Flat"> Flat / Apartment</option>
+                                <option value="House"><i data-lucide="home"></i> Independent House</option>
+                                <option value="Plot"> Residential Plot</option>
                             </select>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">4️⃣ Size (sq ft)</label>
+                            <label class="form-label"><i data-lucide="maximize"></i> Size (sq ft)</label>
                             <input type="number" id="predictSize" class="form-input" placeholder="e.g., 1200" required>
                         </div>
 
                         <div id="bedroomsContainer" class="form-group">
-                            <label class="form-label">5️⃣ Bedrooms</label>
+                            <label class="form-label"><i data-lucide="bed-double"></i> Bedrooms</label>
                             <input type="number" id="predictBedrooms" class="form-input" placeholder="e.g., 2" min="0" required>
                         </div>
 
                         <div id="ageContainer" class="form-group">
-                            <label class="form-label">6️⃣ Age of Property (years)</label>
+                            <label class="form-label"><i data-lucide="calendar"></i> Age of Property (years)</label>
                             <input type="number" id="predictAge" class="form-input" placeholder="e.g., 5" min="0" required>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">7️⃣ Distance to Center (km)</label>
+                            <label class="form-label"><i data-lucide="milestone"></i> Distance to Center (km)</label>
                             <input type="number" id="predictDistance" class="form-input" placeholder="e.g., 8" step="0.1" required>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">8️⃣ Year (Target)</label>
+                            <label class="form-label"><i data-lucide="trending-up"></i> Year (Target)</label>
                             <input type="number" id="predictYear" class="form-input" placeholder="e.g., 2026" min="2020" required>
                         </div>
 
                         <div class="form-group" style="display: flex; align-items: flex-end;">
-                            <button type="button" class="btn btn-primary" style="width: 100%; height: 42px; background: linear-gradient(to right, #4361ee, #7209b7); border: none; font-weight: 700; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="getPrediction()">
+                            <button type="button" class="btn btn-primary" style="width: 100%; height: 50px; font-size: 1.3rem;" onclick="getPrediction()">
                                 Calculate Market Value
                             </button>
                         </div>
                     </form>
 
                     <!-- Prediction Result Display -->
-                    <div id="predictionResult" style="display: none; margin-top: 2.5rem; padding: 0; background: white; border-radius: 20px; overflow: hidden; border: 1px solid rgba(67, 97, 238, 0.15); box-shadow: 0 15px 35px rgba(0,0,0,0.05);">
-                        <div style="padding: 2.5rem; background: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%); color: white;">
-                             <div style="display: flex; justify-content: center; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem; opacity: 0.9;">
-                                <span style="font-size: 1.55rem;">✨</span>
-                                <h3 style="margin: 0; font-size: 1.1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;">Market Value Analysis</h3>
+                    <div id="predictionResult" style="display: none; margin-top: 3rem; padding: 0; background: rgba(255,255,255,0.6); backdrop-filter: blur(15px); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass-border); box-shadow: var(--shadow-lg);">
+                        <div style="padding: 3rem; background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-cyan) 100%); color: white; text-align: center;">
+                             <div style="display: flex; justify-content: center; align-items: center; gap: 0.8rem; margin-bottom: 1rem; opacity: 0.95;">
+                                <span style="font-size: 1.8rem;"><i data-lucide="bar-chart-2"></i></span>
+                                <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 3px;">Market Value Analysis</h3>
                              </div>
-                             <div id="predictedPriceValue" style="font-size: 4.5rem; font-weight: 800; text-shadow: 0 4px 10px rgba(0,0,0,0.15); margin-bottom: 0.5rem;">₹0</div>
-                             <p id="predictionMeta" style="margin: 0; font-size: 1.2rem; opacity: 0.85; background: rgba(255,255,255,0.1); display: inline-block; padding: 0.4rem 1.2rem; border-radius: 30px;"></p>
+                             <div id="predictedPriceValue" style="font-size: 5.5rem; font-weight: 900; text-shadow: 0 8px 20px rgba(0,0,0,0.2); margin-bottom: 1rem; letter-spacing: -0.04em;">₹0</div>
+                             <p id="predictionMeta" style="margin: 0; font-size: 1.3rem; font-weight: 500; background: rgba(0,0,0,0.15); display: inline-block; padding: 0.6rem 1.6rem; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2);"></p>
                         </div>
                         
-                        <div style="padding: 2rem; background: #fafbff;">
+                        <div style="padding: 2.5rem; background: rgba(255,255,255,0.4);">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                                <h4 style="margin: 0; font-size: 1.3rem; color: #1e293b; font-weight: 700;">Price appreciation Trend</h4>
-                                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #4361ee;"></span>
-                                    <span style="font-size: 1.04rem; color: var(--text-secondary); font-weight: 500;">Projected Growth</span>
+                                <h4 style="margin: 0; font-size: 1.5rem; color: var(--primary); font-weight: 800;">Price Appreciation Trend</h4>
+                                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                                    <span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan);"></span>
+                                    <span style="font-size: 1.15rem; color: var(--text-secondary); font-weight: 600;">Projected Growth</span>
                                 </div>
                             </div>
-                            <div style="position: relative; height: 450px; padding: 1rem; background: white; border-radius: 12px; border: 1px solid rgba(0,0,0,0.03);">
+                            <div style="position: relative; height: 350px; padding: 1.5rem; background: rgba(255,255,255,0.7); backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid var(--glass-border); box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);">
                                 <canvas id="predictionChart"></canvas>
                             </div>
                             <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center;">
                                 <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 1.04rem; color: var(--muted);">
-                                    <span>💡</span>
+                                    <span><i data-lucide="lightbulb"></i></span>
                                     <span>Predicted based on 25,000+ local regional data points</span>
                                 </div>
                             </div>
@@ -313,12 +321,12 @@
                     
                     // Create Gradients
                     const gradientStroke = ctx.createLinearGradient(0, 0, 0, 400);
-                    gradientStroke.addColorStop(0, 'rgba(67, 97, 238, 1)');
-                    gradientStroke.addColorStop(1, 'rgba(67, 97, 238, 0.4)');
+                    gradientStroke.addColorStop(0, 'rgba(6, 182, 212, 1)'); // Cyan
+                    gradientStroke.addColorStop(1, 'rgba(139, 92, 246, 1)'); // Purple
 
                     const gradientFill = ctx.createLinearGradient(0, 0, 0, 400);
-                    gradientFill.addColorStop(0, 'rgba(67, 97, 238, 0.2)');
-                    gradientFill.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                    gradientFill.addColorStop(0, 'rgba(6, 182, 212, 0.3)');
+                    gradientFill.addColorStop(1, 'rgba(139, 92, 246, 0)');
 
                     if (predictionChart) {
                         predictionChart.destroy();
@@ -331,14 +339,14 @@
                             datasets: [{
                                 label: 'Property Value',
                                 data: prices,
-                                borderColor: '#4361ee',
-                                borderWidth: 4,
+                                borderColor: gradientStroke,
+                                borderWidth: 5,
                                 pointBackgroundColor: '#ffffff',
-                                pointBorderColor: '#4361ee',
-                                pointBorderWidth: 2,
-                                pointRadius: labels.map(y => y === year ? 8 : 4),
+                                pointBorderColor: '#06b6d4',
+                                pointBorderWidth: 3,
+                                pointRadius: labels.map(y => y === year ? 8 : 0),
                                 pointHoverRadius: 10,
-                                pointHoverBackgroundColor: '#4361ee',
+                                pointHoverBackgroundColor: '#06b6d4',
                                 pointHoverBorderColor: '#ffffff',
                                 fill: true,
                                 backgroundColor: gradientFill,
@@ -439,6 +447,20 @@
             animation: float 4s ease-in-out infinite;
         }
     </style>
+    <script>
+        // Force reset form on load to prevent browser caching old values
+        window.addEventListener('load', function() {
+            const predictionForm = document.getElementById('predictionForm');
+            if (predictionForm) {
+                predictionForm.reset();
+                // If there's any dynamic toggle logic for hide/show, trigger it here
+                if (typeof handleTypeToggle === 'function') {
+                    handleTypeToggle();
+                }
+            }
+        });
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>

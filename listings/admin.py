@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Profile, PasswordResetOTP, Property
+from .models import Profile, PasswordResetOTP, Property, BugReport
 
 
 @admin.register(Profile)
@@ -22,3 +22,11 @@ class PropertyAdmin(admin.ModelAdmin):
     list_filter = ('city', 'property_type', 'bedrooms', 'is_active', 'year')
     search_fields = ('title', 'area', 'city')
     list_per_page = 50
+
+
+@admin.register(BugReport)
+class BugReportAdmin(admin.ModelAdmin):
+    list_display = ('subject', 'user', 'status', 'created_at', 'resolved_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('subject', 'description', 'user__username')
+    readonly_fields = ('created_at',)

@@ -12,10 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* listing-details.css specific overrides to match theme */
-        body {
-            background-color: #f3f4f6;
-            color: #1f2937;
-        }
+        /* Body inherits gradient from index.css */
 
         .property-details-container {
             max-width: 1200px;
@@ -26,12 +23,13 @@
 
         /* Property Header */
         .property-header {
-            background: white;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
             padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             margin-bottom: 2rem;
-            border: 1px solid #e5e7eb;
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
         .property-header-top {
@@ -79,12 +77,13 @@
 
         /* Image Gallery */
         .image-gallery {
-            background: white;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
             padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             margin-bottom: 2rem;
-            border: 1px solid #e5e7eb;
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
         .gallery-grid {
@@ -130,12 +129,13 @@
 
         /* Property Overview */
         .property-overview {
-            background: white;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
             padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             margin-bottom: 2rem;
-            border: 1px solid #e5e7eb;
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
         .section-title {
@@ -194,12 +194,13 @@
 
         /* Property Description */
         .property-description {
-            background: white;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
             padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             margin-bottom: 2rem;
-            border: 1px solid #e5e7eb;
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
         .description-text {
@@ -225,18 +226,19 @@
         }
 
         .feature-item::before {
-            content: "✓";
+            content: "";
             color: #059669;
             font-weight: 700;
         }
 
         /* Buyer Action Panel */
         .buyer-action-panel {
-            background: white;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
             padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.8);
             position: sticky;
             top: 2rem;
         }
@@ -304,16 +306,19 @@
             }
         }
     </style>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
     <!-- Navbar (Matches Dashboard/Landing Theme) -->
-    <header class="navbar" style="background: #1f2937; padding: 1rem 2rem;">
-        <div class="logo" style="color: white; font-weight: 800; font-size: 1.8rem;">Real Estate ML</div>
+    <header class="navbar" style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(25px); border-bottom: 1px solid rgba(255,255,255,0.4); padding: 1rem 2rem; position: sticky; top: 0; z-index: 100;">
+        <a href="{% url 'listings:index' %}" class="logo" style="display: flex; align-items: center; gap: 0.8rem; text-decoration: none;">
+            <img src="{% static 'images/homefinder_icon.png' %}" alt="HomeFinder Logo" style="height: 35px; width: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);" />
+            <span style="font-size: 1.6rem; font-weight: 900; color: #1e293b; letter-spacing: -0.04em;">HomeFinder</span>
+        </a>
         <nav style="margin-left: auto;">
-            <a href="{% url 'listings:buyer_dashboard' %}"
-                style="color: #d1d5db; text-decoration: none; margin-left: 1.5rem; font-weight: 500;">Back to
-                Dashboard</a>
+            <a href="javascript:history.back()"
+                style="color: #475569; background: rgba(255,255,255,0.7); padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 700; text-decoration: none; border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: all 0.2s;">Back to Dashboard</a>
         </nav>
     </header>
 
@@ -324,7 +329,7 @@
                 <div>
                     <h1 class="property-title">Stunning Modern Home</h1>
                     <p class="property-location">
-                        <span>📍</span>
+                        <span><i data-lucide="map-pin"></i></span>
                         <span>Sindhu Bhavan Road, Ahmedabad</span>
                     </p>
                 </div>
@@ -357,28 +362,28 @@
                     <h2 class="section-title">Property Overview</h2>
                     <div class="overview-grid">
                         <div class="overview-item">
-                            <div class="overview-icon">🛏️</div>
+                            <div class="overview-icon"><i data-lucide="bed-double"></i></div>
                             <div class="overview-content">
                                 <h4>Bedrooms</h4>
                                 <p>4 Beds</p>
                             </div>
                         </div>
                         <div class="overview-item">
-                            <div class="overview-icon">🚿</div>
+                            <div class="overview-icon"><i data-lucide="shower-head"></i></div>
                             <div class="overview-content">
                                 <h4>Bathrooms</h4>
                                 <p>2 Baths</p>
                             </div>
                         </div>
                         <div class="overview-item">
-                            <div class="overview-icon">📏</div>
+                            <div class="overview-icon"><i data-lucide="navigation"></i></div>
                             <div class="overview-content">
                                 <h4>Area</h4>
                                 <p>2,039 sq ft</p>
                             </div>
                         </div>
                         <div class="overview-item">
-                            <div class="overview-icon">🏠</div>
+                            <div class="overview-icon"><i data-lucide="home"></i></div>
                             <div class="overview-content">
                                 <h4>Property Type</h4>
                                 <p>Apartment</p>
@@ -422,11 +427,11 @@
                         in this property?</h3>
 
                     <button class="action-button">
-                        <span>❤️</span> Show Interest
+                        <span><i data-lucide="heart"></i></span> Show Interest
                     </button>
 
                     <button class="action-button" style="background: white; color: #2563eb; border: 1px solid #2563eb;">
-                        <span>📅</span> Schedule Viewing
+                        <span><i data-lucide="calendar"></i></span> Schedule Viewing
                     </button>
 
                     <div
@@ -471,6 +476,9 @@
         document.querySelector('.action-button').addEventListener('click', function () {
             alert('Interest registered! Our admin team will verify your request and contact you shortly.');
         });
+    </script>
+    <script>
+        lucide.createIcons();
     </script>
 </body>
 

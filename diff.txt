@@ -1,0 +1,13 @@
+﻿diff --git a/static/css/dashboard.css b/static/css/dashboard.css
+index aaff98d..553bb6d 100644
+--- a/static/css/dashboard.css
++++ b/static/css/dashboard.css
+@@ -43,7 +43,7 @@
+ body {
+   background-color: var(--bg-body);
+   color: var(--text-primary);
+-  font-size: 20px;
++  font-size: clamp(14px, calc(10px + 0.8vw), 24px);
+   line-height: 1.6;
+   min-height: 100vh;
+ }

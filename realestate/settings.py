@@ -138,4 +138,8 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 
 # When CSRF fails, use a custom view which will help debugging in development.
 CSRF_FAILURE_VIEW = 'listings.views.csrf_failure'
+
+# Session Cookie management: expire on browser close
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 3600 # 1 hour fallback
 # Trigger reload for template cache clear

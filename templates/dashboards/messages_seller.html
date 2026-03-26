@@ -1,0 +1,375 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages — Home Finder</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=11">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=5">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .messages-container {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            height: calc(100vh - 100px);
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #eef2f6;
+        }
+
+        .chat-sidebar {
+            border-right: 1px solid #eef2f6;
+            display: flex;
+            flex-direction: column;
+            background: #fcfdfe;
+        }
+
+        .chat-sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eef2f6;
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid #f8fafc;
+        }
+
+        .chat-item:hover {
+            background: #f1f5f9;
+        }
+
+        .chat-item.active {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .chat-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-name {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-preview {
+            font-size: 0.85rem;
+            color: #64748b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .unread-badge {
+            background: #ef4444;
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 10px;
+            font-weight: 800;
+        }
+
+        /* Main Chat Window */
+        .chat-window {
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .chat-header {
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid #eef2f6;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            background: #f8fafc;
+        }
+
+        .message-bubble {
+            max-width: 85%;
+            padding: 1.25rem 1.5rem;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        .message-bubble.me {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-bubble.other {
+            align-self: flex-start;
+            background: white;
+            color: #1e293b;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #eef2f6;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            margin-top: 0.4rem;
+            opacity: 0.7;
+            display: block;
+            text-align: right;
+        }
+
+        .chat-input-area {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid #eef2f6;
+            display: flex;
+            gap: 1rem;
+            background: white;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 1rem 1.4rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.2s;
+            font-size: 1.1rem;
+        }
+
+        #messageInput:focus {
+            border-color: var(--primary);
+        }
+
+        #sendBtn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+        }
+
+        #sendBtn:hover {
+            opacity: 0.9;
+        }
+
+        .no-chat-selected {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            background: #fcfdfe;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="{% url 'listings:index' %}" class="sidebar-logo" style="display: flex; align-items: center; gap: 0.8rem; text-decoration: none;">
+                    <img src="{% static 'images/homefinder_icon.png' %}" alt="HomeFinder Logo" style="height: 35px; width: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);" />
+                    <span style="font-size: 1.6rem; font-weight: 800; color: #1e293b; letter-spacing: -0.04em;">HomeFinder</span>
+                </a>
+                <div class="sidebar-role" style="font-weight: 800; text-transform: uppercase;">Seller Dashboard</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{% url 'listings:seller_dashboard' %}">
+                    <span class="nav-icon"><i data-lucide="bar-chart-2"></i></span>
+                    <span>Overview</span>
+                </a>
+                <a href="{% url 'listings:add_property' %}">
+                    <span class="nav-icon"><i data-lucide="plus-circle"></i></span>
+                    <span>Add Property</span>
+                </a>
+                <a href="{% url 'listings:my_listings' %}">
+                    <span class="nav-icon"><i data-lucide="building"></i></span>
+                    <span>My Listings</span>
+                </a>
+                <a href="#" class="active">
+                    <span class="nav-icon"><i data-lucide="message-square"></i></span>
+                    <span>Messages</span>
+                </a>
+                <a href="{% url 'listings:profile' %}">
+                    <span class="nav-icon"><i data-lucide="user"></i></span>
+                    <span>Profile</span>
+                </a>
+                <a href="{% url 'listings:signout' %}">
+                    <span class="nav-icon"><i data-lucide="log-out"></i></span>
+                    <span>Sign Out</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Messages</h1>
+            </div>
+
+            <div class="messages-container">
+                <!-- Chat Sidebar -->
+                <div class="chat-sidebar">
+                    <div class="chat-sidebar-header">
+                        <div style="font-weight: 800; font-size: 1.1rem; color: #1e293b;">Conversations</div>
+                    </div>
+                    <div class="chat-list">
+                        {% for chat in chat_list %}
+                        <div class="chat-item" onclick="loadChat({{ chat.user.id }}, '{{ chat.user.username }}')">
+                            <div class="user-avatar">{{ chat.user.username|slice:":1"|upper }}</div>
+                            <div class="chat-info">
+                                <div class="chat-name">
+                                    {{ chat.user.username|title }}
+                                    {% if chat.unread_count > 0 %}<span class="unread-badge">{{ chat.unread_count }}</span>{% endif %}
+                                </div>
+                                <div class="chat-preview">{{ chat.last_message.content|default:"No messages yet" }}</div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div style="padding: 2rem; text-align: center; color: #64748b; font-size: 0.9rem;">
+                            No active conversations yet.
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Chat Window -->
+                <div class="chat-window" id="chatWindow">
+                    <div class="no-chat-selected" id="noChatSelected">
+                        <i data-lucide="messages-square" style="width: 64px; height: 64px; margin-bottom: 1.5rem; opacity: 0.2;"></i>
+                        <h3>Select a conversation to start chatting</h3>
+                    </div>
+                    
+                    <!-- Active Chat (Hidden by default) -->
+                    <div id="activeChat" style="display: none; height: 100%; flex-direction: column;">
+                        <div class="chat-header">
+                            <div class="user-avatar" style="width: 40px; height: 40px; font-size: 0.9rem;" id="activeUserAvatar"></div>
+                            <h3 style="margin: 0; font-size: 1.15rem;" id="activeUserName"></h3>
+                        </div>
+                        <div class="chat-messages" id="messageDisplay">
+                            <!-- Messages will load here -->
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="messageInput" placeholder="Type your message here..." onkeypress="if(event.key==='Enter') sendMessage()">
+                            <button id="sendBtn" onclick="sendMessage()"><i data-lucide="send"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentReceiverId = null;
+
+        function loadChat(userId, userName) {
+            currentReceiverId = userId;
+            document.getElementById('noChatSelected').style.display = 'none';
+            document.getElementById('activeChat').style.display = 'flex';
+            document.getElementById('activeUserName').textContent = userName.charAt(0).toUpperCase() + userName.slice(1);
+            document.getElementById('activeUserAvatar').textContent = userName.charAt(0).toUpperCase();
+
+            // Clear active state and set for current
+            document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
+            // Note: In a real app we'd target by data-id, but keeping it simple
+            
+            fetchMessages(userId);
+        }
+
+        function fetchMessages(userId) {
+            fetch(`/api/messages/fetch/${userId}/`)
+                .then(res => res.json())
+                .then(data => {
+                    const display = document.getElementById('messageDisplay');
+                    display.innerHTML = '';
+                    data.messages.forEach(msg => {
+                        const div = document.createElement('div');
+                        div.className = `message-bubble ${msg.is_me ? 'me' : 'other'}`;
+                        div.innerHTML = `${msg.content} <span class="message-time">${msg.timestamp}</span>`;
+                        display.appendChild(div);
+                    });
+                    display.scrollTop = display.scrollHeight;
+                });
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const content = input.value.trim();
+            if (!content || !currentReceiverId) return;
+
+            fetch('/api/messages/send/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    receiver_id: currentReceiverId,
+                    content: content
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    input.value = '';
+                    fetchMessages(currentReceiverId);
+                }
+            });
+        }
+
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

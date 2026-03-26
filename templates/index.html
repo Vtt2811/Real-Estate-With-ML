@@ -5,16 +5,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HomeFinder</title>
-  <link rel="stylesheet" href="{% static 'css/index.css' %}?v=2" />
-  <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=2" />
+  <title>HomeFinder - Ultra Premium Real Estate</title>
+  <link rel="stylesheet" href="{% static 'css/index.css' %}?v=5" />
+  <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=4" />
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
 
-  <!-- Navbar -->
-  <header class="navbar">
-    <div class="logo">Home Finder</div>
+  <!-- Ultra Frosted Navbar -->
+  <header class="navbar" id="navbar">
+    <a href="#" class="logo" style="display: flex; align-items: center; gap: 1rem; text-decoration: none;">
+      <img src="{% static 'images/homefinder_icon.png' %}" alt="HomeFinder Icon" style="height: 55px; width: auto; object-fit: contain; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);" />
+      <span>HomeFinder</span>
+    </a>
 
     <button class="hamburger" aria-label="Toggle navigation">
       <span></span>
@@ -23,18 +27,13 @@
     </button>
 
     <div class="nav-links">
-      <nav>
-        <!-- Navigation links removed as per request -->
-      </nav>
-
-      <div class="search-section">
-        {% if user.is_authenticated %}
-        <a href="{% url 'listings:profile' %}" class="profile-icon" title="Profile">{{ user.username|slice:":2"|upper
-          }}</a>
-        {% else %}
-        <a href="{% url 'listings:signin' %}" class="sign-in">Sign In</a>
-        {% endif %}
-      </div>
+      {% if user.is_authenticated %}
+      <a href="{% url 'listings:profile' %}" class="btn-gradient" style="padding: 0.5rem 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+        <span><i data-lucide="user"></i></span> {{ user.username|title }}
+      </a>
+      {% else %}
+      <a href="{% url 'listings:signin' %}" class="btn-gradient">Sign In / Register</a>
+      {% endif %}
     </div>
   </header>
 
@@ -44,66 +43,129 @@
     {% endfor %}
   </div>
 
-  <!-- Hero Section -->
+  <!-- Animated Hero Section -->
   <section class="hero">
-    <div class="hero-content">
-      <h1>Find your place with <span>HomeFinder</span></h1>
+    <!-- Floating background shapes -->
+    <div class="hero-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+    </div>
+
+    <div class="hero-container">
+      <div class="hero-text reveal">
+        <div class="hero-badge">🚀 The Future of Real Estate</div>
+        <h1>Find your dream place with <br><span class="text-gradient">HomeFinder AI</span></h1>
+        <p class="hero-subtitle">Discover ultra-premium properties across India with the unparalleled power of ML price prediction. We bring transparency and accuracy to your luxury home search.</p>
+        
+        <div class="hero-actions" style="display: flex; gap: 1.5rem; margin-top: 1rem;">
+          <a href="{% url 'listings:signin' %}" class="btn-gradient" style="padding: 0.8rem 2.2rem; display: inline-block; text-align: center;">Start Searching</a>
+          <a href="#cities" class="btn-gradient" style="padding: 0.8rem 2.2rem; display: inline-block; background: rgba(255,255,255,0.8); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; backdrop-filter: blur(10px);">Explore Cities</a>
+        </div>
+      </div>
+
+      <div class="hero-visual reveal" style="transition-delay: 0.2s;">
+        <div class="glass-card main-glass">
+            <img src="{% static 'images/homefinder_premium_logo.png' %}" alt="HomeFinder Premium Logo" class="hero-image"/>
+            <div class="glass-floater top-right">
+                <span class="emoji">📈</span>
+                <span class="text">AI Price Prediction</span>
+            </div>
+            <div class="glass-floater bottom-left">
+                <span class="emoji"><i data-lucide="sparkles"></i></span>
+                <span class="text">Verified Premium</span>
+            </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Featured Listings -->
   <section class="featured">
-    <h2>Featured Listings</h2>
+    <div class="section-header reveal">
+      <h2>Featured Premium Listings</h2>
+      <p>Handpicked luxury properties matching your unparalleled standards.</p>
+    </div>
+    
     <div class="listings">
       {% for prop in featured_properties %}
-      <a href="#" class="listing-card" data-listing-url="{% url 'listings:listing_details' %}">
-        {% if forloop.counter0|divisibleby:3 %}
-        <img src="{% static 'images/Depth 5, Frame 0.png' %}" alt="Home" />
-        {% elif forloop.counter0|add:"-1"|divisibleby:3 %}
-        <img src="{% static 'images/Depth 6 Frame 0.png' %}" alt="Home" />
-        {% else %}
-        <img src="{% static 'images/hero sectione.png' %}" alt="Home" />
-        {% endif %}
-        <h3>
-          {% if prop.title %}
-            {{ prop.title }}
+      <a href="#" class="listing-card reveal" style="transition-delay: {{ forloop.counter0|add:1|add:0 }}00ms;" data-listing-url="{% url 'listings:listing_details' %}">
+        <div class="listing-img-wrapper">
+          <div class="listing-badge">Prime Edition</div>
+          {% if forloop.counter0|divisibleby:3 %}
+          <img src="{% static 'images/Depth 5, Frame 0.png' %}" alt="Home" />
+          {% elif forloop.counter0|add:"-1"|divisibleby:3 %}
+          <img src="{% static 'images/Depth 6 Frame 0.png' %}" alt="Home" />
           {% else %}
-            {{ prop.property_type }} in {{ prop.area }}
+          <img src="{% static 'images/hero sectione.png' %}" alt="Home" />
           {% endif %}
-        </h3>
-        <p>{% if prop.bedrooms > 0 %}{{ prop.get_bedrooms_display }} • {% endif %}{{ prop.size_sqft|floatformat:0 }} sq ft • {{ prop.formatted_price }}</p>
+        </div>
+        <div class="listing-info">
+          <h3>
+            {% if prop.title %}
+              {{ prop.title }}
+            {% else %}
+              {{ prop.property_type }} in {{ prop.area }}
+            {% endif %}
+          </h3>
+          <div class="listing-meta">
+            <span>{% if prop.bedrooms > 0 %}<i data-lucide="bed-double"></i> {{ prop.get_bedrooms_display }}{% else %}🏢 Plot {% endif %}</span>
+            <span><i data-lucide="ruler"></i> {{ prop.size_sqft|floatformat:0 }} sq ft</span>
+          </div>
+          <div class="listing-bottom">
+            <span class="view-btn">View Details ➔</span>
+            <span class="listing-price">{{ prop.formatted_price }}</span>
+          </div>
+        </div>
       </a>
       {% empty %}
-      <p style="grid-column: 1 / -1; text-align: center; color: var(--text-secondary); font-size: 1.3rem;">No properties available currently.</p>
+      <p style="grid-column: 1 / -1; text-align: center; color: var(--text-secondary); font-size: 1.3rem;">No premium properties available currently.</p>
       {% endfor %}
     </div>
   </section>
 
   <!-- Explore by City -->
-  <section class="cities">
-    <h2>Explore by City</h2>
-    <div class="city-grid">
-      <div class="city-card">
+  <section class="cities" id="cities">
+    <div class="section-header reveal">
+      <h2>Explore Prestige Hubs</h2>
+      <p>Find extraordinary options in India's fastest growing tech and business capitals.</p>
+    </div>
+    
+    <div class="city-gallery">
+      <div class="city-card reveal" style="transition-delay: 100ms;">
         <img src="{% static 'images/ahemdabad.png' %}" alt="Ahmedabad">
-        <p>Ahmedabad</p>
+        <div class="city-overlay">
+            <h3>Ahmedabad</h3>
+            <span>Explore Options ➔</span>
+        </div>
       </div>
-      <div class="city-card">
+      <div class="city-card reveal" style="transition-delay: 200ms;">
         <img src="{% static 'images/mumbai.png' %}" alt="Rajkot">
-        <p>Rajkot</p>
+        <div class="city-overlay">
+            <h3>Rajkot</h3>
+            <span>Explore Options ➔</span>
+        </div>
       </div>
-      <div class="city-card">
+      <div class="city-card reveal" style="transition-delay: 300ms;">
         <img src="{% static 'images/bangalore.png' %}" alt="Vadodara">
-        <p>Vadodara</p>
+        <div class="city-overlay">
+            <h3>Vadodara</h3>
+            <span>Explore Options ➔</span>
+        </div>
       </div>
-      <div class="city-card">
+      <div class="city-card reveal" style="transition-delay: 400ms;">
         <img src="{% static 'images/chennai.png' %}" alt="Surat">
-        <p>Surat</p>
+        <div class="city-overlay">
+            <h3>Surat</h3>
+            <span>Explore Options ➔</span>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer>
+  <footer class="reveal">
     <h3>Ready to find your dream property?</h3>
     <div class="footer-links">
       <a href="#">About Us</a>
@@ -111,57 +173,51 @@
       <a href="#">Privacy Policy</a>
       <a href="#">Terms of Service</a>
     </div>
-    <p>Home Finder</p>
+    <p>© 2026 HomeFinder Premium. All rights reserved.</p>
   </footer>
 
   <script src="{% static 'js/ui.js' %}"></script>
   <script>
-    // Frontend-only authentication and redirection logic
     document.addEventListener('DOMContentLoaded', function () {
       const isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
 
-      console.log('Page loaded. User authenticated:', isAuthenticated);
-
-      // Only auto-redirect if user is authenticated
+      // Redirect logic for authenticated users (Sync with database to allow role switches)
       if (isAuthenticated) {
-        const userRole = localStorage.getItem('userRole');
-
-        // Redirect to appropriate dashboard based on role
-        if (userRole === 'buyer') {
-          console.log('Authenticated buyer detected, redirecting to Buyer Dashboard...');
-          window.location.href = "{% url 'listings:buyer_dashboard' %}";
-        } else if (userRole === 'seller') {
-          console.log('Authenticated seller detected, redirecting to Seller Dashboard...');
-          window.location.href = "{% url 'listings:seller_dashboard' %}";
+        // We use the actual role from the backend
+        const actualRole = "{% if user.profile %}{{ user.profile.role }}{% else %}admin{% endif %}";
+        sessionStorage.setItem('userRole', actualRole);
+        
+        // Only auto-redirect if this tab was already verified 
+        // OR just let them stay on the home page.
+        // For now, let's keep it consistent by checking if they just arrived.
+        if (sessionStorage.getItem('tab_verified') === 'true') {
+           if (actualRole === 'buyer' && window.location.hash !== '#home') {
+             window.location.href = "{% url 'listings:buyer_dashboard' %}";
+           } else if (actualRole === 'seller' && window.location.hash !== '#home') {
+             window.location.href = "{% url 'listings:seller_dashboard' %}";
+           } else if (actualRole === 'admin' && window.location.hash !== '#home') {
+             window.location.href = "{% url 'listings:admin_dashboard' %}";
+           }
         }
-        // If no role or unknown role, stay on index page
       }
 
-      // Add click protection to Featured Listings
+      // Feature Listing lock
       const listingCards = document.querySelectorAll('.listing-card');
-      console.log('Found', listingCards.length, 'listing cards');
-
       listingCards.forEach(function (card) {
         card.addEventListener('click', function (e) {
-          e.preventDefault(); // Prevent default link behavior
-          console.log('Card clicked!');
-
+          e.preventDefault(); 
           const listingUrl = this.getAttribute('data-listing-url');
 
           if (!isAuthenticated) {
-            // User is not logged in - redirect to login page
-            console.log('User not authenticated. Redirecting to login...');
-            alert('Please login to view property details');
+            alert('Please login to view premium property details.');
             window.location.href = "{% url 'listings:signin' %}";
           } else {
-            // User is logged in - allow access to listing details
-            console.log('User authenticated. Navigating to listing details...');
             window.location.href = listingUrl;
           }
         });
       });
 
-      // Mobile Menu Toggle
+      // Mobile Menu
       const hamburger = document.querySelector('.hamburger');
       const navLinks = document.querySelector('.nav-links');
 
@@ -169,10 +225,57 @@
         hamburger.addEventListener('click', function () {
           this.classList.toggle('active');
           navLinks.classList.toggle('active');
+          const spans = this.querySelectorAll('span');
+          if (this.classList.contains('active')) {
+            spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+            spans[1].style.opacity = '0';
+            spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
+          } else {
+            spans[0].style.transform = 'none';
+            spans[1].style.opacity = '1';
+            spans[2].style.transform = 'none';
+          }
         });
       }
+
+      // Scroll Reveal Animation Logic
+      const revealElements = document.querySelectorAll('.reveal');
+      
+      const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px"
+      });
+
+      revealElements.forEach(el => revealObserver.observe(el));
+
+      // Navbar scroll effect
+      const navbar = document.getElementById('navbar');
+      window.addEventListener('scroll', () => {
+        if(window.scrollY > 50) navbar.classList.add('scrolled');
+        else navbar.classList.remove('scrolled');
+      });
+      
+      // Trigger initial reveals just in case they're above fold
+      setTimeout(() => {
+        revealElements.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            if(rect.top < window.innerHeight) {
+                el.classList.add('active');
+            }
+        });
+      }, 100);
     });
   </script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>

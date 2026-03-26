@@ -41,12 +41,24 @@ urlpatterns = [
      path('buyer/prediction/', views.price_prediction, name='price_prediction'),
      path('seller/dashboard/', views.seller_dashboard, name='seller_dashboard'),
      path('seller/add-property/', views.add_property, name='add_property'),
+     path('seller/edit-property/<int:pk>/', views.edit_property, name='edit_property'),
+     path('seller/delete-property/<int:pk>/', views.delete_property, name='delete_property'),
      path('seller/listings/', views.my_listings, name='my_listings'),
+     path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
 
-     # ML Prediction API
+     # API Endpoints
      path('api/predict-price/', views.predict_price, name='predict_price'),
-
+     path('api/property-details/<int:pk>/', views.property_details_api, name='property_details_api'),
+     path('api/toggle-interest/<int:pk>/', views.toggle_interest, name='toggle_interest'),
+     path('api/report-bug/', views.report_bug, name='report_bug'),
+     path('api/resolve-bug/<int:bug_id>/', views.resolve_bug, name='resolve_bug'),
+     path('api/resolve-all-bugs/', views.resolve_all_bugs, name='resolve_all_bugs'),
      
-     # Redirect /dashboard/ to /dashboards/ for convenience
+     # Messaging API
+     path('api/messages/fetch/<int:receiver_id>/', views.fetch_messages, name='fetch_messages'),
+     path('api/messages/send/', views.send_message, name='send_message'),
+     path('messages/', views.messages_view, name='messages'),
+
+     # Redirects
      path('dashboard/', views.dashboard_directory, name='dashboard_alias'),
 ]

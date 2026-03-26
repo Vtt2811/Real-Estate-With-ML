@@ -6,9 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seller Dashboard — Home Finder</title>
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=5">
-    <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=10">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=4">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -17,28 +18,39 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="sidebar-logo">Real Estate ML</div>
-                <div class="sidebar-role">Seller Dashboard</div>
+                <a href="{% url 'listings:index' %}" class="sidebar-logo" style="display: flex; align-items: center; gap: 0.8rem; text-decoration: none;">
+                    <img src="{% static 'images/homefinder_icon.png' %}" alt="HomeFinder Logo" style="height: 35px; width: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);" />
+                    <span style="font-size: 1.6rem; font-weight: 800; color: #1e293b; letter-spacing: -0.04em;">HomeFinder</span>
+                </a>
+                <div class="sidebar-role" style="font-weight: 800; text-transform: uppercase;">Seller Dashboard</div>
             </div>
             <nav class="sidebar-nav">
                 <a href="#" class="active">
-                    <span class="nav-icon">📊</span>
+                    <span class="nav-icon"><i data-lucide="bar-chart-2"></i></span>
                     <span>Overview</span>
                 </a>
                 <a href="{% url 'listings:add_property' %}">
-                    <span class="nav-icon">➕</span>
+                    <span class="nav-icon"><i data-lucide="plus-circle"></i></span>
                     <span>Add Property</span>
                 </a>
                 <a href="{% url 'listings:my_listings' %}">
-                    <span class="nav-icon">🏘️</span>
+                    <span class="nav-icon"><i data-lucide="building"></i></span>
                     <span>My Listings</span>
                 </a>
+                <a href="{% url 'listings:messages' %}?view=seller">
+                    <span class="nav-icon"><i data-lucide="message-square"></i></span>
+                    <span>Messages</span>
+                </a>
                 <a href="{% url 'listings:profile' %}">
-                    <span class="nav-icon">👤</span>
+                    <span class="nav-icon"><i data-lucide="user"></i></span>
                     <span>Profile</span>
                 </a>
+                <a href="javascript:void(0)" onclick="openBugModal()">
+                    <span class="nav-icon"><i data-lucide="help-circle"></i></span>
+                    <span>Report Bug</span>
+                </a>
                 <a href="{% url 'listings:signout' %}">
-                    <span class="nav-icon">🚪</span>
+                    <span class="nav-icon"><i data-lucide="log-out"></i></span>
                     <span>Sign Out</span>
                 </a>
             </nav>
@@ -60,7 +72,7 @@
                 <div class="stat-card info">
                     <div class="stat-header">
                         <div class="stat-title">Active Listings</div>
-                        <div class="stat-icon">🏘️</div>
+                        <div class="stat-icon"><i data-lucide="building"></i></div>
                     </div>
                     <div class="stat-value">{{ property_count }}</div>
                     <div class="stat-change positive">Your properties</div>
@@ -69,28 +81,19 @@
                 <div class="stat-card success">
                     <div class="stat-header">
                         <div class="stat-title">Total Views</div>
-                        <div class="stat-icon">👁️</div>
+                        <div class="stat-icon"><i data-lucide="eye"></i></div>
                     </div>
-                    <div class="stat-value">342</div>
+                    <div class="stat-value">{{ total_views }}</div>
                     <div class="stat-change positive">↑ 18% this week</div>
                 </div>
 
                 <div class="stat-card warning">
                     <div class="stat-header">
                         <div class="stat-title">Buyer Interests</div>
-                        <div class="stat-icon">📬</div>
+                        <div class="stat-icon"><i data-lucide="inbox"></i></div>
                     </div>
-                    <div class="stat-value">12</div>
-                    <div class="stat-change">5 pending</div>
-                </div>
-
-                <div class="stat-card error">
-                    <div class="stat-header">
-                        <div class="stat-title">Avg. Response Time</div>
-                        <div class="stat-icon">⏱️</div>
-                    </div>
-                    <div class="stat-value">4h</div>
-                    <div class="stat-change positive">↓ 2h improved</div>
+                    <div class="stat-value">{{ recent_interests|length }}</div>
+                    <div class="stat-change">Check latest inquiries</div>
                 </div>
             </div>
 
@@ -100,89 +103,55 @@
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">Recent Buyer Interests</h2>
-                        <span class="badge badge-warning">5 Pending</span>
+                        <span class="badge" style="background: rgba(255,255,255,0.5); color: #059669; border: 1px solid rgba(255,255,255,0.8); font-weight: 700;">{{ recent_interests|length }} Total</span>
                     </div>
                     <div class="card-body">
-                        <div style="display: flex; flex-direction: column; gap: 1rem;">
-                            <!-- Interest 1 -->
-                            <div
-                                style="padding: 1.2rem; background: var(--bg-light); border-radius: 8px; border-left: 4px solid var(--warning);">
-                                <div
-                                    style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.8rem;">
-                                    <div>
-                                        <h4 style="font-weight: 700; margin-bottom: 0.3rem;">Rahul Sharma</h4>
-                                        <p style="font-size: 1.1rem; color: var(--muted);">Interested in: Stunning
-                                            Modern Home</p>
-                                    </div>
-                                    <span class="badge badge-warning">Pending</span>
-                                </div>
-                                <p style="font-size: 1.15rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
-                                    "I'm very interested in this property. Can we schedule a viewing?"
-                                </p>
-                                <div class="action-buttons">
-                                    <button class="btn btn-success btn-sm">Accept</button>
-                                    <button class="btn btn-danger btn-sm">Decline</button>
-                                </div>
+                        {% if recent_interests %}
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Buyer Name</th>
+                                            <th>Property Title</th>
+                                            <th>Interested On</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for interest in recent_interests %}
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 0.8rem;">
+                                                    <div style="width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem;">
+                                                        {{ interest.buyer.username|slice:":1"|upper }}
+                                                    </div>
+                                                    <strong>{{ interest.buyer.username|title }}</strong>
+                                                </div>
+                                            </td>
+                                            <td><span style="color: var(--text-secondary);">{{ interest.property.title }}</span></td>
+                                            <td><span style="color: var(--muted); font-size: 0.95rem;">{{ interest.created_at|date:"M d, H:i" }}</span></td>
+                                            <td>
+                                                <button class="btn btn-secondary chat-btn" 
+                                                    style="padding: 0.4rem 0.8rem; font-size: 0.9rem; border-radius: 6px; display: flex; align-items: center; gap: 0.4rem;" 
+                                                    data-buyer-id="{{ interest.buyer.id }}"
+                                                    data-buyer-name="{{ interest.buyer.username }}"
+                                                    data-property-id="{{ interest.property.id }}"
+                                                    onclick="openChatModal(this)">
+                                                    <i data-lucide="message-circle" style="width: 16px; height: 16px;"></i> Chat
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
-
-                            <!-- Interest 2 -->
-                            <div
-                                style="padding: 1.2rem; background: var(--bg-light); border-radius: 8px; border-left: 4px solid var(--success);">
-                                <div
-                                    style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.8rem;">
-                                    <div>
-                                        <h4 style="font-weight: 700; margin-bottom: 0.3rem;">Priya Patel</h4>
-                                        <p style="font-size: 1.1rem; color: var(--muted);">Interested in: Elegant
-                                            Family Residence</p>
-                                    </div>
-                                    <span class="badge badge-success">Accepted</span>
-                                </div>
-                                <p style="font-size: 1.15rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
-                                    "Looking for a family home. This looks perfect!"
-                                </p>
-                                <p style="font-size: 1.1rem; color: var(--success); font-weight: 600;">
-                                    ✓ Viewing scheduled for Jan 15, 2026
-                                </p>
+                        {% else %}
+                            <div class="empty-state" style="padding: 2rem;">
+                                <div class="empty-icon" style="font-size: 3.5rem; margin-bottom: 1rem; color: var(--muted);"><i data-lucide="inbox"></i></div>
+                                <h3 style="font-size: 1.5rem; color: var(--primary); font-weight: 700; margin-bottom: 0.5rem;">No Buyer Interests Yet</h3>
+                                <p style="font-size: 1.15rem; color: var(--text-secondary);">When buyers express interest in your properties, they will appear here.</p>
                             </div>
-
-                            <!-- Interest 3 -->
-                            <div
-                                style="padding: 1.2rem; background: var(--bg-light); border-radius: 8px; border-left: 4px solid var(--warning);">
-                                <div
-                                    style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.8rem;">
-                                    <div>
-                                        <h4 style="font-weight: 700; margin-bottom: 0.3rem;">Amit Kumar</h4>
-                                        <p style="font-size: 1.1rem; color: var(--muted);">Interested in: Luxury Estate
-                                        </p>
-                                    </div>
-                                    <span class="badge badge-warning">Pending</span>
-                                </div>
-                                <p style="font-size: 1.15rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
-                                    "Interested in making an offer. Please contact me."
-                                </p>
-                                <div class="action-buttons">
-                                    <button class="btn btn-success btn-sm">Accept</button>
-                                    <button class="btn btn-danger btn-sm">Decline</button>
-                                </div>
-                            </div>
-
-                            <!-- Interest 4 -->
-                            <div
-                                style="padding: 1.2rem; background: var(--bg-light); border-radius: 8px; border-left: 4px solid var(--error);">
-                                <div
-                                    style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.8rem;">
-                                    <div>
-                                        <h4 style="font-weight: 700; margin-bottom: 0.3rem;">Sneha Reddy</h4>
-                                        <p style="font-size: 1.1rem; color: var(--muted);">Interested in: Cozy
-                                            Apartment</p>
-                                    </div>
-                                    <span class="badge badge-error">Declined</span>
-                                </div>
-                                <p style="font-size: 1.15rem; color: var(--text-secondary);">
-                                    "Is the price negotiable?"
-                                </p>
-                            </div>
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -224,9 +193,15 @@
                             </table>
                         </div>
                     {% else %}
-                        <div style="text-align: center; padding: 2rem; color: var(--muted);">
-                            <p style="font-size: 1.4rem; margin-bottom: 1rem;">📭 No properties added yet</p>
-                            <p>Start adding your properties using the form on the left to build your portfolio.</p>
+                        <div class="empty-state" style="text-align: center; padding: 4rem 2rem;">
+                            <div class="empty-icon" style="margin-bottom: 1.5rem; color: var(--muted); opacity: 0.7;">
+                                <i data-lucide="package-open" style="width: 64px; height: 64px;"></i>
+                            </div>
+                            <h3 style="font-size: 1.6rem; color: var(--primary); font-weight: 800; margin-bottom: 0.8rem;">No Properties Added Yet</h3>
+                            <p style="font-size: 1.15rem; color: var(--text-secondary); margin-bottom: 2.5rem;">Start building your premium portfolio by adding your first property.</p>
+                            <a href="{% url 'listings:add_property' %}" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.8rem; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; padding: 1rem 2.5rem; border-radius: 12px; font-weight: 700; font-size: 1.2rem; text-decoration: none; box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3); transition: transform 0.2s, box-shadow 0.2s;">
+                                <i data-lucide="plus-circle" style="width: 20px; height: 20px;"></i> Add Your First Property
+                            </a>
                         </div>
                     {% endif %}
                 </div>
@@ -234,6 +209,45 @@
 
 
         </main>
+    </div>
+    
+    <div id="chatModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 2000;">
+        <div style="background: white; width: 600px; height: 750px; max-width: 90%; max-height: 90vh; margin: 5vh auto; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+            <div style="padding: 1rem 1.5rem; background: var(--primary); color: white; display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="chatModalTitle" style="margin: 0; font-size: 1.1rem;">Chat with Buyer</h3>
+                <button onclick="closeChatModal()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div id="chatModalMessages" style="flex: 1; padding: 1.5rem; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Messages load here -->
+            </div>
+            <div style="padding: 1rem; border-top: 1px solid #eee; display: flex; gap: 0.8rem;">
+                <input type="text" id="chatModalInput" placeholder="Type a message..." style="flex: 1; padding: 0.8rem 1.2rem; border: 1px solid #ddd; border-radius: 8px; outline: none; font-size: 1.1rem;" onkeypress="if(event.key==='Enter') sendModalMessage()">
+                <button onclick="sendModalMessage()" style="background: var(--primary); color: white; border: none; padding: 0 1rem; border-radius: 8px; cursor: pointer;">
+                    <i data-lucide="send" style="width: 18px; height: 18px;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bug Report Modal -->
+    <div id="bugModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 3000;">
+        <div style="background: white; width: 500px; margin: 10% auto; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
+            <div style="padding: 1.5rem; background: #ef4444; color: white; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.2rem;">Report a Bug / Get Help</h3>
+                <button onclick="closeBugModal()" style="background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer;">&times;</button>
+            </div>
+            <div style="padding: 2rem;">
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Subject</label>
+                    <input type="text" id="bugSubject" placeholder="Brief summary of the issue" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; outline: none;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Description</label>
+                    <textarea id="bugDescription" placeholder="Please describe the issue in detail..." style="width: 100%; height: 150px; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; outline: none; resize: none;"></textarea>
+                </div>
+                <button onclick="submitBug()" style="width: 100%; padding: 1rem; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Submit Report</button>
+            </div>
+        </div>
     </div>
 
     <div id="messages" style="display:none;">
@@ -246,13 +260,123 @@
     <script>
         // Optional: Dashboard guard - verify user has seller role
         (function () {
-            const userRole = localStorage.getItem('userRole');
+            const userRole = sessionStorage.getItem('userRole');
             const isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
 
             if (isAuthenticated && userRole && userRole !== 'seller') {
                 console.log('User role mismatch. Expected: seller, Got:', userRole);
             }
         })();
+
+        let modalReceiverId = null;
+        let modalPropertyId = null;
+
+        function openChatModal(btn) {
+            modalReceiverId = btn.getAttribute('data-buyer-id');
+            modalPropertyId = btn.getAttribute('data-property-id');
+            const buyerName = btn.getAttribute('data-buyer-name');
+            
+            document.getElementById('chatModalTitle').textContent = `Chat with ${buyerName.charAt(0).toUpperCase() + buyerName.slice(1)}`;
+            document.getElementById('chatModal').style.display = 'block';
+            
+            fetchModalMessages();
+            // Poll for new messages every 3 seconds while modal is open
+            window.chatInterval = setInterval(fetchModalMessages, 3000);
+        }
+
+        function closeChatModal() {
+            document.getElementById('chatModal').style.display = 'none';
+            clearInterval(window.chatInterval);
+        }
+
+        function fetchModalMessages() {
+            if (!modalReceiverId) return;
+            fetch(`/api/messages/fetch/${modalReceiverId}/`)
+                .then(res => res.json())
+                .then(data => {
+                    const display = document.getElementById('chatModalMessages');
+                    display.innerHTML = '';
+                    data.messages.forEach(msg => {
+                        const div = document.createElement('div');
+                        const isMe = msg.is_me;
+                        div.style.cssText = `
+                            max-width: 85%;
+                            padding: 1rem 1.25rem;
+                            border-radius: 12px;
+                            font-size: 1.1rem;
+                            line-height: 1.4;
+                            ${isMe ? 'align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px;' : 'align-self: flex-start; background: white; color: #333; border: 1px solid #eee; border-bottom-left-radius: 2px;'}
+                        `;
+                        div.innerHTML = `${msg.content} <span style="font-size: 0.7rem; display: block; margin-top: 0.3rem; opacity: 0.7; text-align: right;">${msg.timestamp}</span>`;
+                        display.appendChild(div);
+                    });
+                    display.scrollTop = display.scrollHeight;
+                });
+        }
+
+        function sendModalMessage() {
+            const input = document.getElementById('chatModalInput');
+            const content = input.value.trim();
+            if (!content || !modalReceiverId) return;
+
+            fetch('/api/messages/send/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    receiver_id: modalReceiverId,
+                    content: content,
+                    property_id: modalPropertyId
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    input.value = '';
+                    fetchModalMessages();
+                }
+            });
+        }
+    </script>
+
+    <script>
+        function openBugModal() { document.getElementById('bugModal').style.display = 'block'; }
+        function closeBugModal() { document.getElementById('bugModal').style.display = 'none'; }
+        
+        function submitBug() {
+            const subject = document.getElementById('bugSubject').value.trim();
+            const description = document.getElementById('bugDescription').value.trim();
+            
+            if (!subject || !description) {
+                showToast('Please fill in all fields.', 'error');
+                return;
+            }
+
+            fetch('/api/report-bug/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ subject, description })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showToast('Report sent to admin!', 'success');
+                    closeBugModal();
+                    document.getElementById('bugSubject').value = '';
+                    document.getElementById('bugDescription').value = '';
+                } else {
+                    showToast(data.error || 'Failed to send report.', 'error');
+                }
+            });
+        }
+    </script>
+    <script>
+        lucide.createIcons();
     </script>
 </body>
 

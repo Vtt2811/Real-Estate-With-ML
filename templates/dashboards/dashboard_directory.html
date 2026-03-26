@@ -112,6 +112,7 @@
             line-height: 1.6;
         }
     </style>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -124,19 +125,27 @@
 
         <div class="dashboard-grid">
             <a href="{% url 'listings:buyer_dashboard' %}" class="dashboard-link">
-                <span class="dashboard-icon">🏠</span>
+                <span class="dashboard-icon"><i data-lucide="home"></i></span>
                 <h3 class="dashboard-name">Buyer Dashboard</h3>
                 <p class="dashboard-desc">Browse properties with ML price predictions and express interest</p>
             </a>
 
             <a href="{% url 'listings:seller_dashboard' %}" class="dashboard-link">
-                <span class="dashboard-icon">📊</span>
+                <span class="dashboard-icon"><i data-lucide="bar-chart-2"></i></span>
                 <h3 class="dashboard-name">Seller Dashboard</h3>
                 <p class="dashboard-desc">Manage property listings and respond to buyer interests</p>
             </a>
 
+            {% if user.profile.role == 'admin' %}
+            <a href="{% url 'listings:admin_dashboard' %}" class="dashboard-link" style="border: 2px solid rgba(239, 68, 68, 0.2);">
+                <span class="dashboard-icon"><i data-lucide="shield-check" style="color: #ef4444;"></i></span>
+                <h3 class="dashboard-name" style="color: #ef4444;">Admin Dashboard</h3>
+                <p class="dashboard-desc">Monitor system activity and resolve user bug reports</p>
+            </a>
+            {% endif %}
+
             <a href="{% url 'listings:index' %}" class="dashboard-link">
-                <span class="dashboard-icon">🏡</span>
+                <span class="dashboard-icon"><i data-lucide="home"></i></span>
                 <h3 class="dashboard-name">Home Page</h3>
                 <p class="dashboard-desc">Return to the main homepage</p>
             </a>
@@ -145,10 +154,8 @@
         <div class="info-section">
             <h4 class="info-title">ℹ️ Important Notes</h4>
             <p class="info-text">
-                <strong>Frontend-Only Implementation:</strong> All dashboards use static/dummy data for demonstration
-                purposes.
-                Buttons and forms are UI-only and do not perform backend operations. This is intentional for a
-                faculty-friendly demonstration of the user interface design.
+                <strong>Functional Implementation:</strong> All dashboards are fully integrated with the Django backend.
+                User actions, messaging, and bug reporting are processed in real-time and stored in the database.
             </p>
         </div>
 
@@ -180,6 +187,9 @@
     </div>
 
     <script src="{% static 'js/ui.js' %}"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>

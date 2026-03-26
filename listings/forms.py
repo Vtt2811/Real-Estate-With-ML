@@ -100,7 +100,7 @@ class PropertyForm(forms.ModelForm):
             'title', 'city', 'area', 'property_type', 
             'size_sqft', 'bedrooms', 'age_of_property_years',
             'nearby_infrastructure_score', 'distance_to_city_center_km',
-            'year', 'price_inr'
+            'price_inr'
         ]
         widgets = {
             'title': forms.TextInput(attrs={
@@ -129,8 +129,11 @@ class PropertyForm(forms.ModelForm):
                 'max': '10000',
                 'required': True
             }),
-            'bedrooms': forms.Select(attrs={
-                'class': 'form-select',
+            'bedrooms': forms.NumberInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'e.g., 2',
+                'min': '0',
+                'max': '10',
                 'required': True
             }),
             'age_of_property_years': forms.NumberInput(attrs={
@@ -155,13 +158,6 @@ class PropertyForm(forms.ModelForm):
                 'step': '0.1',
                 'required': True
             }),
-            'year': forms.NumberInput(attrs={
-                'class': 'form-input',
-                'placeholder': 'e.g., 2024',
-                'min': '2000',
-                'max': '2035',
-                'required': True
-            }),
             'price_inr': forms.NumberInput(attrs={
                 'class': 'form-input',
                 'placeholder': 'e.g., 7500000',
@@ -172,13 +168,15 @@ class PropertyForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['bedrooms'].choices = [
-            (0, '0 (Plot / Studio)'),
-            (1, '1 BHK'),
-            (2, '2 BHK'),
-            (3, '3 BHK'),
-            (4, '4 BHK'),
-        ]
+        
+        # Clear default initial values from model for a fresh look
+        self.fields['bedrooms'].initial = ''
+        self.fields['bedrooms'].required = False
+        self.fields['age_of_property_years'].initial = ''
+        self.fields['age_of_property_years'].required = False
+        self.fields['nearby_infrastructure_score'].initial = ''
+        self.fields['distance_to_city_center_km'].initial = ''
+        
         self.fields['title'].required = True
         
         # Set up area field with choices based on selected city

@@ -6,9 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Listings — Home Finder</title>
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=5">
-    <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=10">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=4">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -17,28 +18,35 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="sidebar-logo">Real Estate ML</div>
-                <div class="sidebar-role">Seller Dashboard</div>
+                <a href="{% url 'listings:index' %}" class="sidebar-logo" style="display: flex; align-items: center; gap: 0.8rem; text-decoration: none;">
+                    <img src="{% static 'images/homefinder_icon.png' %}" alt="HomeFinder Logo" style="height: 35px; width: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);" />
+                    <span style="font-size: 1.6rem; font-weight: 800; color: #1e293b; letter-spacing: -0.04em;">HomeFinder</span>
+                </a>
+                <div class="sidebar-role" style="font-weight: 800; text-transform: uppercase;">Seller Dashboard</div>
             </div>
             <nav class="sidebar-nav">
                 <a href="{% url 'listings:seller_dashboard' %}">
-                    <span class="nav-icon">📊</span>
+                    <span class="nav-icon"><i data-lucide="bar-chart-2"></i></span>
                     <span>Overview</span>
                 </a>
                 <a href="{% url 'listings:add_property' %}">
-                    <span class="nav-icon">➕</span>
+                    <span class="nav-icon"><i data-lucide="plus-circle"></i></span>
                     <span>Add Property</span>
                 </a>
                 <a href="{% url 'listings:my_listings' %}" class="active">
-                    <span class="nav-icon">🏘️</span>
+                    <span class="nav-icon"><i data-lucide="building"></i></span>
                     <span>My Listings</span>
                 </a>
+                <a href="{% url 'listings:messages' %}?view=seller">
+                    <span class="nav-icon"><i data-lucide="message-square"></i></span>
+                    <span>Messages</span>
+                </a>
                 <a href="{% url 'listings:profile' %}">
-                    <span class="nav-icon">👤</span>
+                    <span class="nav-icon"><i data-lucide="user"></i></span>
                     <span>Profile</span>
                 </a>
                 <a href="{% url 'listings:signout' %}">
-                    <span class="nav-icon">🚪</span>
+                    <span class="nav-icon"><i data-lucide="log-out"></i></span>
                     <span>Sign Out</span>
                 </a>
             </nav>
@@ -59,7 +67,7 @@
                 <div class="stat-card info">
                     <div class="stat-header">
                         <div class="stat-title">Total Properties</div>
-                        <div class="stat-icon">🏘️</div>
+                        <div class="stat-icon"><i data-lucide="building"></i></div>
                     </div>
                     <div class="stat-value">{{ property_count }}</div>
                     <div class="stat-change">Active listings</div>
@@ -68,7 +76,7 @@
                 <div class="stat-card success">
                     <div class="stat-header">
                         <div class="stat-title">Total Views</div>
-                        <div class="stat-icon">👁️</div>
+                        <div class="stat-icon"><i data-lucide="eye"></i></div>
                     </div>
                     <div class="stat-value">342</div>
                     <div class="stat-change positive">↑ 18% this week</div>
@@ -77,7 +85,7 @@
                 <div class="stat-card warning">
                     <div class="stat-header">
                         <div class="stat-title">Interested Buyers</div>
-                        <div class="stat-icon">📬</div>
+                        <div class="stat-icon"><i data-lucide="inbox"></i></div>
                     </div>
                     <div class="stat-value">12</div>
                     <div class="stat-change">5 pending</div>
@@ -123,15 +131,18 @@
                                         <td>{{ property.area }}, {{ property.city }}</td>
                                         <td>{{ property.property_type }}</td>
                                         <td>{{ property.size_sqft }}</td>
-                                        <td>{{ property.get_bedrooms_display }}</td>
+                                        <td>{% if property.property_type != 'Plot' %}{{ property.get_bedrooms_display }}{% else %}-{% endif %}</td>
                                         <td><strong>{{ property.formatted_price }}</strong></td>
                                         <td>{{ property.created_at|date:"M d, Y" }}</td>
                                         <td><span class="badge badge-success">Active</span></td>
                                         <td>
                                             <div class="action-buttons">
-                                                <button class="btn btn-info btn-sm" title="View Details">👁️</button>
-                                                <button class="btn btn-warning btn-sm" title="Edit">✏️</button>
-                                                <button class="btn btn-danger btn-sm" title="Delete">🗑️</button>
+                                                <button class="btn btn-info btn-sm view-details-btn" data-id="{{ property.pk }}" title="View Details"><i data-lucide="eye"></i></button>
+                                                <a href="{% url 'listings:edit_property' property.pk %}" class="btn btn-warning btn-sm" title="Edit">✏️</a>
+                                                <form action="{% url 'listings:delete_property' property.pk %}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this property?');">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger btn-sm" title="Delete">🗑️</button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>
@@ -140,12 +151,14 @@
                             </table>
                         </div>
                     {% else %}
-                        <div style="text-align: center; padding: 3rem; color: var(--muted);">
-                            <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
-                            <p style="font-size: 1.2rem; margin-bottom: 1rem; font-weight: 600;">No properties added yet</p>
-                            <p style="font-size: 1rem; margin-bottom: 2rem;">Start building your portfolio by adding your first property.</p>
-                            <a href="{% url 'listings:add_property' %}" style="display: inline-block; background: var(--primary); color: white; border: none; padding: 0.75rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 1rem; text-decoration: none;">
-                                ➕ Add Your First Property
+                        <div class="empty-state" style="text-align: center; padding: 4rem 2rem;">
+                            <div class="empty-icon" style="margin-bottom: 1.5rem; color: var(--muted); opacity: 0.7;">
+                                <i data-lucide="package-open" style="width: 64px; height: 64px;"></i>
+                            </div>
+                            <h3 style="font-size: 1.6rem; color: var(--primary); font-weight: 800; margin-bottom: 0.8rem;">No Properties Added Yet</h3>
+                            <p style="font-size: 1.15rem; color: var(--text-secondary); margin-bottom: 2.5rem;">Start building your premium portfolio by adding your first property.</p>
+                            <a href="{% url 'listings:add_property' %}" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.8rem; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; padding: 1rem 2.5rem; border-radius: 12px; font-weight: 700; font-size: 1.2rem; text-decoration: none; box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3); transition: transform 0.2s, box-shadow 0.2s;">
+                                <i data-lucide="plus-circle" style="width: 20px; height: 20px;"></i> Add Your First Property
                             </a>
                         </div>
                     {% endif %}
@@ -179,10 +192,63 @@
 
     <script src="{% static 'js/ui.js' %}"></script>
     <script>
-        // Close details modal
-        const closeDetailsModal = document.getElementById('closeDetailsModal');
+        // View details modal logic
         const propertyDetailsModal = document.getElementById('propertyDetailsModal');
+        const detailsContent = document.getElementById('detailsContent');
+        const viewButtons = document.querySelectorAll('.view-details-btn');
 
+        viewButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const propertyId = this.getAttribute('data-id');
+                
+                // Show "Loading..."
+                detailsContent.innerHTML = '<div style="text-align: center; padding: 2rem;"><i data-lucide="loader-2" class="animate-spin" style="width: 32px; height: 32px; color: var(--primary);"></i><p style="margin-top: 1rem; color: #666;">Fetching details...</p></div>';
+                propertyDetailsModal.style.display = 'block';
+                lucide.createIcons();
+
+                // Fetch data from API
+                fetch(`/api/property-details/${propertyId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            detailsContent.innerHTML = `<div style="color: #c00; padding: 1rem; text-align: center;">Error: ${data.error}</div>`;
+                            return;
+                        }
+
+                        // Populate content
+                        detailsContent.innerHTML = `
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                                <div>
+                                    <h3 style="font-size: 1.3rem; margin-bottom: 1.5rem; color: var(--primary);">${data.title}</h3>
+                                    <p style="margin-bottom: 0.8rem;"><strong>Location:</strong> ${data.area}, ${data.city}</p>
+                                    <p style="margin-bottom: 0.8rem;"><strong>Type:</strong> ${data.property_type}</p>
+                                    <p style="margin-bottom: 0.8rem;"><strong>Size:</strong> ${data.size_sqft} sq ft</p>
+                                    <p style="margin-bottom: 0.8rem;"><strong>Bedrooms:</strong> ${data.bedrooms}</p>
+                                    <p style="margin-bottom: 0.8rem;"><strong>Age:</strong> ${data.age}</p>
+                                </div>
+                                <div>
+                                    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--primary);">
+                                        <p style="font-size: 0.9rem; color: #666; margin-bottom: 0.3rem;">Current Asking Price</p>
+                                        <p style="font-size: 1.8rem; font-weight: 800; color: var(--primary);">${data.price}</p>
+                                        <p style="font-size: 1.1rem; color: #444; margin-top: 0.5rem; opacity: 0.8;">${data.full_price}</p>
+                                    </div>
+                                    <div style="margin-top: 1.5rem;">
+                                        <p style="margin-bottom: 0.8rem;"><strong>Built Year:</strong> ${data.year}</p>
+                                        <p style="margin-bottom: 0.8rem;"><strong>Infra Score:</strong> ${data.infrastructure}</p>
+                                        <p style="margin-bottom: 0.8rem;"><strong>City Distance:</strong> ${data.distance}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    })
+                    .catch(err => {
+                        console.error('Error fetching property details:', err);
+                        detailsContent.innerHTML = '<div style="color: #c00; padding: 1rem; text-align: center;">Failed to load details. Please try again.</div>';
+                    });
+            });
+        });
+
+        const closeDetailsModal = document.getElementById('closeDetailsModal');
         if (closeDetailsModal) {
             closeDetailsModal.addEventListener('click', function() {
                 propertyDetailsModal.style.display = 'none';
@@ -205,6 +271,9 @@
                 console.log('User role mismatch. Expected: seller, Got:', userRole);
             }
         })();
+    </script>
+    <script>
+        lucide.createIcons();
     </script>
 </body>
 

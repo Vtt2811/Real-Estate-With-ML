@@ -10,6 +10,7 @@ class Profile(models.Model):
     ROLE_CHOICES = (
         ('buyer', 'Buyer'),
         ('seller', 'Seller'),
+        ('admin', 'Admin'),
     )
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -19,6 +20,28 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} ({self.get_role_display()})"
+
+
+class BugReport(models.Model):
+    """User-submitted bug reports or help requests"""
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('in_progress', 'In Progress'),
+        ('resolved', 'Resolved'),
+    )
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bug_reports')
+    subject = models.CharField(max_length=200)
+    description = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Bug from {self.user.username}: {self.subject}"
 
 
 class Property(models.Model):
@@ -60,6 +83,7 @@ class Property(models.Model):
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    views_count = models.IntegerField(default=0)
 
     class Meta:
         ordering = ['-created_at']
@@ -121,3 +145,48 @@ class PasswordResetOTP(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+
+
+class BuyerInterest(models.Model):
+    """Tracks when a buyer shows interest in a property"""
+    buyer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='interests')
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='interested_buyers')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ('buyer', 'property') # Prevent duplicate interests
+
+    def __str__(self):
+        return f"{self.buyer.username} interested in {self.property.title}"
+
+
+class Message(models.Model):
+    """Real-time chat messages between buyers and sellers"""
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_messages')
+    receiver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='received_messages')
+    property = models.ForeignKey(Property, on_delete=models.SET_NULL, null=True, blank=True)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['timestamp']
+
+    def __str__(self):
+        return f"From {self.sender.username} to {self.receiver.username}"
+
+
+class BugReport(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bug_reports')
+    subject = models.CharField(max_length=200)
+    description = models.TextField()
+    status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('resolved', 'Resolved')], default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Bug: {self.subject} ({self.status})"

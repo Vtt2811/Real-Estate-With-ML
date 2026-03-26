@@ -1,0 +1,344 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — Home Finder</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=10">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=5">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid #f1f5f9;
+        }
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .bug-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .bug-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+        .bug-info h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: #1e293b;
+        }
+        .bug-info p {
+            margin: 0.2rem 0 0;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-resolved { background: #dcfce7; color: #166534; }
+        
+        .activity-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            position: relative;
+        }
+        .feed-item {
+            display: flex;
+            gap: 1rem;
+            position: relative;
+        }
+        .feed-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        .feed-content h5 {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #1e293b;
+        }
+        .feed-content p {
+            margin: 0.1rem 0;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        .feed-time {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+        .btn-resolve {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-resolve:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        .btn-refresh {
+            background: white;
+            border: 1.5px solid #e2e8f0;
+            color: #64748b;
+            padding: 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            margin-left: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .btn-refresh:hover {
+            background: #f1f5f9;
+            color: var(--primary);
+            border-color: var(--primary);
+            transform: rotate(180deg);
+        }
+        .update-time {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="{% url 'listings:index' %}" class="sidebar-logo" style="display: flex; align-items: center; gap: 0.8rem; text-decoration: none;">
+                    <img src="{% static 'images/homefinder_icon.png' %}" alt="HomeFinder Logo" style="height: 35px; width: auto; object-fit: contain; border-radius: 8px;" />
+                    <span style="font-size: 1.6rem; font-weight: 800; color: #1e293b; letter-spacing: -0.04em;">HomeFinder</span>
+                </a>
+                <div class="sidebar-role" style="font-weight: 800; text-transform: uppercase; color: #dc2626;">Admin Dashboard</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active">
+                    <span class="nav-icon"><i data-lucide="layout"></i></span>
+                    <span>Overview</span>
+                </a>
+                <a href="{% url 'listings:profile' %}">
+                    <span class="nav-icon"><i data-lucide="user"></i></span>
+                    <span>Settings</span>
+                </a>
+                <a href="{% url 'listings:signout' %}">
+                    <span class="nav-icon"><i data-lucide="log-out"></i></span>
+                    <span>Sign Out</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="dashboard-header">
+                <div>
+                    <h1 class="dashboard-title">
+                        System Overview
+                        <button onclick="clearAndRefresh()" class="btn-refresh" title="Clear Reports and Refresh Dashboard">
+                            <i data-lucide="refresh-cw"></i>
+                        </button>
+                    </h1>
+                    <p id="lastSync" class="update-time">Status: Loaded just now</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Users</div>
+                        <div class="stat-icon"><i data-lucide="users"></i></div>
+                    </div>
+                    <div class="stat-value">{{ total_users }}</div>
+                    <div class="stat-change">Active registrations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Properties</div>
+                        <div class="stat-icon"><i data-lucide="building"></i></div>
+                    </div>
+                    <div class="stat-value">{{ total_listings }}</div>
+                    <div class="stat-change">Total listings</div>
+                </div>
+                <div class="stat-card error">
+                    <div class="stat-header">
+                        <div class="stat-title">Bug Reports</div>
+                        <div class="stat-icon"><i data-lucide="alert-triangle"></i></div>
+                    </div>
+                    <div class="stat-value">{{ total_bugs }}</div>
+                    <div class="stat-change">{{ pending_bugs.count }} pending resolution</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">System Load</div>
+                        <div class="stat-icon"><i data-lucide="activity"></i></div>
+                    </div>
+                    <div class="stat-value">Stable</div>
+                    <div class="stat-change">Healthy performance</div>
+                </div>
+            </div>
+
+            <div class="admin-grid">
+                <!-- Bug Reports Section -->
+                <div class="card">
+                    <div class="section-title">
+                        <i data-lucide="bug" style="color: #ef4444;"></i>
+                        Pending Bug Reports
+                    </div>
+                    <div class="bug-list">
+                        {% for bug in pending_bugs %}
+                        <div class="bug-item" id="bug-{{ bug.id }}">
+                            <div class="bug-info">
+                                <h4>{{ bug.subject }}</h4>
+                                <p>Reported by <strong>{{ bug.user.username }}</strong> &bull; {{ bug.created_at|timesince }} ago</p>
+                                <p style="margin-top: 0.5rem; background: white; padding: 0.5rem; border-radius: 8px; border: 1px dashed #cbd5e1;">{{ bug.description }}</p>
+                            </div>
+                            <button class="btn-resolve" onclick="resolveBug({{ bug.id }})">Mark Resolved</button>
+                        </div>
+                        {% empty %}
+                        <div style="text-align: center; padding: 2rem; color: #64748b;">
+                            <i data-lucide="check-circle" style="width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.3;"></i>
+                            <p>No pending bug reports. All clear!</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Activity Feed -->
+                <div class="card">
+                    <div class="section-title">
+                        <i data-lucide="zap" style="color: #eab308;"></i>
+                        Recent Activities
+                    </div>
+                    <div class="activity-feed">
+                        {% for act in activities %}
+                        <div class="feed-item">
+                            <div class="feed-icon">
+                                <i data-lucide="{{ act.icon }}"></i>
+                            </div>
+                            <div class="feed-content">
+                                <h5>{{ act.title }}</h5>
+                                <p>by {{ act.user }}</p>
+                                <span class="feed-time">{{ act.time|timesince }} ago</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{% static 'js/ui.js' %}"></script>
+    <script>
+        function clearAndRefresh() {
+            const btn = document.querySelector('.btn-refresh');
+            btn.style.pointerEvents = 'none';
+            btn.innerHTML = '<div class="spinner-mini"></div>'; // Placeholder animation
+            
+            fetch('/api/resolve-all-bugs/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(() => {
+                location.reload();
+            })
+            .catch(() => {
+                location.reload(); // Still reload even if API fails
+            });
+        }
+
+        const getCookie = (name) => {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        };
+
+        function resolveBug(id) {
+            if (!confirm('Resolve this report?')) return;
+            
+            fetch(`/api/resolve-bug/${id}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const el = document.getElementById(`bug-${id}`);
+                    el.style.opacity = '0';
+                    setTimeout(() => el.remove(), 300);
+                    showToast('Report resolved successfully', 'success');
+                }
+            });
+        }
+        lucide.createIcons();
+
+        // Update Sync Timestamp
+        (function() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const dateStr = now.toLocaleDateString([], { month: 'short', day: 'numeric' });
+            const el = document.getElementById('lastSync');
+            if (el) el.textContent = `Last synchronized: ${dateStr}, ${timeStr}`;
+        })();
+    </script>
+</body>
+</html>

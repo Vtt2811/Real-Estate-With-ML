@@ -6,9 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Property — Home Finder</title>
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=5">
-    <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=10">
+    <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=4">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -17,28 +18,35 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="sidebar-logo">Real Estate ML</div>
-                <div class="sidebar-role">Seller Dashboard</div>
+                <a href="{% url 'listings:index' %}" class="sidebar-logo" style="display: flex; align-items: center; gap: 0.8rem; text-decoration: none;">
+                    <img src="{% static 'images/homefinder_icon.png' %}" alt="HomeFinder Logo" style="height: 35px; width: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);" />
+                    <span style="font-size: 1.6rem; font-weight: 800; color: #1e293b; letter-spacing: -0.04em;">HomeFinder</span>
+                </a>
+                <div class="sidebar-role" style="font-weight: 800; text-transform: uppercase;">Seller Dashboard</div>
             </div>
             <nav class="sidebar-nav">
                 <a href="{% url 'listings:seller_dashboard' %}">
-                    <span class="nav-icon">📊</span>
+                    <span class="nav-icon"><i data-lucide="bar-chart-2"></i></span>
                     <span>Overview</span>
                 </a>
                 <a href="{% url 'listings:add_property' %}" class="active">
-                    <span class="nav-icon">➕</span>
+                    <span class="nav-icon"><i data-lucide="plus-circle"></i></span>
                     <span>Add Property</span>
                 </a>
                 <a href="{% url 'listings:my_listings' %}">
-                    <span class="nav-icon">🏘️</span>
+                    <span class="nav-icon"><i data-lucide="building"></i></span>
                     <span>My Listings</span>
                 </a>
+                <a href="{% url 'listings:messages' %}?view=seller">
+                    <span class="nav-icon"><i data-lucide="message-square"></i></span>
+                    <span>Messages</span>
+                </a>
                 <a href="{% url 'listings:profile' %}">
-                    <span class="nav-icon">👤</span>
+                    <span class="nav-icon"><i data-lucide="user"></i></span>
                     <span>Profile</span>
                 </a>
                 <a href="{% url 'listings:signout' %}">
-                    <span class="nav-icon">🚪</span>
+                    <span class="nav-icon"><i data-lucide="log-out"></i></span>
                     <span>Sign Out</span>
                 </a>
             </nav>
@@ -49,8 +57,8 @@
             <!-- Page Header -->
             <div class="dashboard-header">
                 <div>
-                    <h1 class="dashboard-title">Add New Property</h1>
-                    <p class="dashboard-subtitle">Fill in the details to list your property</p>
+                    <h1 class="dashboard-title">{% if is_edit %}Edit Property{% else %}Add New Property{% endif %}</h1>
+                    <p class="dashboard-subtitle">{% if is_edit %}Update the details of your property{% else %}Fill in the details to list your property{% endif %}</p>
                 </div>
             </div>
 
@@ -58,7 +66,7 @@
             <div class="card" style="margin-bottom: 2rem;">
                 <div class="card-header">
                     <h2 class="card-title">Property Details</h2>
-                    <span style="font-size: 0.85rem; color: var(--text-secondary);">All fields are required</span>
+                    <span style="font-size: 1.1rem; color: var(--text-secondary); font-weight: 600;">All fields are required</span>
                 </div>
                 <div class="card-body">
                     {% if messages %}
@@ -69,7 +77,7 @@
                         {% endfor %}
                     {% endif %}
 
-                    <form method="post" id="propertyForm">
+                    <form method="post" id="propertyForm" autocomplete="off">
                         {% csrf_token %}
                         
                         <!-- Two Column Layout -->
@@ -77,50 +85,50 @@
                             <!-- Left Column -->
                             <div>
                                 <div class="form-group">
-                                    <label class="form-label">🏷️ Property Title</label>
+                                    <label class="form-label"><i data-lucide="type"></i> Property Title</label>
                                     {{ form.title }}
                                     {% if form.title.errors %}
-                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.title.errors.0 }}</span>
+                                        <span style="color: #c00; font-size: 1.05rem; font-weight: 600; display: block; margin-top: 0.5rem;">{{ form.title.errors.0 }}</span>
                                     {% endif %}
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label">🏙️ City</label>
+                                    <label class="form-label"><i data-lucide="building-2"></i> City</label>
                                     {{ form.city }}
                                     {% if form.city.errors %}
-                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.city.errors.0 }}</span>
+                                        <span style="color: #c00; font-size: 1.05rem; font-weight: 600; display: block; margin-top: 0.5rem;">{{ form.city.errors.0 }}</span>
                                     {% endif %}
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label">📍 Area / Locality</label>
+                                    <label class="form-label"><i data-lucide="map-pin"></i> Area / Locality</label>
                                     {{ form.area }}
                                     {% if form.area.errors %}
-                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.area.errors.0 }}</span>
+                                        <span style="color: #c00; font-size: 1.05rem; font-weight: 600; display: block; margin-top: 0.5rem;">{{ form.area.errors.0 }}</span>
                                     {% endif %}
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label">🏢 Property Type</label>
+                                    <label class="form-label"><i data-lucide="home"></i> Property Type</label>
                                     {{ form.property_type }}
                                     {% if form.property_type.errors %}
-                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.property_type.errors.0 }}</span>
+                                        <span style="color: #c00; font-size: 1.05rem; font-weight: 600; display: block; margin-top: 0.5rem;">{{ form.property_type.errors.0 }}</span>
                                     {% endif %}
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label">📏 Size (sq ft)</label>
+                                    <label class="form-label"><i data-lucide="navigation"></i> Size (sq ft)</label>
                                     {{ form.size_sqft }}
                                     {% if form.size_sqft.errors %}
-                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.size_sqft.errors.0 }}</span>
+                                        <span style="color: #c00; font-size: 1.05rem; font-weight: 600; display: block; margin-top: 0.5rem;">{{ form.size_sqft.errors.0 }}</span>
                                     {% endif %}
                                 </div>
 
                                 <div class="form-group" id="bedroomsContainer">
-                                    <label class="form-label">🛏️ Bedrooms</label>
+                                    <label class="form-label"><i data-lucide="bed-double"></i> Bedrooms</label>
                                     {{ form.bedrooms }}
                                     {% if form.bedrooms.errors %}
-                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.bedrooms.errors.0 }}</span>
+                                        <span style="color: #c00; font-size: 1.05rem; font-weight: 600; display: block; margin-top: 0.5rem;">{{ form.bedrooms.errors.0 }}</span>
                                     {% endif %}
                                 </div>
                             </div>
@@ -128,45 +136,38 @@
                             <!-- Right Column -->
                             <div>
                                 <div class="form-group" id="ageContainer">
-                                    <label class="form-label">📅 Age of Property (years)</label>
+                                    <label class="form-label"><i data-lucide="calendar"></i> Age of Property (years)</label>
                                     {{ form.age_of_property_years }}
                                     {% if form.age_of_property_years.errors %}
-                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.age_of_property_years.errors.0 }}</span>
+                                        <span style="color: #c00; font-size: 1.05rem; font-weight: 600; display: block; margin-top: 0.5rem;">{{ form.age_of_property_years.errors.0 }}</span>
                                     {% endif %}
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label">🏫 Nearby Infrastructure Score (1-10)</label>
+                                    <label class="form-label"><i data-lucide="award"></i> Nearby Infrastructure Score (1-10)</label>
                                     {{ form.nearby_infrastructure_score }}
-                                    <small style="color: var(--muted); font-size: 0.8rem; display: block; margin-top: 0.4rem;">Rate based on nearby schools, hospitals, malls, transport</small>
+                                    <small style="color: var(--muted); font-size: 1.05rem; display: block; margin-top: 0.6rem; font-weight: 500;">Rate based on nearby schools, hospitals, malls, transport</small>
                                     {% if form.nearby_infrastructure_score.errors %}
-                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.nearby_infrastructure_score.errors.0 }}</span>
+                                        <span style="color: #c00; font-size: 1.05rem; font-weight: 600; display: block; margin-top: 0.5rem;">{{ form.nearby_infrastructure_score.errors.0 }}</span>
                                     {% endif %}
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label">🗺️ Distance to City Center (km)</label>
+                                    <label class="form-label"><i data-lucide="map"></i> Distance to City Center (km)</label>
                                     {{ form.distance_to_city_center_km }}
                                     {% if form.distance_to_city_center_km.errors %}
-                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.distance_to_city_center_km.errors.0 }}</span>
+                                        <span style="color: #c00; font-size: 1.05rem; font-weight: 600; display: block; margin-top: 0.5rem;">{{ form.distance_to_city_center_km.errors.0 }}</span>
                                     {% endif %}
                                 </div>
 
-                                <div class="form-group">
-                                    <label class="form-label">📆 Year</label>
-                                    {{ form.year }}
-                                    <small style="color: var(--muted); font-size: 0.8rem; display: block; margin-top: 0.4rem;">Year of construction or listing</small>
-                                    {% if form.year.errors %}
-                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.year.errors.0 }}</span>
-                                    {% endif %}
-                                </div>
+
 
                                 <div class="form-group">
-                                    <label class="form-label">💰 Price (₹)</label>
+                                    <label class="form-label"><i data-lucide="indian-rupee"></i> Price (₹)</label>
                                     {{ form.price_inr }}
-                                    <small style="color: var(--muted); font-size: 0.8rem; display: block; margin-top: 0.4rem;">Minimum: ₹1,00,000</small>
+                                    <small style="color: var(--muted); font-size: 1.05rem; display: block; margin-top: 0.6rem; font-weight: 500;">Minimum: ₹1,00,000</small>
                                     {% if form.price_inr.errors %}
-                                        <span style="color: #c00; font-size: 0.85rem; display: block; margin-top: 0.4rem;">{{ form.price_inr.errors.0 }}</span>
+                                        <span style="color: #c00; font-size: 1.05rem; font-weight: 600; display: block; margin-top: 0.5rem;">{{ form.price_inr.errors.0 }}</span>
                                     {% endif %}
                                 </div>
                             </div>
@@ -178,7 +179,7 @@
                                 ← Cancel
                             </a>
                             <button type="button" id="submitBtn" class="btn btn-primary" style="background: var(--primary); color: white; border: none; padding: 0.75rem 2rem; border-radius: 6px; cursor: pointer; font-weight: 600;">
-                                ✓ Add Property
+                                 {% if is_edit %}Save Changes{% else %}Add Property{% endif %}
                             </button>
                         </div>
                     </form>
@@ -190,9 +191,9 @@
                 <div class="stat-card info">
                     <div class="stat-header">
                         <div class="stat-title">Quick Tips</div>
-                        <div class="stat-icon">💡</div>
+                        <div class="stat-icon"><i data-lucide="lightbulb"></i></div>
                     </div>
-                    <div style="font-size: 0.95rem; line-height: 1.6;">
+                    <div style="font-size: 1.1rem; line-height: 1.6; font-weight: 500;">
                         <p><strong>Title:</strong> Make it descriptive and attractive</p>
                         <p><strong>Price:</strong> Should be realistic and competitive</p>
                         <p><strong>Infrastructure Score:</strong> Rate how well-connected the area is</p>
@@ -202,24 +203,24 @@
                 <div class="stat-card success">
                     <div class="stat-header">
                         <div class="stat-title">Perfect Property Details</div>
-                        <div class="stat-icon">⭐</div>
+                        <div class="stat-icon"><i data-lucide="star"></i></div>
                     </div>
-                    <div style="font-size: 0.95rem; line-height: 1.6;">
-                        <p>✓ Clear and detailed title</p>
-                        <p>✓ All infrastructure info filled</p>
-                        <p>✓ Realistic price estimation</p>
+                    <div style="font-size: 1.1rem; line-height: 1.6; font-weight: 500;">
+                        <p> Clear and detailed title</p>
+                        <p> All infrastructure info filled</p>
+                        <p> Realistic price estimation</p>
                     </div>
                 </div>
 
                 <div class="stat-card warning">
                     <div class="stat-header">
                         <div class="stat-title">Availability</div>
-                        <div class="stat-icon">📅</div>
+                        <div class="stat-icon"><i data-lucide="calendar"></i></div>
                     </div>
-                    <div style="font-size: 0.95rem; line-height: 1.6;">
+                    <div style="font-size: 1.1rem; line-height: 1.6; font-weight: 500;">
                         <p>After adding, your property will be:</p>
-                        <p>✓ Visible on the platform</p>
-                        <p>✓ Available for buyers to find</p>
+                        <p> Visible on the platform</p>
+                        <p> Available for buyers to find</p>
                     </div>
                 </div>
             </div>
@@ -246,7 +247,8 @@
 
         const citySelect = document.getElementById('id_city');
         const areaSelect = document.getElementById('id_area');
-        const currentAreaValue = areaSelect ? areaSelect.value : '';
+        // Pre-populate area value from Django form instance to ensure it's restored during JS population
+        const currentAreaValue = "{{ form.area.value|default:'' }}";
 
         // Function to populate area dropdown
         function populateAreaDropdown(selectedCity) {
@@ -344,7 +346,6 @@
                 const ageField = document.getElementById('id_age_of_property_years');
                 const infrastructureField = document.getElementById('id_nearby_infrastructure_score');
                 const distanceField = document.getElementById('id_distance_to_city_center_km');
-                const yearField = document.getElementById('id_year');
                 const priceField = document.getElementById('id_price_inr');
                 
                 // Basic validation
@@ -357,7 +358,6 @@
                 if (!sizeField.value) errors.push('✗ Size is required');
                 if (!infrastructureField.value) errors.push('✗ Infrastructure Score is required');
                 if (!distanceField.value) errors.push('✗ Distance to City Center is required');
-                if (!yearField.value) errors.push('✗ Year is required');
                 if (!priceField.value) errors.push('✗ Price is required');
                 
                 // For non-plot types, check bedrooms and age
@@ -375,6 +375,17 @@
                 propertyForm.submit();
             });
         }
+
+        // Handle initial state on load
+        window.addEventListener('load', function() {
+            // Re-trigger plot toggle logic
+            if (typeof handlePlotTypeToggle === 'function') {
+                handlePlotTypeToggle();
+            }
+        });
+    </script>
+    <script>
+        lucide.createIcons();
     </script>
 </body>
 

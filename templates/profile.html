@@ -6,7 +6,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Profile — Home Finder</title>
-  <link rel="stylesheet" href="{% static 'css/profile.css' %}?v=2">
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}?v=4">
   <link rel="stylesheet" href="{% static 'css/ui.css' %}" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -15,7 +15,10 @@
 
   <!-- Navbar -->
   <header class="navbar">
-    <div class="logo">Home Finder</div>
+        <a href="{% url 'listings:index' %}" class="logo" style="display: flex; align-items: center; gap: 0.8rem; text-decoration: none;">
+            <img src="{% static 'images/homefinder_icon.png' %}" alt="HomeFinder Logo" style="height: 35px; width: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);" />
+            <span style="font-size: 1.6rem; font-weight: 900; color: #1e293b; letter-spacing: -0.04em;">HomeFinder</span>
+        </a>
 
     <div class="search-section">
       <a href="{% url 'listings:signout' %}" class="sign-out-btn">Sign Out</a>

@@ -6,9 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buyer Dashboard — Home Finder</title>
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=6">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=9">
     <link rel="stylesheet" href="{% static 'css/ui.css' %}?v=4">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -17,24 +18,35 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="sidebar-logo">Real Estate ML</div>
-                <div class="sidebar-role">Buyer Dashboard</div>
+                <a href="{% url 'listings:index' %}" class="sidebar-logo" style="display: flex; align-items: center; gap: 0.8rem; text-decoration: none;">
+                    <img src="{% static 'images/homefinder_icon.png' %}" alt="HomeFinder Logo" style="height: 35px; width: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);" />
+                    <span style="font-size: 1.6rem; font-weight: 800; color: #1e293b; letter-spacing: -0.04em;">HomeFinder</span>
+                </a>
+                <div class="sidebar-role" style="font-weight: 800; text-transform: uppercase;">Buyer Dashboard</div>
             </div>
             <nav class="sidebar-nav">
                 <a href="#" class="active">
-                    <span class="nav-icon">🏠</span>
+                    <span class="nav-icon"><i data-lucide="home"></i></span>
                     <span>Browse Properties</span>
                 </a>
                 <a href="{% url 'listings:price_prediction' %}">
-                    <span class="nav-icon">📊</span>
+                    <span class="nav-icon"><i data-lucide="bar-chart-2"></i></span>
                     <span>Price Predictions</span>
                 </a>
+                <a href="{% url 'listings:messages' %}?view=buyer">
+                    <span class="nav-icon"><i data-lucide="message-square"></i></span>
+                    <span>Messages</span>
+                </a>
                 <a href="{% url 'listings:profile' %}">
-                    <span class="nav-icon">👤</span>
+                    <span class="nav-icon"><i data-lucide="user"></i></span>
                     <span>Profile</span>
                 </a>
+                <a href="javascript:void(0)" onclick="openBugModal()">
+                    <span class="nav-icon"><i data-lucide="help-circle"></i></span>
+                    <span>Report Bug</span>
+                </a>
                 <a href="{% url 'listings:signout' %}">
-                    <span class="nav-icon">🚪</span>
+                    <span class="nav-icon"><i data-lucide="log-out"></i></span>
                     <span>Sign Out</span>
                 </a>
             </nav>
@@ -50,7 +62,7 @@
                 </div>
                 <div class="header-actions">
                     <button class="btn btn-primary" onclick="toggleFilters()">
-                        <span>🔍</span>
+                        <span><i data-lucide="search"></i></span>
                         <span>Filter Properties</span>
                     </button>
                 </div>
@@ -61,7 +73,7 @@
                 <div class="stat-card info">
                     <div class="stat-header">
                         <div class="stat-title">Total Properties</div>
-                        <div class="stat-icon">🏘️</div>
+                        <div class="stat-icon"><i data-lucide="building"></i></div>
                     </div>
                     <div class="stat-value">{{ total_properties|default:"0" }}</div>
                     <div class="stat-change positive">Available listings</div>
@@ -70,7 +82,7 @@
                 <div class="stat-card success">
                     <div class="stat-header">
                         <div class="stat-title">Filtered Results</div>
-                        <div class="stat-icon">🔍</div>
+                        <div class="stat-icon"><i data-lucide="search"></i></div>
                     </div>
                     <div class="stat-value">{{ filtered_count|default:"0" }}</div>
                     <div class="stat-change">Matching your criteria</div>
@@ -79,7 +91,7 @@
                 <div class="stat-card warning">
                     <div class="stat-header">
                         <div class="stat-title">Cities Covered</div>
-                        <div class="stat-icon">🌆</div>
+                        <div class="stat-icon"><i data-lucide="map"></i></div>
                     </div>
                     <div class="stat-value">5</div>
                     <div class="stat-change">Gujarat region</div>
@@ -88,16 +100,14 @@
                 <div class="stat-card error">
                     <div class="stat-header">
                         <div class="stat-title">Property Types</div>
-                        <div class="stat-icon">🏗️</div>
+                        <div class="stat-icon"><i data-lucide="hard-hat"></i></div>
                     </div>
                     <div class="stat-value">3</div>
                     <div class="stat-change">Flat, House, Plot</div>
                 </div>
             </div>
 
-
-
-            <!-- Filter Section (Hidden by default) -->
+            <!-- Filter Section -->
             <div id="filterSection" class="filter-section" style="display: none;">
                 <div class="filter-header">
                     <h3 class="filter-title">Refine Your Search</h3>
@@ -114,7 +124,6 @@
                                 {% endfor %}
                             </select>
                         </div>
-
                         <div class="form-group">
                             <label class="form-label">Property Type</label>
                             <select name="property_type" id="filterType" class="form-select">
@@ -124,7 +133,6 @@
                                 {% endfor %}
                             </select>
                         </div>
-
                         <div class="form-group">
                             <label class="form-label">Price Range</label>
                             <select name="price" id="filterPrice" class="form-select">
@@ -135,7 +143,6 @@
                                 <option value="above2cr" {% if current_price == 'above2cr' %}selected{% endif %}>Above ₹2 Cr</option>
                             </select>
                         </div>
-
                         <div class="form-group">
                             <label class="form-label">Bedrooms</label>
                             <select name="bedrooms" id="filterBedrooms" class="form-select">
@@ -147,14 +154,12 @@
                                 <option value="4" {% if current_bedrooms == '4' %}selected{% endif %}>4 BHK</option>
                             </select>
                         </div>
-
                         <div class="form-group">
                             <label class="form-label">Area / Locality</label>
                             <select name="area" id="filterArea" class="form-select" disabled>
                                 <option value="">Select City First</option>
                             </select>
                         </div>
-
                         <div class="form-group" style="display: flex; gap: 0.5rem; align-items: end;">
                             <button type="submit" class="btn btn-primary" style="flex: 1;">Apply Filters</button>
                             <a href="{% url 'listings:buyer_dashboard' %}" class="btn btn-secondary" style="flex: 0.5; text-align: center; text-decoration: none;">Reset</a>
@@ -173,33 +178,42 @@
                     {% if properties %}
                     <div class="property-grid">
                         {% for prop in properties %}
-                        <div class="property-card"
-                            data-city="{{ prop.city }}"
-                            data-price="{{ prop.price_inr }}"
-                            data-type="{{ prop.property_type }}"
-                            data-url="{% url 'listings:listing_details' %}"
-                            onclick="window.location.href=this.getAttribute('data-url');"
-                            style="cursor: pointer;">
-                            <!-- Property type badge overlay -->
-                            <div class="property-type-badge">{{ prop.property_type }}</div>
+                        <div class="property-card" data-id="{{ prop.pk }}" onclick="openPropertyModal(this.getAttribute('data-id'));" style="cursor: pointer;">
                             <div class="property-content">
+                                <div class="property-type-badge">{{ prop.property_type }}</div>
                                 <h3 class="property-title">{{ prop.title }}</h3>
                                 <div class="property-meta-grid">
                                     {% if prop.bedrooms > 0 %}
-                                    <span class="property-meta-item">🛏️ {{ prop.bedrooms }} Bed{{ prop.bedrooms|pluralize }}</span>
+                                    <span class="property-meta-item"><i data-lucide="bed-double"></i> {{ prop.bedrooms }} Bed{{ prop.bedrooms|pluralize }}</span>
                                     {% endif %}
-                                    <span class="property-meta-item">📐 {{ prop.size_sqft|floatformat:0 }} sq ft</span>
-                                    <span class="property-meta-item">🏗️ {{ prop.age_of_property_years }} yrs old</span>
-                                    <span class="property-meta-item">⭐ Infra: {{ prop.nearby_infrastructure_score }}/10</span>
+                                    <span class="property-meta-item"><i data-lucide="ruler"></i> {{ prop.size_sqft|floatformat:0 }} sq ft</span>
+                                    {% if prop.property_type|lower != 'plot' %}
+                                    <span class="property-meta-item"><i data-lucide="hard-hat"></i> {{ prop.age_of_property_years }} yrs old</span>
+                                    {% endif %}
+                                    <span class="property-meta-item"><i data-lucide="star"></i> Infra: {{ prop.nearby_infrastructure_score }}/10</span>
                                 </div>
-                                <p class="property-details">📍 {{ prop.area }}, {{ prop.city }}</p>
-                                <p class="property-details" style="font-size: 0.8rem; color: var(--muted);">
-                                    📏 {{ prop.distance_to_city_center_km }} km from city center • 📅 Year {{ prop.year }}
+                                <p class="property-details"><i data-lucide="map-pin"></i> {{ prop.area }}, {{ prop.city }}</p>
+                                <p class="property-details" style="font-size: 1.15rem; color: var(--text-secondary); margin-top: -0.5rem; font-weight: 500;">
+                                    <i data-lucide="navigation"></i> {{ prop.distance_to_city_center_km }} km from city center • <i data-lucide="calendar"></i> Year {{ prop.year }}
                                 </p>
                                 <div class="property-price">{{ prop.formatted_price }}</div>
-                                <button class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;"
-                                    onclick="event.stopPropagation(); alert('Interest registered for this property!');">Show
-                                    Interest</button>
+                                <button class="btn btn-primary interest-btn-card" 
+                                    style="width: 100%; margin-top: 0.5rem; {% if prop.pk in interested_property_ids %}background: #2563eb;{% endif %}"
+                                    data-id="{{ prop.pk }}"
+                                    data-seller-id="{{ prop.seller.id }}"
+                                    data-seller-name="{{ prop.seller.username }}"
+                                    data-property-id="{{ prop.pk }}"
+                                    onclick="event.stopPropagation(); {% if prop.pk in interested_property_ids and prop.seller.id in chatted_user_ids %}openChatModal(this);{% else %}toggleInterest(this.getAttribute('data-id'), this);{% endif %}">
+                                    {% if prop.pk in interested_property_ids %}
+                                        {% if prop.seller.id in chatted_user_ids %}
+                                            Chat with {{ prop.seller.username|title }}
+                                        {% else %}
+                                            Withdraw Interest
+                                        {% endif %}
+                                    {% else %}
+                                        Show Interest
+                                    {% endif %}
+                                </button>
                             </div>
                         </div>
                         {% endfor %}
@@ -210,29 +224,20 @@
                     <div class="pagination-wrapper">
                         <div class="pagination">
                             {% if page_obj.has_previous %}
-                            <a href="?page=1{% if current_city != 'all' %}&city={{ current_city }}{% endif %}{% if current_property_type != 'all' %}&property_type={{ current_property_type }}{% endif %}{% if current_price != 'all' %}&price={{ current_price }}{% endif %}{% if current_bedrooms != 'all' %}&bedrooms={{ current_bedrooms }}{% endif %}{% if current_area %}&area={{ current_area }}{% endif %}"
-                                class="pagination-btn">« First</a>
-                            <a href="?page={{ page_obj.previous_page_number }}{% if current_city != 'all' %}&city={{ current_city }}{% endif %}{% if current_property_type != 'all' %}&property_type={{ current_property_type }}{% endif %}{% if current_price != 'all' %}&price={{ current_price }}{% endif %}{% if current_bedrooms != 'all' %}&bedrooms={{ current_bedrooms }}{% endif %}{% if current_area %}&area={{ current_area }}{% endif %}"
-                                class="pagination-btn">‹ Previous</a>
+                            <a href="?page=1{% if current_city != 'all' %}&city={{ current_city }}{% endif %}{% if current_property_type != 'all' %}&property_type={{ current_property_type }}{% endif %}{% if current_price != 'all' %}&price={{ current_price }}{% endif %}{% if current_bedrooms != 'all' %}&bedrooms={{ current_bedrooms }}{% endif %}{% if current_area %}&area={{ current_area }}{% endif %}" class="pagination-btn">« First</a>
+                            <a href="?page={{ page_obj.previous_page_number }}{% if current_city != 'all' %}&city={{ current_city }}{% endif %}{% if current_property_type != 'all' %}&property_type={{ current_property_type }}{% endif %}{% if current_price != 'all' %}&price={{ current_price }}{% endif %}{% if current_bedrooms != 'all' %}&bedrooms={{ current_bedrooms }}{% endif %}{% if current_area %}&area={{ current_area }}{% endif %}" class="pagination-btn">‹ Previous</a>
                             {% endif %}
-
-                            <span class="pagination-info">
-                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                            </span>
-
+                            <span class="pagination-info">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
                             {% if page_obj.has_next %}
-                            <a href="?page={{ page_obj.next_page_number }}{% if current_city != 'all' %}&city={{ current_city }}{% endif %}{% if current_property_type != 'all' %}&property_type={{ current_property_type }}{% endif %}{% if current_price != 'all' %}&price={{ current_price }}{% endif %}{% if current_bedrooms != 'all' %}&bedrooms={{ current_bedrooms }}{% endif %}{% if current_area %}&area={{ current_area }}{% endif %}"
-                                class="pagination-btn">Next ›</a>
-                            <a href="?page={{ page_obj.paginator.num_pages }}{% if current_city != 'all' %}&city={{ current_city }}{% endif %}{% if current_property_type != 'all' %}&property_type={{ current_property_type }}{% endif %}{% if current_price != 'all' %}&price={{ current_price }}{% endif %}{% if current_bedrooms != 'all' %}&bedrooms={{ current_bedrooms }}{% endif %}{% if current_area %}&area={{ current_area }}{% endif %}"
-                                class="pagination-btn">Last »</a>
+                            <a href="?page={{ page_obj.next_page_number }}{% if current_city != 'all' %}&city={{ current_city }}{% endif %}{% if current_property_type != 'all' %}&property_type={{ current_property_type }}{% endif %}{% if current_price != 'all' %}&price={{ current_price }}{% endif %}{% if current_bedrooms != 'all' %}&bedrooms={{ current_bedrooms }}{% endif %}{% if current_area %}&area={{ current_area }}{% endif %}" class="pagination-btn">Next ›</a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}{% if current_city != 'all' %}&city={{ current_city }}{% endif %}{% if current_property_type != 'all' %}&property_type={{ current_property_type }}{% endif %}{% if current_price != 'all' %}&price={{ current_price }}{% endif %}{% if current_bedrooms != 'all' %}&bedrooms={{ current_bedrooms }}{% endif %}{% if current_area %}&area={{ current_area }}{% endif %}" class="pagination-btn">Last »</a>
                             {% endif %}
                         </div>
                     </div>
                     {% endif %}
-
                     {% else %}
                     <div class="empty-state">
-                        <div class="empty-icon">🏠</div>
+                        <div class="empty-icon"><i data-lucide="home"></i></div>
                         <h3>No Properties Found</h3>
                         <p>Try adjusting your filters or <a href="{% url 'listings:buyer_dashboard' %}">reset all filters</a>.</p>
                     </div>
@@ -240,7 +245,69 @@
                 </div>
             </div>
 
+            <!-- Property Details Modal -->
+            <div id="propertyDetailsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; overflow-y: auto;">
+                <div style="background: white; margin: 2rem auto; border-radius: 12px; max-width: 700px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); overflow: hidden;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid #eee; background: #fff;">
+                        <h2 style="margin: 0; font-size: 1.5rem; font-weight: 800; color: var(--primary);">Property Details</h2>
+                        <button id="closeDetailsModal" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: #666; line-height: 1;">&times;</button>
+                    </div>
+                    <div style="padding: 2.5rem;">
+                        <div id="detailsContent"></div>
+                    </div>
+                </div>
+            </div>
         </main>
+    </div>
+
+    <!-- Chat Modal -->
+    <div id="chatModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 2000;">
+        <div style="background: white; width: 600px; height: 750px; max-width: 90%; max-height: 90vh; margin: 5vh auto; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+            <div style="padding: 1rem 1.5rem; background: var(--primary); color: white; display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="chatModalTitle" style="margin: 0; font-size: 1.1rem;">Chat with Seller</h3>
+                <button onclick="closeChatModal()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div id="chatModalMessages" style="flex: 1; padding: 1.5rem; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 1rem;"></div>
+            <div style="padding: 1rem; border-top: 1px solid #eee; display: flex; gap: 0.8rem;">
+                <input type="text" id="chatModalInput" placeholder="Type a message..." style="flex: 1; padding: 0.8rem 1.2rem; border: 1px solid #ddd; border-radius: 8px; outline: none; font-size: 1.1rem;" onkeypress="if(event.key==='Enter') sendModalMessage()">
+                <button onclick="sendModalMessage()" style="background: var(--primary); color: white; border: none; padding: 0 1rem; border-radius: 8px; cursor: pointer;">
+                    <i data-lucide="send" style="width: 18px; height: 18px;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bug Report Modal -->
+    <div id="bugModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 3000;">
+        <div style="background: white; width: 500px; margin: 10% auto; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
+            <div id="bugModalHeader" style="padding: 1.5rem; background: #ef4444; color: white; display: flex; justify-content: space-between; align-items: center; transition: background 0.3s;">
+                <h3 id="bugModalTitle" style="margin: 0; font-size: 1.2rem;">Report a Bug / Get Help</h3>
+                <button onclick="closeBugModal()" style="background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer;">&times;</button>
+            </div>
+            <div style="padding: 2rem;">
+                <!-- Form State -->
+                <div id="bugFormContainer">
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Subject</label>
+                        <input type="text" id="bugSubject" placeholder="Brief summary of the issue" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; outline: none;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Description</label>
+                        <textarea id="bugDescription" placeholder="Please describe the issue in detail..." style="width: 100%; height: 150px; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; outline: none; resize: none;"></textarea>
+                    </div>
+                    <button id="submitBugBtn" onclick="submitBug()" style="width: 100%; padding: 1rem; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Submit Report</button>
+                </div>
+                <!-- Success State -->
+                <div id="bugSuccessContainer" style="display: none; text-align: center; padding: 2rem 1rem;">
+                    <div style="width: 80px; height: 80px; background: #10b981; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                        <i data-lucide="check-circle-2" style="width: 48px; height: 48px;"></i>
+                    </div>
+                    <h2 style="font-size: 1.8rem; font-weight: 800; color: #1e293b; margin-bottom: 1rem;">Thank You!</h2>
+                    <p style="color: #64748b; font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.5;">Your report has been received. Our admin team will investigate it shortly to improve your experience.</p>
+                    <button onclick="closeBugModal()" style="width: 100%; padding: 1rem; background: #1e293b; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Close Window</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="messages" style="display:none;">
@@ -261,7 +328,6 @@
             }
         }
 
-        // City-Area Mapping
         const cityAreaMapping = {
             "Ahmedabad": ["Bopal", "Maninagar", "Satellite", "Gota"],
             "Gandhinagar": ["Infocity", "Sector 7"],
@@ -274,6 +340,7 @@
         const areaSelect = document.getElementById('filterArea');
 
         function updateAreas(selectedCity, selectedArea = "") {
+            if (!areaSelect) return;
             areaSelect.innerHTML = '';
             if (selectedCity && selectedCity !== 'all' && cityAreaMapping[selectedCity]) {
                 areaSelect.disabled = false;
@@ -281,57 +348,178 @@
                 defaultOpt.value = '';
                 defaultOpt.textContent = 'All Areas';
                 areaSelect.appendChild(defaultOpt);
-                
                 cityAreaMapping[selectedCity].forEach(area => {
                     const opt = document.createElement('option');
-                    opt.value = area;
-                    opt.textContent = area;
+                    opt.value = area; opt.textContent = area;
                     if (area === selectedArea) opt.selected = true;
                     areaSelect.appendChild(opt);
                 });
             } else {
                 areaSelect.disabled = true;
                 const opt = document.createElement('option');
-                opt.value = '';
-                opt.textContent = selectedCity === 'all' ? 'Select a City' : 'Select City First';
+                opt.value = ''; opt.textContent = selectedCity === 'all' ? 'Select a City' : 'Select City First';
                 areaSelect.appendChild(opt);
             }
         }
 
-        if (citySelect && areaSelect) {
-            citySelect.addEventListener('change', function() {
-                updateAreas(this.value);
-            });
+        if (citySelect) {
+            citySelect.addEventListener('change', function() { updateAreas(this.value); });
         }
 
-        // Auto-show filters if any filter is active
         (function () {
             const params = new URLSearchParams(window.location.search);
             const currentCity = params.get('city');
             const currentArea = params.get('area');
-
-            if (currentCity && currentCity !== 'all') {
-                updateAreas(currentCity, currentArea);
-            }
-
-            const hasFilter = ['city', 'property_type', 'price', 'bedrooms', 'area'].some(
-                key => params.has(key) && params.get(key) !== 'all' && params.get(key) !== ''
-            );
-            if (hasFilter) {
-                document.getElementById('filterSection').style.display = 'block';
-            }
+            if (currentCity && currentCity !== 'all') updateAreas(currentCity, currentArea);
+            const hasFilter = ['city', 'property_type', 'price', 'bedrooms', 'area'].some(key => params.has(key) && params.get(key) !== 'all' && params.get(key) !== '');
+            if (hasFilter) document.getElementById('filterSection').style.display = 'block';
         })();
 
-        // Optional: Dashboard guard
-        (function () {
-            const userRole = localStorage.getItem('userRole');
-            const isAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+        const propertyDetailsModal = document.getElementById('propertyDetailsModal');
+        const detailsContent = document.getElementById('detailsContent');
 
-            if (isAuthenticated && userRole && userRole !== 'buyer') {
-                console.log('User role mismatch. Expected: buyer, Got:', userRole);
+        function openPropertyModal(id) {
+            if (!propertyDetailsModal || !detailsContent) return;
+            detailsContent.innerHTML = '<div style="text-align: center; padding: 3rem;"><p>Loading...</p></div>';
+            propertyDetailsModal.style.display = 'block';
+            fetch(`/api/property-details/${id}/`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) { detailsContent.innerHTML = `<div>${data.error}</div>`; return; }
+                    detailsContent.innerHTML = `
+                        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem;">
+                            <div>
+                                <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem;">${data.title}</h3>
+                                <p><i data-lucide="map-pin"></i> ${data.area}, ${data.city}</p>
+                                <p><i data-lucide="home"></i> ${data.property_type}</p>
+                                <p><i data-lucide="ruler"></i> ${data.size_sqft} sq ft</p>
+                                <p><i data-lucide="bed-double"></i> ${data.bedrooms} BHK</p>
+                                <p><i data-lucide="calendar"></i> Age: ${data.age}</p>
+                            </div>
+                            <div>
+                                <div style="background: #f1f5f9; padding: 1.5rem; border-radius: 12px; text-align: center;">
+                                    <p style="font-weight: 600; font-size: 0.9rem;">ASKING PRICE</p>
+                                    <p style="font-size: 2rem; font-weight: 900; color: var(--primary);">${data.price}</p>
+                                </div>
+                                <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                                    ${data.is_interested ? (data.has_chat ? `
+                                        <button class="btn btn-primary" data-seller-id="${data.seller_id}" data-seller-name="${data.seller_name}" data-property-id="${data.id}" onclick="openChatModal(this)">Chat with ${data.seller_name}</button>
+                                    ` : `
+                                        <button class="btn btn-primary" style="background: #dc2626;" onclick="toggleInterest(${data.id}, this)">Withdraw Interest</button>
+                                        <button class="btn btn-secondary" data-seller-id="${data.seller_id}" data-seller-name="${data.seller_name}" data-property-id="${data.id}" onclick="openChatModal(this)">Start Chat</button>
+                                    `) : `
+                                        <button class="btn btn-primary" onclick="toggleInterest(${data.id}, this)">Show Interest</button>
+                                    `}
+                                </div>
+                            </div>
+                        </div>`;
+                    lucide.createIcons();
+                });
+        }
+
+        function toggleInterest(id, button) {
+            fetch(`/api/toggle-interest/${id}/`, { method: 'POST', headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json' } })
+            .then(res => res.json())
+            .then(data => { location.reload(); });
+        }
+
+        document.getElementById('closeDetailsModal').onclick = () => propertyDetailsModal.style.display = 'none';
+        window.onclick = (e) => { if (e.target === propertyDetailsModal) propertyDetailsModal.style.display = 'none'; };
+
+        let modalReceiverId = null;
+        let modalPropertyId = null;
+        function openChatModal(btn) {
+            modalReceiverId = btn.getAttribute('data-seller-id');
+            modalPropertyId = btn.getAttribute('data-property-id');
+            document.getElementById('chatModalTitle').textContent = `Chat with ${btn.getAttribute('data-seller-name')}`;
+            document.getElementById('chatModal').style.display = 'block';
+            fetchModalMessages();
+            window.chatInterval = setInterval(fetchModalMessages, 3000);
+        }
+        function closeChatModal() { document.getElementById('chatModal').style.display = 'none'; clearInterval(window.chatInterval); }
+        function fetchModalMessages() {
+            if (!modalReceiverId) return;
+            fetch(`/api/messages/fetch/${modalReceiverId}/`)
+                .then(res => res.json())
+                .then(data => {
+                    const display = document.getElementById('chatModalMessages');
+                    display.innerHTML = '';
+                    data.messages.forEach(msg => {
+                        const div = document.createElement('div');
+                        div.style.cssText = `max-width: 85%; padding: 0.8rem 1rem; border-radius: 8px; font-size: 1.1rem; ${msg.is_me ? 'align-self: flex-end; background: var(--primary); color: white;' : 'align-self: flex-start; background: white; border: 1px solid #eee;'}`;
+                        div.innerHTML = `${msg.content} <span style="font-size: 0.7rem; display: block; opacity: 0.7; text-align: right;">${msg.timestamp}</span>`;
+                        display.appendChild(div);
+                    });
+                    display.scrollTop = display.scrollHeight;
+                });
+        }
+        function sendModalMessage() {
+            const input = document.getElementById('chatModalInput');
+            if (!input.value.trim() || !modalReceiverId) return;
+            fetch('/api/messages/send/', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' }, body: JSON.stringify({ receiver_id: modalReceiverId, content: input.value, property_id: modalPropertyId }) })
+            .then(res => res.json()).then(() => { input.value = ''; fetchModalMessages(); });
+        }
+
+        function openBugModal() { 
+            document.getElementById('bugModal').style.display = 'block'; 
+        }
+        function closeBugModal() { 
+            document.getElementById('bugModal').style.display = 'none'; 
+            // Reset modal state after it's hidden
+            setTimeout(() => {
+                document.getElementById('bugFormContainer').style.display = 'block';
+                document.getElementById('bugSuccessContainer').style.display = 'none';
+                document.getElementById('bugModalHeader').style.background = '#ef4444';
+                document.getElementById('bugModalTitle').textContent = 'Report a Bug / Get Help';
+                document.getElementById('bugSubject').value = '';
+                document.getElementById('bugDescription').value = '';
+            }, 300);
+        }
+        function submitBug() {
+            const btn = document.getElementById('submitBugBtn');
+            const subject = document.getElementById('bugSubject').value.trim();
+            const description = document.getElementById('bugDescription').value.trim();
+            
+            if (!subject || !description) { 
+                showToast('Please fill in all fields.', 'error'); 
+                return; 
             }
-        })();
+            
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+            btn.style.opacity = '0.7';
+            
+            fetch('/api/report-bug/', { 
+                method: 'POST', 
+                headers: { 
+                    'X-CSRFToken': '{{ csrf_token }}', 
+                    'Content-Type': 'application/json' 
+                }, 
+                body: JSON.stringify({ subject, description }) 
+            })
+            .then(res => res.json())
+            .then(data => { 
+                if (data.status === 'success') { 
+                    // Success View
+                    document.getElementById('bugFormContainer').style.display = 'none';
+                    document.getElementById('bugSuccessContainer').style.display = 'block';
+                    document.getElementById('bugModalHeader').style.background = '#10b981';
+                    document.getElementById('bugModalTitle').textContent = 'Report Submitted';
+                    lucide.createIcons(); // Initialize the checkmark icon
+                } else {
+                    showToast(data.message || 'Error occurred during submission.', 'error');
+                }
+            })
+            .catch(err => {
+                showToast('Connection error. Please try again.', 'error');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = 'Submit Report';
+                btn.style.opacity = '1';
+            });
+        }
+        lucide.createIcons();
     </script>
 </body>
-
 </html>
