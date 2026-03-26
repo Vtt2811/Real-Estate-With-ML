@@ -225,26 +225,62 @@
                 <div class="sidebar-role" style="font-weight: 800; text-transform: uppercase;">Seller Dashboard</div>
             </div>
             <nav class="sidebar-nav">
-                <a href="{% url 'listings:seller_dashboard' %}">
-                    <span class="nav-icon"><i data-lucide="bar-chart-2"></i></span>
-                    <span>Overview</span>
-                </a>
-                <a href="{% url 'listings:add_property' %}">
-                    <span class="nav-icon"><i data-lucide="plus-circle"></i></span>
-                    <span>Add Property</span>
-                </a>
-                <a href="{% url 'listings:my_listings' %}">
-                    <span class="nav-icon"><i data-lucide="building"></i></span>
-                    <span>My Listings</span>
-                </a>
-                <a href="#" class="active">
-                    <span class="nav-icon"><i data-lucide="message-square"></i></span>
-                    <span>Messages</span>
-                </a>
-                <a href="{% url 'listings:profile' %}">
-                    <span class="nav-icon"><i data-lucide="user"></i></span>
-                    <span>Profile</span>
-                </a>
+                {% if profile.role == 'buyer' %}
+                    <a href="{% url 'listings:buyer_dashboard' %}">
+                        <span class="nav-icon"><i data-lucide="home"></i></span>
+                        <span>Browse Properties</span>
+                    </a>
+                    <a href="{% url 'listings:price_prediction' %}">
+                        <span class="nav-icon"><i data-lucide="bar-chart-2"></i></span>
+                        <span>Price Predictions</span>
+                    </a>
+                    <a href="{% url 'listings:messages' %}?view=buyer" class="active">
+                        <span class="nav-icon"><i data-lucide="message-square"></i></span>
+                        <span>Messages</span>
+                    </a>
+                    <a href="{% url 'listings:profile' %}">
+                        <span class="nav-icon"><i data-lucide="user"></i></span>
+                        <span>Profile</span>
+                    </a>
+                    <a href="javascript:void(0)" onclick="openBugModal()">
+                        <span class="nav-icon"><i data-lucide="help-circle"></i></span>
+                        <span>Report Bug</span>
+                    </a>
+                {% elif profile.role == 'seller' %}
+                    <a href="{% url 'listings:seller_dashboard' %}">
+                        <span class="nav-icon"><i data-lucide="bar-chart-2"></i></span>
+                        <span>Overview</span>
+                    </a>
+                    <a href="{% url 'listings:add_property' %}">
+                        <span class="nav-icon"><i data-lucide="plus-circle"></i></span>
+                        <span>Add Property</span>
+                    </a>
+                    <a href="{% url 'listings:my_listings' %}">
+                        <span class="nav-icon"><i data-lucide="building"></i></span>
+                        <span>My Listings</span>
+                    </a>
+                    <a href="{% url 'listings:messages' %}?view=seller" class="active">
+                        <span class="nav-icon"><i data-lucide="message-square"></i></span>
+                        <span>Messages</span>
+                    </a>
+                    <a href="{% url 'listings:profile' %}">
+                        <span class="nav-icon"><i data-lucide="user"></i></span>
+                        <span>Profile</span>
+                    </a>
+                    <a href="javascript:void(0)" onclick="openBugModal()">
+                        <span class="nav-icon"><i data-lucide="help-circle"></i></span>
+                        <span>Report Bug</span>
+                    </a>
+                {% elif profile.role == 'admin' %}
+                    <a href="{% url 'listings:admin_dashboard' %}">
+                        <span class="nav-icon"><i data-lucide="shield"></i></span>
+                        <span>Admin Panel</span>
+                    </a>
+                    <a href="{% url 'listings:profile' %}">
+                        <span class="nav-icon"><i data-lucide="user"></i></span>
+                        <span>Profile</span>
+                    </a>
+                {% endif %}
                 <a href="{% url 'listings:signout' %}">
                     <span class="nav-icon"><i data-lucide="log-out"></i></span>
                     <span>Sign Out</span>
@@ -266,7 +302,7 @@
                     </div>
                     <div class="chat-list">
                         {% for chat in chat_list %}
-                        <div class="chat-item" onclick="loadChat({{ chat.user.id }}, '{{ chat.user.username }}')">
+                        <div class="chat-item" onclick="loadChat('{{ chat.user.id|default:'' }}', '{{ chat.user.username|escapejs }}')">
                             <div class="user-avatar">{{ chat.user.username|slice:":1"|upper }}</div>
                             <div class="chat-info">
                                 <div class="chat-name">
@@ -309,6 +345,81 @@
             </div>
         </main>
     </div>
+
+    <!-- Bug Report Modal (Hidden by default) -->
+    <div id="bugModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 3000;">
+        <div style="background: white; width: 500px; margin: 10% auto; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
+            <div id="bugModalHeader" style="padding: 1.5rem; background: #ef4444; color: white; display: flex; justify-content: space-between; align-items: center; transition: background 0.3s;">
+                <h3 id="bugModalTitle" style="margin: 0; font-size: 1.2rem;">Report a Bug / Get Help</h3>
+                <button onclick="closeBugModal()" style="background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer;">&times;</button>
+            </div>
+            <div style="padding: 2rem;">
+                <div id="bugFormContainer">
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Subject</label>
+                        <input type="text" id="bugSubject" placeholder="Brief summary of the issue" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; outline: none;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Description</label>
+                        <textarea id="bugDescription" placeholder="Please describe the issue in detail..." style="width: 100%; height: 150px; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; outline: none; resize: none;"></textarea>
+                    </div>
+                    <button id="submitBugBtn" onclick="submitBug()" style="width: 100%; padding: 1rem; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Submit Report</button>
+                </div>
+                <div id="bugSuccessContainer" style="display: none; text-align: center; padding: 2rem 1rem;">
+                    <div style="width: 80px; height: 80px; background: #10b981; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                        <i data-lucide="check-circle-2" style="width: 48px; height: 48px;"></i>
+                    </div>
+                    <h2 style="font-size: 1.8rem; font-weight: 800; color: #1e293b; margin-bottom: 1rem;">Thank You!</h2>
+                    <p style="color: #64748b; font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.5;">Your report has been received.</p>
+                    <button onclick="closeBugModal()" style="width: 100%; padding: 1rem; background: #1e293b; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Close Window</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/ui.js' %}"></script>
+    <script>
+        // Bug Modal Logic
+        function openBugModal() { document.getElementById('bugModal').style.display = 'block'; }
+        function closeBugModal() { 
+            document.getElementById('bugModal').style.display = 'none'; 
+            setTimeout(() => {
+                document.getElementById('bugFormContainer').style.display = 'block';
+                document.getElementById('bugSuccessContainer').style.display = 'none';
+                document.getElementById('bugModalHeader').style.background = '#ef4444';
+                document.getElementById('bugModalTitle').textContent = 'Report a Bug / Get Help';
+                document.getElementById('bugSubject').value = '';
+                document.getElementById('bugDescription').value = '';
+            }, 300);
+        }
+        function submitBug() {
+            const btn = document.getElementById('submitBugBtn');
+            const subject = document.getElementById('bugSubject').value.trim();
+            const description = document.getElementById('bugDescription').value.trim();
+            
+            if (!subject || !description) { alert('Please fill in all fields.'); return; }
+            
+            btn.disabled = true; btn.textContent = 'Sending...'; btn.style.opacity = '0.7';
+            
+            fetch('/api/report-bug/', { 
+                method: 'POST', 
+                headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ subject, description }) 
+            })
+            .then(res => res.json())
+            .then(data => { 
+                if (data.status === 'success') { 
+                    document.getElementById('bugFormContainer').style.display = 'none';
+                    document.getElementById('bugSuccessContainer').style.display = 'block';
+                    document.getElementById('bugModalHeader').style.background = '#10b981';
+                    document.getElementById('bugModalTitle').textContent = 'Report Submitted';
+                    lucide.createIcons();
+                } else { alert(data.message || 'Error occurred during submission.'); }
+            })
+            .catch(err => { alert('Connection error. Please try again.'); })
+            .finally(() => { btn.disabled = false; btn.textContent = 'Submit Report'; btn.style.opacity = '1'; });
+        }
+    </script>
 
     <script>
         let currentReceiverId = null;

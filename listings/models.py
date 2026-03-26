@@ -177,16 +177,5 @@ class Message(models.Model):
         return f"From {self.sender.username} to {self.receiver.username}"
 
 
-class BugReport(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bug_reports')
-    subject = models.CharField(max_length=200)
-    description = models.TextField()
-    status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('resolved', 'Resolved')], default='pending')
-    created_at = models.DateTimeField(auto_now_add=True)
-    resolved_at = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ['-created_at']
-
-    def __str__(self):
-        return f"Bug: {self.subject} ({self.status})"
+# Message model (already defined at 164)
+# Removing duplicated BugReport model from the end of the file.

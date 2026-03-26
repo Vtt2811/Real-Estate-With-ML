@@ -117,7 +117,8 @@ def messages_view(request):
         })
     
     context = {
-        'chat_list': sorted(chat_list, key=lambda x: x['last_message'].timestamp if x['last_message'] else None, reverse=True)
+        'chat_list': sorted(chat_list, key=lambda x: x['last_message'].timestamp if x['last_message'] else None, reverse=True),
+        'profile': request.user.profile,
     }
     
     # Use different base depending on role or context

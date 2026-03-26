@@ -155,16 +155,16 @@
                     <img src="{% static 'images/homefinder_icon.png' %}" alt="HomeFinder Logo" style="height: 35px; width: auto; object-fit: contain; border-radius: 8px;" />
                     <span style="font-size: 1.6rem; font-weight: 800; color: #1e293b; letter-spacing: -0.04em;">HomeFinder</span>
                 </a>
-                <div class="sidebar-role" style="font-weight: 800; text-transform: uppercase; color: #dc2626;">Admin Dashboard</div>
+                <div class="sidebar-role" style="font-weight: 800; text-transform: uppercase; color: var(--accent-purple);">Admin Dashboard</div>
             </div>
             <nav class="sidebar-nav">
-                <a href="#" class="active">
-                    <span class="nav-icon"><i data-lucide="layout"></i></span>
-                    <span>Overview</span>
+                <a href="{% url 'listings:admin_dashboard' %}" class="active">
+                    <span class="nav-icon"><i data-lucide="shield"></i></span>
+                    <span>Admin Panel</span>
                 </a>
                 <a href="{% url 'listings:profile' %}">
                     <span class="nav-icon"><i data-lucide="user"></i></span>
-                    <span>Settings</span>
+                    <span>Profile</span>
                 </a>
                 <a href="{% url 'listings:signout' %}">
                     <span class="nav-icon"><i data-lucide="log-out"></i></span>
@@ -236,7 +236,7 @@
                                 <p>Reported by <strong>{{ bug.user.username }}</strong> &bull; {{ bug.created_at|timesince }} ago</p>
                                 <p style="margin-top: 0.5rem; background: white; padding: 0.5rem; border-radius: 8px; border: 1px dashed #cbd5e1;">{{ bug.description }}</p>
                             </div>
-                            <button class="btn-resolve" onclick="resolveBug({{ bug.id }})">Mark Resolved</button>
+                            <button class="btn-resolve" data-bug-id="{{ bug.id }}" onclick="resolveBugClick(this)">Mark Resolved</button>
                         </div>
                         {% empty %}
                         <div style="text-align: center; padding: 2rem; color: #64748b;">
@@ -308,6 +308,12 @@
             }
             return cookieValue;
         };
+
+        function resolveBugClick(btn) {
+            const id = btn.getAttribute('data-bug-id');
+            if (!id) return;
+            resolveBug(id);
+        }
 
         function resolveBug(id) {
             if (!confirm('Resolve this report?')) return;
