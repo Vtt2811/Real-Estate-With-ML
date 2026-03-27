@@ -93,7 +93,7 @@ class PropertyForm(forms.ModelForm):
         "Surat": ["Adajan", "Surat", "Varachha", "Vesu"],
         "Vadodara": ["Alkapuri", "Gotri", "Manjalpur"]
     }
-    
+
     class Meta:
         model = Property
         fields = [

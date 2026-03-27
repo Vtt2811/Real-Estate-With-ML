@@ -17,7 +17,7 @@ from django.core.paginator import Paginator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
-from .models import Profile, PasswordResetOTP, Property, BuyerInterest, Message, BugReport
+from .models import Profile, PasswordResetOTP, Property, BuyerInterest, Message, BugReport, PropertyImage
 
 
 @login_required(login_url='listings:signin')
@@ -25,24 +25,38 @@ def fetch_messages(request, receiver_id):
     """Fetch chat history between current user and another user"""
     receiver = get_object_or_404(User, id=receiver_id)
     
-    # Get messages where (sender=user, receiver=other) OR (sender=other, receiver=user)
     messages_list = Message.objects.filter(
         (Q(sender=request.user, receiver=receiver) | 
          Q(sender=receiver, receiver=request.user))
-    ).order_by('timestamp')
+    ).select_related('property').order_by('timestamp')
     
     # Mark messages as read
     messages_list.filter(receiver=request.user).update(is_read=True)
     
+    # Find the property context for this conversation
+    prop_msg = messages_list.filter(property__isnull=False).first()
+    property_info = None
+    if prop_msg and prop_msg.property:
+        p = prop_msg.property
+        property_info = {
+            'title': p.title,
+            'price': f'₹ {p.price_inr:,.0f}' if p.price_inr else 'N/A',
+            'image_url': p.image.url if p.image else None,
+            'city': p.city,
+            'area': p.area,
+        }
+    
     data = [{
+        'id': msg.id,
         'sender': msg.sender.username,
         'sender_id': msg.sender.id,
-        'content': msg.content,
+        'content': '🚫 This message was deleted' if msg.is_deleted else msg.content,
         'timestamp': msg.timestamp.strftime('%H:%M'),
-        'is_me': msg.sender == request.user
+        'is_me': msg.sender == request.user,
+        'is_deleted': msg.is_deleted,
     } for msg in messages_list]
     
-    return JsonResponse({'messages': data})
+    return JsonResponse({'messages': data, 'property_info': property_info})
 
 
 @login_required(login_url='listings:signin')
@@ -81,6 +95,18 @@ def send_message(request):
 
 
 @login_required(login_url='listings:signin')
+@require_POST
+def delete_message(request, msg_id):
+    """Soft-delete a message (only sender can delete)"""
+    msg = get_object_or_404(Message, id=msg_id)
+    if msg.sender != request.user:
+        return JsonResponse({'error': 'You can only delete your own messages'}, status=403)
+    msg.is_deleted = True
+    msg.save()
+    return JsonResponse({'status': 'success'})
+
+
+@login_required(login_url='listings:signin')
 def messages_view(request):
     """Main messages dashboard showing all conversations"""
     # Get all direct messages where the user is either sender or receiver
@@ -103,17 +129,23 @@ def messages_view(request):
     # For each conversational partner, get the latest message and unread count
     chat_list = []
     for other in other_users:
-        last_msg = Message.objects.filter(
+        conv_msgs = Message.objects.filter(
             (Q(sender=request.user, receiver=other) | 
              Q(sender=other, receiver=request.user))
-        ).order_by('timestamp').last()
+        ).select_related('property').order_by('timestamp')
         
+        last_msg = conv_msgs.last()
         unread_count = Message.objects.filter(sender=other, receiver=request.user, is_read=False).count()
+        
+        # Find property context for this conversation
+        prop_msg = conv_msgs.filter(property__isnull=False).first()
+        prop = prop_msg.property if prop_msg else None
         
         chat_list.append({
             'user': other,
             'last_message': last_msg,
-            'unread_count': unread_count
+            'unread_count': unread_count,
+            'property': prop,
         })
     
     context = {
@@ -416,7 +448,7 @@ def seller_dashboard(request):
 def add_property(request):
     """Dedicated page for adding a new property"""
     if request.method == 'POST':
-        form = PropertyForm(request.POST)
+        form = PropertyForm(request.POST, request.FILES)
         if form.is_valid():
             # Create property with current user as seller
             property_obj = form.save(commit=False)
@@ -425,6 +457,17 @@ def add_property(request):
             # Current Platform Year: 2026
             property_obj.year = 2026 - property_obj.age_of_property_years
             property_obj.save()
+
+            # Handle multiple images — image field is NOT in Meta.fields
+            # so we must manually assign the first file to property_obj.image
+            images = request.FILES.getlist('image')
+            if images:
+                property_obj.image = images[0]
+                property_obj.save()
+                # Save extra images to PropertyImage model
+                for img in images[1:]:
+                    PropertyImage.objects.create(property=property_obj, image=img)
+
             messages.success(request, f'Property "{property_obj.title}" added successfully! View it in My Listings.')
             return redirect('listings:add_property')
         else:
@@ -461,12 +504,23 @@ def edit_property(request, pk):
     """Edit an existing property"""
     property_obj = get_object_or_404(Property, pk=pk, seller=request.user)
     if request.method == 'POST':
-        form = PropertyForm(request.POST, instance=property_obj)
+        form = PropertyForm(request.POST, request.FILES, instance=property_obj)
         if form.is_valid():
             property_obj = form.save(commit=False)
             # Automatically calculate/update Built Year based on Age
             property_obj.year = 2026 - property_obj.age_of_property_years
             property_obj.save()
+
+            # Handle additional images
+            images = request.FILES.getlist('image')
+            if images:
+                # First image replaces the main property image
+                property_obj.image = images[0]
+                property_obj.save()
+                # Others are added to PropertyImage
+                for img in images[1:]:
+                    PropertyImage.objects.create(property=property_obj, image=img)
+
             messages.success(request, f'Property "{property_obj.title}" updated successfully!')
             return redirect('listings:my_listings')
         else:
@@ -522,7 +576,9 @@ def property_details_api(request, pk):
         'has_chat': Message.objects.filter(
             (Q(sender=request.user, receiver=property_obj.seller) | 
              Q(sender=property_obj.seller, receiver=request.user))
-        ).exists()
+        ).exists(),
+        'image_url': property_obj.image.url if property_obj.image else None,
+        'extra_images': [img.image.url for img in property_obj.extra_images.all()]
     }
     return JsonResponse(data)
 

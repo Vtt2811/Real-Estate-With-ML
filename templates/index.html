@@ -93,12 +93,16 @@
       <a href="#" class="listing-card reveal" style="transition-delay: {{ forloop.counter0|add:1|add:0 }}00ms;" data-listing-url="{% url 'listings:listing_details' %}">
         <div class="listing-img-wrapper">
           <div class="listing-badge">Prime Edition</div>
-          {% if forloop.counter0|divisibleby:3 %}
-          <img src="{% static 'images/Depth 5, Frame 0.png' %}" alt="Home" />
-          {% elif forloop.counter0|add:"-1"|divisibleby:3 %}
-          <img src="{% static 'images/Depth 6 Frame 0.png' %}" alt="Home" />
+          {% if prop.image %}
+            <img src="{{ prop.image.url }}" alt="{{ prop.title }}" />
           {% else %}
-          <img src="{% static 'images/hero sectione.png' %}" alt="Home" />
+            {% if forloop.counter0|divisibleby:3 %}
+            <img src="{% static 'images/Depth 5, Frame 0.png' %}" alt="Home" />
+            {% elif forloop.counter0|add:"-1"|divisibleby:3 %}
+            <img src="{% static 'images/Depth 6 Frame 0.png' %}" alt="Home" />
+            {% else %}
+            <img src="{% static 'images/hero sectione.png' %}" alt="Home" />
+            {% endif %}
           {% endif %}
         </div>
         <div class="listing-info">

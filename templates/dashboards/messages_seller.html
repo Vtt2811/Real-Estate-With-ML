@@ -108,6 +108,8 @@
             display: flex;
             flex-direction: column;
             background: white;
+            height: 100%;
+            overflow: hidden;
         }
 
         .chat-header {
@@ -120,11 +122,12 @@
 
         .chat-messages {
             flex: 1;
-            padding: 2rem;
+            min-height: 0;
+            padding: 1.5rem;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1rem;
             background: #f8fafc;
         }
 
@@ -153,6 +156,13 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
+        .message-bubble.deleted {
+            opacity: 0.6;
+            font-style: italic;
+        }
+        .message-bubble.deleted.me { background: #94a3b8; }
+        .message-bubble.deleted.other { background: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; }
+
         .message-time {
             font-size: 0.75rem;
             margin-top: 0.4rem;
@@ -160,6 +170,32 @@
             display: block;
             text-align: right;
         }
+
+        .msg-delete-btn {
+            position: absolute; top: 6px; right: 6px;
+            background: rgba(0,0,0,0.15); border: none; border-radius: 50%;
+            width: 26px; height: 26px; cursor: pointer; display: none;
+            align-items: center; justify-content: center; color: inherit;
+            font-size: 0.75rem; transition: background 0.2s;
+        }
+        .msg-delete-btn:hover { background: rgba(220,38,38,0.8); color: white; }
+        .message-bubble:hover .msg-delete-btn { display: flex; }
+
+        .property-banner {
+            display: none; padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, #eff6ff, #f0f9ff);
+            border-bottom: 1px solid #dbeafe;
+            align-items: center; gap: 1rem;
+        }
+        .property-banner img {
+            width: 52px; height: 52px; border-radius: 10px;
+            object-fit: cover; border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .property-banner-info { flex: 1; }
+        .property-banner-title { font-weight: 700; font-size: 0.95rem; color: #1e293b; }
+        .property-banner-meta { font-size: 0.82rem; color: #64748b; margin-top: 2px; }
+        .property-banner-price { font-weight: 800; font-size: 1.1rem; color: var(--primary); white-space: nowrap; }
 
         .chat-input-area {
             padding: 1.5rem 2rem;
@@ -209,6 +245,125 @@
             color: #94a3b8;
             background: #fcfdfe;
         }
+
+        /* ======== Quick Actions Panel ======== */
+        .quick-actions-toggle {
+            display: flex; align-items: center; justify-content: center;
+            padding: 5px; border: none; background: #f1f5f9;
+            cursor: pointer; transition: all 0.25s; width: 100%;
+            border-top: 1px solid #eef2f6;
+        }
+        .quick-actions-toggle:hover { background: #e2e8f0; }
+        .quick-actions-toggle svg { transition: transform 0.3s; }
+        .quick-actions-toggle.open svg { transform: rotate(180deg); }
+
+        .quick-actions-panel {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+            background: #fff; border-top: 1px solid #eef2f6;
+        }
+        .quick-actions-panel.open { max-height: 280px; }
+
+        .qa-tabs {
+            display: flex; border-bottom: 2px solid #eef2f6;
+        }
+        .qa-tab {
+            flex: 1; padding: 0.7rem; text-align: center;
+            font-weight: 700; font-size: 0.85rem; cursor: pointer;
+            color: #94a3b8; border: none; background: none;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s; display: flex;
+            align-items: center; justify-content: center; gap: 0.4rem;
+        }
+        .qa-tab.active { color: #1e3a5f; border-bottom-color: #1e3a5f; }
+        .qa-tab:hover { color: #475569; }
+
+        .qa-content { display: none; padding: 0.8rem 1.2rem; overflow-y: auto; max-height: 220px; }
+        .qa-content.active { display: block; }
+
+        .qa-category-bar {
+            display: flex; gap: 0.4rem; overflow-x: auto;
+            padding-bottom: 0.6rem; margin-bottom: 0.6rem;
+            scrollbar-width: none;
+        }
+        .qa-category-bar::-webkit-scrollbar { display: none; }
+        .qa-category {
+            padding: 0.35rem 0.9rem; border-radius: 20px; font-size: 0.78rem;
+            font-weight: 600; cursor: pointer; white-space: nowrap;
+            border: 1px solid #e2e8f0; background: white; color: #64748b;
+            transition: all 0.2s;
+        }
+        .qa-category.active { background: #1e3a5f; color: white; border-color: #1e3a5f; }
+        .qa-category:hover { border-color: #94a3b8; }
+
+        .qa-chips {
+            display: flex; flex-wrap: wrap; gap: 0.4rem;
+        }
+        .qa-chip {
+            padding: 0.45rem 0.9rem; border-radius: 20px; font-size: 0.82rem;
+            border: 1px solid #e2e8f0; background: #f8fafc; color: #1e293b;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .qa-chip:hover { background: #eff6ff; border-color: var(--primary); transform: translateY(-1px); }
+
+        .offer-asking {
+            font-size: 0.82rem; color: #64748b; margin-bottom: 0.4rem;
+        }
+        .offer-asking strong { color: #1e293b; font-size: 1.1rem; }
+        .offer-chips {
+            display: flex; gap: 0.5rem; margin-bottom: 0.8rem; flex-wrap: wrap;
+        }
+        .offer-chip {
+            padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.82rem;
+            font-weight: 600; cursor: pointer; border: 2px solid #e2e8f0;
+            background: white; color: #334155; transition: all 0.2s;
+        }
+        .offer-chip.active { background: #1e3a5f; color: white; border-color: #1e3a5f; }
+        .offer-chip:hover { border-color: #1e3a5f; transform: translateY(-1px); }
+
+        .offer-input-row {
+            display: flex; align-items: center; gap: 0.6rem;
+            margin-bottom: 0.6rem;
+        }
+        .offer-input-wrap {
+            flex: 1; display: flex; align-items: center;
+            border: 2px solid #e2e8f0; border-radius: 10px;
+            padding: 0.6rem 1rem; background: white;
+            transition: border-color 0.2s;
+        }
+        .offer-input-wrap:focus-within { border-color: #1e3a5f; }
+        .offer-input-wrap .currency { font-weight: 800; font-size: 1.3rem; color: #1e293b; margin-right: 0.5rem; }
+        .offer-input-wrap input {
+            flex: 1; border: none; outline: none; font-size: 1.3rem;
+            font-weight: 800; color: #1e293b; background: transparent;
+            min-width: 0;
+        }
+        .offer-send-btn {
+            padding: 0.7rem 1.4rem; border: none; border-radius: 10px;
+            font-weight: 800; font-size: 0.95rem; cursor: pointer;
+            background: #1e3a5f; color: white; transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .offer-send-btn:hover { background: #15294a; transform: translateY(-1px); }
+
+        .offer-feedback-bar {
+            display: flex; align-items: center; gap: 0.6rem;
+            padding: 0.5rem 0.8rem; border-radius: 10px;
+            font-size: 0.8rem; font-weight: 600; transition: all 0.3s;
+        }
+        .offer-feedback-bar.good { background: #ecfdf5; color: #059669; }
+        .offer-feedback-bar.good .fb-icon { background: #5ec5b0; color: white; }
+        .offer-feedback-bar.mid { background: #fffbeb; color: #b45309; }
+        .offer-feedback-bar.mid .fb-icon { background: #f59e0b; color: white; }
+        .offer-feedback-bar.low { background: #fef2f2; color: #dc2626; }
+        .offer-feedback-bar.low .fb-icon { background: #ef4444; color: white; }
+        .fb-icon {
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; flex-shrink: 0;
+        }
+        .fb-text strong { display: block; font-size: 0.82rem; }
+        .fb-text small { font-weight: 500; opacity: 0.8; }
     </style>
 </head>
 
@@ -328,14 +483,70 @@
                     </div>
                     
                     <!-- Active Chat (Hidden by default) -->
-                    <div id="activeChat" style="display: none; height: 100%; flex-direction: column;">
+                    <div id="activeChat" style="display: none; flex-direction: column; flex: 1; overflow: hidden;">
                         <div class="chat-header">
                             <div class="user-avatar" style="width: 40px; height: 40px; font-size: 0.9rem;" id="activeUserAvatar"></div>
                             <h3 style="margin: 0; font-size: 1.15rem;" id="activeUserName"></h3>
                         </div>
+                        <!-- Property Info Banner -->
+                        <div class="property-banner" id="propertyBanner">
+                            <img id="bannerImg" src="" alt="">
+                            <div class="property-banner-info">
+                                <div class="property-banner-title" id="bannerTitle"></div>
+                                <div class="property-banner-meta" id="bannerMeta"></div>
+                            </div>
+                            <div class="property-banner-price" id="bannerPrice"></div>
+                        </div>
                         <div class="chat-messages" id="messageDisplay">
                             <!-- Messages will load here -->
                         </div>
+                        
+                        <!-- Quick Actions Toggle -->
+                        <button class="quick-actions-toggle open" id="qaToggle" onclick="toggleQuickActions()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                        </button>
+                        
+                        <!-- Quick Actions Panel -->
+                        <div class="quick-actions-panel open" id="qaPanel">
+                            <div class="qa-tabs">
+                                <button class="qa-tab active" onclick="switchQATab('questions', this)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> QUESTIONS
+                                </button>
+                                <button class="qa-tab" onclick="switchQATab('offer', this)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> MAKE OFFER
+                                </button>
+                            </div>
+                            
+                            <!-- Questions Tab -->
+                            <div class="qa-content active" id="qaQuestions">
+                                <div class="qa-category-bar">
+                                    <span class="qa-category active" onclick="switchCategory('popular', this)">Popular</span>
+                                    <span class="qa-category" onclick="switchCategory('property', this)">Property</span>
+                                    <span class="qa-category" onclick="switchCategory('payment', this)">Payment</span>
+                                    <span class="qa-category" onclick="switchCategory('visit', this)">Visit</span>
+                                    <span class="qa-category" onclick="switchCategory('docs', this)">Documents</span>
+                                </div>
+                                <div class="qa-chips" id="qaChips"></div>
+                            </div>
+                            
+                            <!-- Make Offer Tab -->
+                            <div class="qa-content" id="qaOffer">
+                                <div class="offer-asking" id="offerAsking">Asking Price: <strong id="askingPriceDisplay">—</strong></div>
+                                <div class="offer-chips" id="offerChips"></div>
+                                <div class="offer-input-row">
+                                    <div class="offer-input-wrap">
+                                        <span class="currency">₹</span>
+                                        <input type="text" id="offerInput" placeholder="Enter your offer" oninput="onOfferInput(this.value)">
+                                    </div>
+                                    <button class="offer-send-btn" onclick="sendOffer()">Send</button>
+                                </div>
+                                <div class="offer-feedback-bar good" id="offerFeedback" style="display:none;">
+                                    <div class="fb-icon" id="fbIcon">🤝</div>
+                                    <div class="fb-text"><strong id="fbTitle">Very good offer!</strong><small id="fbSub">High chances of seller's reply.</small></div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="chat-input-area">
                             <input type="text" id="messageInput" placeholder="Type your message here..." onkeypress="if(event.key==='Enter') sendMessage()">
                             <button id="sendBtn" onclick="sendMessage()"><i data-lucide="send"></i></button>
@@ -444,14 +655,51 @@
                 .then(data => {
                     const display = document.getElementById('messageDisplay');
                     display.innerHTML = '';
+                    
+                    // Show property banner
+                    const banner = document.getElementById('propertyBanner');
+                    if (data.property_info) {
+                        banner.style.display = 'flex';
+                        document.getElementById('bannerTitle').textContent = data.property_info.title;
+                        document.getElementById('bannerMeta').textContent = `${data.property_info.area}, ${data.property_info.city}`;
+                        document.getElementById('bannerPrice').textContent = data.property_info.price;
+                        const bannerImg = document.getElementById('bannerImg');
+                        if (data.property_info.image_url) {
+                            bannerImg.src = data.property_info.image_url;
+                            bannerImg.style.display = 'block';
+                        } else {
+                            bannerImg.style.display = 'none';
+                        }
+                    } else {
+                        banner.style.display = 'none';
+                    }
+                    
                     data.messages.forEach(msg => {
                         const div = document.createElement('div');
-                        div.className = `message-bubble ${msg.is_me ? 'me' : 'other'}`;
-                        div.innerHTML = `${msg.content} <span class="message-time">${msg.timestamp}</span>`;
+                        div.className = `message-bubble ${msg.is_me ? 'me' : 'other'}${msg.is_deleted ? ' deleted' : ''}`;
+                        
+                        let deleteBtn = '';
+                        if (msg.is_me && !msg.is_deleted) {
+                            deleteBtn = `<button class="msg-delete-btn" onclick="deleteMessage(${msg.id})" title="Delete">✕</button>`;
+                        }
+                        
+                        div.innerHTML = `${deleteBtn}${msg.content} <span class="message-time">${msg.timestamp}</span>`;
                         display.appendChild(div);
                     });
                     display.scrollTop = display.scrollHeight;
                 });
+        }
+        
+        function deleteMessage(msgId) {
+            if (!confirm('Delete this message? It will show as deleted for everyone.')) return;
+            fetch(`/api/messages/delete/${msgId}/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') fetchMessages(currentReceiverId);
+            });
         }
 
         function sendMessage() {
@@ -478,6 +726,136 @@
                 }
             });
         }
+
+        // =============== Quick Actions Panel ===============
+        let currentPropertyPrice = 0;
+        let selectedOfferAmount = 0;
+
+        const questionsByCategory = {
+            popular: ['Is this property still available?', "Let's schedule a visit?", 'What is the exact location?', 'Can you share more photos?', 'Is the price negotiable?'],
+            property: ['How old is this property?', 'What is the carpet area?', 'Which floor is it on?', 'Does it have parking?', 'Is it furnished or semi-furnished?', 'What is the facing direction?'],
+            payment: ['What are the payment terms?', 'Is loan facility available?', 'What is the maintenance charge?', 'Are there any hidden charges?', 'Is registration included?'],
+            visit: ["When can I visit the property?", 'Can I visit this weekend?', 'Is the property ready for possession?', 'Can you share the exact address?'],
+            docs: ['Is the title clear?', 'Can you share the sale deed?', 'Is NOC available?', 'Are all approvals in place?', 'Is there RERA registration?']
+        };
+
+        function toggleQuickActions() {
+            document.getElementById('qaPanel').classList.toggle('open');
+            document.getElementById('qaToggle').classList.toggle('open');
+        }
+
+        function switchQATab(tab, el) {
+            document.querySelectorAll('.qa-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            document.querySelectorAll('.qa-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tab === 'questions' ? 'qaQuestions' : 'qaOffer').classList.add('active');
+            if (tab === 'offer') setupOfferChips();
+        }
+
+        function switchCategory(cat, el) {
+            document.querySelectorAll('.qa-category').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            renderQuestionChips(cat);
+        }
+
+        function renderQuestionChips(category) {
+            const container = document.getElementById('qaChips');
+            container.innerHTML = '';
+            (questionsByCategory[category] || []).forEach(q => {
+                const chip = document.createElement('span');
+                chip.className = 'qa-chip';
+                chip.textContent = q;
+                chip.onclick = () => {
+                    document.getElementById('messageInput').value = q;
+                    sendMessage();
+                };
+                container.appendChild(chip);
+            });
+        }
+
+        function formatINR(num) {
+            return num.toLocaleString('en-IN');
+        }
+
+        function setupOfferChips() {
+            const priceText = document.getElementById('bannerPrice')?.textContent || '';
+            const numStr = priceText.replace(/[^\d]/g, '');
+            currentPropertyPrice = parseInt(numStr) || 0;
+            
+            const container = document.getElementById('offerChips');
+            container.innerHTML = '';
+            const askDisplay = document.getElementById('askingPriceDisplay');
+            const offerInput = document.getElementById('offerInput');
+            
+            if (currentPropertyPrice === 0) {
+                askDisplay.textContent = 'No price set';
+                offerInput.value = '';
+                updateOfferFeedback(0);
+                return;
+            }
+            
+            askDisplay.textContent = '₹ ' + formatINR(currentPropertyPrice);
+            
+            const percents = [100, 95, 90, 85, 80];
+            percents.forEach((pct, i) => {
+                const amount = Math.round(currentPropertyPrice * pct / 100);
+                const chip = document.createElement('span');
+                chip.className = 'offer-chip' + (i === 0 ? ' active' : '');
+                chip.textContent = '₹ ' + formatINR(amount);
+                chip.onclick = () => {
+                    document.querySelectorAll('.offer-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    selectedOfferAmount = amount;
+                    offerInput.value = formatINR(amount);
+                    updateOfferFeedback(amount);
+                };
+                container.appendChild(chip);
+            });
+            selectedOfferAmount = currentPropertyPrice;
+            offerInput.value = formatINR(currentPropertyPrice);
+            updateOfferFeedback(currentPropertyPrice);
+        }
+
+        function onOfferInput(val) {
+            const num = parseInt(val.replace(/[^\d]/g, '')) || 0;
+            selectedOfferAmount = num;
+            document.querySelectorAll('.offer-chip').forEach(c => c.classList.remove('active'));
+            updateOfferFeedback(num);
+        }
+
+        function updateOfferFeedback(amount) {
+            const fb = document.getElementById('offerFeedback');
+            if (!amount || !currentPropertyPrice) { fb.style.display = 'none'; return; }
+            fb.style.display = 'flex';
+            const pct = (amount / currentPropertyPrice) * 100;
+            const icon = document.getElementById('fbIcon');
+            const title = document.getElementById('fbTitle');
+            const sub = document.getElementById('fbSub');
+            if (pct >= 95) {
+                fb.className = 'offer-feedback-bar good';
+                icon.textContent = '🤝'; title.textContent = 'Very good offer!';
+                sub.textContent = "High chances of seller's reply.";
+            } else if (pct >= 85) {
+                fb.className = 'offer-feedback-bar mid';
+                icon.textContent = '💬'; title.textContent = 'Reasonable offer';
+                sub.textContent = 'Seller might negotiate.';
+            } else {
+                fb.className = 'offer-feedback-bar low';
+                icon.textContent = '⚡'; title.textContent = 'Low offer';
+                sub.textContent = 'Seller may not respond.';
+            }
+        }
+
+        function sendOffer() {
+            if (!selectedOfferAmount || !currentReceiverId) return;
+            const offerMsg = `💰 OFFER: ₹ ${formatINR(selectedOfferAmount)}\nI would like to make an offer of ₹ ${formatINR(selectedOfferAmount)} for this property.`;
+            document.getElementById('messageInput').value = offerMsg;
+            sendMessage();
+            document.getElementById('qaPanel').classList.remove('open');
+            document.getElementById('qaToggle').classList.remove('open');
+        }
+
+        renderQuestionChips('popular');
 
         lucide.createIcons();
     </script>

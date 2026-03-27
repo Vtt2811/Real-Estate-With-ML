@@ -79,6 +79,7 @@ class Property(models.Model):
     distance_to_city_center_km = models.FloatField(default=0.0)
     year = models.IntegerField(default=2024)
     price_inr = models.BigIntegerField()
+    image = models.ImageField(upload_to='property_images/', null=True, blank=True)
 
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)
@@ -169,6 +170,7 @@ class Message(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['timestamp']
@@ -177,5 +179,12 @@ class Message(models.Model):
         return f"From {self.sender.username} to {self.receiver.username}"
 
 
-# Message model (already defined at 164)
-# Removing duplicated BugReport model from the end of the file.
+
+class PropertyImage(models.Model):
+    """Extra images for a property listing."""
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='extra_images')
+    image = models.ImageField(upload_to='property_images/')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Image for {self.property.title}"

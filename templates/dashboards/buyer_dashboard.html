@@ -179,8 +179,17 @@
                     <div class="property-grid">
                         {% for prop in properties %}
                         <div class="property-card" data-id="{{ prop.pk }}" onclick="openPropertyModal(this.getAttribute('data-id'));" style="cursor: pointer;">
-                            <div class="property-content">
-                                <div class="property-type-badge">{{ prop.property_type }}</div>
+                                <div class="property-image-container" style="height: 180px; width: 100%; position: relative; overflow: hidden; border-radius: 12px 12px 0 0; background: #e2e8f0;">
+                                    {% if prop.image %}
+                                        <img src="{{ prop.image.url }}" alt="{{ prop.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    {% else %}
+                                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                                            <i data-lucide="image" style="width: 48px; height: 48px;"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="property-type-badge" style="position: absolute; top: 1rem; left: 1rem;">{{ prop.property_type }}</div>
+                                </div>
+                                <div class="property-content" style="padding: 1.5rem;">
                                 <h3 class="property-title">{{ prop.title }}</h3>
                                 <div class="property-meta-grid">
                                     {% if prop.bedrooms > 0 %}
@@ -382,11 +391,57 @@
             if (!propertyDetailsModal || !detailsContent) return;
             detailsContent.innerHTML = '<div style="text-align: center; padding: 3rem;"><p>Loading...</p></div>';
             propertyDetailsModal.style.display = 'block';
+            window.currentCarouselIndex = 0;
             fetch(`/api/property-details/${id}/`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.error) { detailsContent.innerHTML = `<div>${data.error}</div>`; return; }
+                    const allImages = data.image_url ? [data.image_url, ...data.extra_images] : [];
+                    const hasMultiple = allImages.length > 1;
+                    
                     detailsContent.innerHTML = `
+                        <!-- Modern Image Gallery -->
+                        <div id="modalImageContainer" style="margin-bottom: 2rem; border-radius: 16px; overflow: hidden; background: #0f172a; position: relative;">
+                            ${allImages.length > 0 ? `
+                                <!-- Main Image with crossfade -->
+                                <div style="width: 100%; height: 350px; position: relative; overflow: hidden;">
+                                    ${allImages.map((url, i) => `
+                                        <img src="${url}" class="gallery-slide" data-index="${i}"
+                                             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+                                                    opacity: ${i === 0 ? 1 : 0}; transition: opacity 0.5s ease, transform 0.5s ease;
+                                                    transform: scale(${i === 0 ? 1 : 1.05});">
+                                    `).join('')}
+                                    
+                                    <!-- Image count badge -->
+                                    <div style="position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700;">
+                                        <span id="imgCounter">1</span> / ${allImages.length}
+                                    </div>
+                                    
+                                    ${hasMultiple ? `
+                                        <!-- Nav arrows with glassmorphism -->
+                                        <button onclick="slideGallery(-1)" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; width: 44px; height: 44px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; transition: all 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'"><i data-lucide="chevron-left"></i></button>
+                                        <button onclick="slideGallery(1)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; width: 44px; height: 44px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; transition: all 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'"><i data-lucide="chevron-right"></i></button>
+                                    ` : ''}
+                                </div>
+                                
+                                ${hasMultiple ? `
+                                    <!-- Thumbnail strip -->
+                                    <div id="thumbStrip" style="display: flex; gap: 6px; padding: 10px 12px; background: rgba(15,23,42,0.95); overflow-x: auto;">
+                                        ${allImages.map((url, i) => `
+                                            <img src="${url}" onclick="goToSlide(${i})" class="gallery-thumb-item"
+                                                 style="width: 56px; height: 56px; object-fit: cover; border-radius: 8px; cursor: pointer;
+                                                        border: 2px solid ${i === 0 ? '#3b82f6' : 'transparent'}; opacity: ${i === 0 ? 1 : 0.5};
+                                                        transition: all 0.3s ease; flex-shrink: 0;"
+                                                 onmouseover="this.style.opacity='1'" onmouseout="if(this.dataset.active!=='true') this.style.opacity='0.5'">
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                            ` : `
+                                <div style="width: 100%; height: 350px; display: flex; align-items: center; justify-content: center; color: #475569;">
+                                    <i data-lucide="image" style="width: 64px; height: 64px;"></i>
+                                </div>
+                            `}
+                        </div>
                         <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem;">
                             <div>
                                 <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1rem;">${data.title}</h3>
@@ -415,6 +470,36 @@
                         </div>`;
                     lucide.createIcons();
                 });
+        }
+
+        // Advanced Gallery Controls
+        window.currentCarouselIndex = 0;
+        window.slideGallery = function(direction) {
+            const slides = document.querySelectorAll('.gallery-slide');
+            if (slides.length === 0) return;
+            
+            window.currentCarouselIndex = (window.currentCarouselIndex + direction + slides.length) % slides.length;
+            updateGallerySlides();
+        };
+        window.goToSlide = function(index) {
+            window.currentCarouselIndex = index;
+            updateGallerySlides();
+        };
+        function updateGallerySlides() {
+            const slides = document.querySelectorAll('.gallery-slide');
+            const thumbs = document.querySelectorAll('.gallery-thumb-item');
+            const counter = document.getElementById('imgCounter');
+            
+            slides.forEach((slide, i) => {
+                slide.style.opacity = i === window.currentCarouselIndex ? '1' : '0';
+                slide.style.transform = i === window.currentCarouselIndex ? 'scale(1)' : 'scale(1.05)';
+            });
+            thumbs.forEach((thumb, i) => {
+                thumb.style.border = i === window.currentCarouselIndex ? '2px solid #3b82f6' : '2px solid transparent';
+                thumb.style.opacity = i === window.currentCarouselIndex ? '1' : '0.5';
+                thumb.dataset.active = i === window.currentCarouselIndex ? 'true' : 'false';
+            });
+            if (counter) counter.textContent = window.currentCarouselIndex + 1;
         }
 
         function toggleInterest(id, button) {

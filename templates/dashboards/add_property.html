@@ -77,7 +77,7 @@
                         {% endfor %}
                     {% endif %}
 
-                    <form method="post" id="propertyForm" autocomplete="off">
+                    <form method="post" id="propertyForm" autocomplete="off" enctype="multipart/form-data">
                         {% csrf_token %}
                         
                         <!-- Two Column Layout -->
@@ -168,6 +168,32 @@
                                     <small style="color: var(--muted); font-size: 1.05rem; display: block; margin-top: 0.6rem; font-weight: 500;">Minimum: ₹1,00,000</small>
                                     {% if form.price_inr.errors %}
                                         <span style="color: #c00; font-size: 1.05rem; font-weight: 600; display: block; margin-top: 0.5rem;">{{ form.price_inr.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label"><i data-lucide="image"></i> Property Images</label>
+                                    <input type="file" name="image" class="form-input" accept="image/*" multiple>
+                                    <small style="color: var(--muted); font-size: 1.05rem; display: block; margin-top: 0.6rem; font-weight: 500;">Select multiple high-quality photos. First image = Main Image.</small>
+                                    <!-- Large Image Preview Grid -->
+                                    <div id="imagePreviewContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.2rem; margin-top: 1.5rem;"></div>
+                                    {% if is_edit %}
+                                        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dotted #ddd;">
+                                            <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 1rem; font-weight: 600;">Currently Uploaded Images:</p>
+                                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem;">
+                                                {% if property.image %}
+                                                    <div style="position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 16px; border: 3px solid var(--primary); box-shadow: 0 8px 24px rgba(37,99,235,0.15);">
+                                                        <img src="{{ property.image.url }}" alt="Main Image" style="width: 100%; height: 100%; object-fit: cover;">
+                                                        <span style="position: absolute; top: 8px; left: 8px; background: var(--primary); color: white; font-size: 0.8rem; padding: 4px 12px; border-radius: 20px; font-weight: 700; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">★ Main</span>
+                                                    </div>
+                                                {% endif %}
+                                                {% for extra in property.extra_images.all %}
+                                                    <div style="aspect-ratio: 1; overflow: hidden; border-radius: 16px; border: 2px solid #e5e7eb; transition: all 0.3s ease;">
+                                                        <img src="{{ extra.image.url }}" alt="Extra Image" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
                                     {% endif %}
                                 </div>
                             </div>
@@ -383,6 +409,122 @@
                 handlePlotTypeToggle();
             }
         });
+
+        // Multiple Image Preview Logic — Large, Uniform, Animated
+        const imageInput = document.querySelector('input[type="file"][name="image"]');
+        const previewContainer = document.getElementById('imagePreviewContainer');
+
+        // --- Lightbox Overlay ---
+        let lightboxOverlay = document.getElementById('lightboxOverlay');
+        if (!lightboxOverlay) {
+            lightboxOverlay = document.createElement('div');
+            lightboxOverlay.id = 'lightboxOverlay';
+            lightboxOverlay.style.cssText = `
+                display: none; position: fixed; inset: 0; z-index: 9999;
+                background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+                align-items: center; justify-content: center; cursor: zoom-out;
+                animation: lightboxFadeIn 0.25s ease;
+            `;
+            lightboxOverlay.innerHTML = `
+                <img id="lightboxImg" src="" style="max-width: 90vw; max-height: 85vh; object-fit: contain; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); transition: transform 0.3s ease;">
+                <span style="position:absolute;top:24px;right:32px;color:white;font-size:2.5rem;cursor:pointer;font-weight:300;line-height:1;" onclick="closeLightbox()">✕</span>
+                <span id="lightboxCaption" style="position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.8);font-size:1rem;font-weight:600;background:rgba(0,0,0,0.4);padding:6px 18px;border-radius:20px;"></span>
+            `;
+            lightboxOverlay.addEventListener('click', function(e) {
+                if (e.target === lightboxOverlay) closeLightbox();
+            });
+            document.body.appendChild(lightboxOverlay);
+
+            // Inject lightbox + preview animation styles
+            if (!document.getElementById('previewAnimStyle')) {
+                const style = document.createElement('style');
+                style.id = 'previewAnimStyle';
+                style.textContent = `
+                    @keyframes fadeInPreview { to { opacity: 1; transform: scale(1); } }
+                    @keyframes lightboxFadeIn { from { opacity: 0; } to { opacity: 1; } }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        function openLightbox(src, caption) {
+            const overlay = document.getElementById('lightboxOverlay');
+            const img = document.getElementById('lightboxImg');
+            const cap = document.getElementById('lightboxCaption');
+            img.src = src;
+            cap.textContent = caption || '';
+            overlay.style.display = 'flex';
+        }
+        function closeLightbox() {
+            document.getElementById('lightboxOverlay').style.display = 'none';
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+        });
+
+        if (imageInput && previewContainer) {
+            imageInput.addEventListener('change', function() {
+                previewContainer.innerHTML = '';
+                const files = Array.from(this.files);
+                
+                if (files.length > 0) {
+                    // Add a counter label
+                    const counter = document.createElement('div');
+                    counter.style.cssText = 'grid-column: 1 / -1; font-size: 1.1rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0.25rem;';
+                    counter.innerHTML = `<i data-lucide="images" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px;"></i> ${files.length} image${files.length > 1 ? 's' : ''} selected`;
+                    previewContainer.appendChild(counter);
+
+                    files.forEach((file, index) => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const wrapper = document.createElement('div');
+                            wrapper.style.cssText = `
+                                position: relative;
+                                aspect-ratio: 1;
+                                overflow: hidden;
+                                border-radius: 16px;
+                                border: ${index === 0 ? '3px solid var(--primary)' : '2px solid #e5e7eb'};
+                                box-shadow: 0 8px 24px ${index === 0 ? 'rgba(37,99,235,0.15)' : 'rgba(0,0,0,0.06)'};
+                                opacity: 0;
+                                transform: scale(0.9);
+                                animation: fadeInPreview 0.4s ease ${index * 0.08}s forwards;
+                                cursor: pointer;
+                            `;
+                            
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.style.cssText = 'width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;';
+                            img.onmouseover = () => img.style.transform = 'scale(1.08)';
+                            img.onmouseout  = () => img.style.transform = 'scale(1)';
+                            wrapper.appendChild(img);
+
+                            // Click to enlarge
+                            wrapper.addEventListener('click', function() {
+                                openLightbox(e.target.result, index === 0 ? '★ Main Image' : `Image ${index + 1}`);
+                            });
+                            
+                            if (index === 0) {
+                                const badge = document.createElement('span');
+                                badge.textContent = '★ Main';
+                                badge.style.cssText = 'position:absolute;top:8px;left:8px;background:var(--primary);color:white;font-size:0.8rem;padding:4px 12px;border-radius:20px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.2);';
+                                wrapper.appendChild(badge);
+                            }
+
+                            // Image number badge (bottom-right)
+                            const numBadge = document.createElement('span');
+                            numBadge.textContent = (index + 1);
+                            numBadge.style.cssText = 'position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.5);color:white;font-size:0.75rem;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:700;';
+                            wrapper.appendChild(numBadge);
+                            
+                            previewContainer.appendChild(wrapper);
+                        }
+                        reader.readAsDataURL(file);
+                    });
+
+                    // Re-initialize lucide icons for the counter
+                    setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 50);
+                }
+            });
+        }
     </script>
     <script>
         lucide.createIcons();

@@ -57,6 +57,7 @@ urlpatterns = [
      # Messaging API
      path('api/messages/fetch/<int:receiver_id>/', views.fetch_messages, name='fetch_messages'),
      path('api/messages/send/', views.send_message, name='send_message'),
+     path('api/messages/delete/<int:msg_id>/', views.delete_message, name='delete_message'),
      path('messages/', views.messages_view, name='messages'),
 
      # Redirects
